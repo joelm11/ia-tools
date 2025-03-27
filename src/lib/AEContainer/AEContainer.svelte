@@ -26,6 +26,12 @@
     id="audio-element-container"
     class="flex flex-col gap-2 p-2 text-left border-2 border-gray-300 rounded-lg"
   >
+    {#each selectedFiles as file, index}
+      <AeContainerElem
+        aeFilename={file.name}
+        onDelete={() => deleteFile(index)}
+      />
+    {/each}
     <button
       id="add-audio-element"
       class="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mt-4"
@@ -41,11 +47,5 @@
       accept=".wav"
       onchange={handleFileSelect}
     />
-    {#each selectedFiles as file, index}
-      <AeContainerElem
-        aeFilename={file.name}
-        onDelete={() => deleteFile(index)}
-      />
-    {/each}
   </div>
 </div>
