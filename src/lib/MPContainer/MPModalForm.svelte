@@ -1,13 +1,15 @@
 <script>
-  let { isOpen = false, onClose, onSubmit } = $props();
+  let { isOpen = false, onClose, onSubmit, audioElements = [] } = $props();
 
   let title = $state("");
   let description = $state("");
+  let selectedAudio = $state([]);
 
   function handleSubmit() {
-    onSubmit({ title, description });
+    onSubmit({ title, description, audioElements: selectedAudio });
     title = "";
     description = "";
+    selectedAudio = [];
     onClose();
   }
 </script>
@@ -37,6 +39,19 @@
             class="w-full p-2 border rounded"
             rows="3"
           ></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="audioElements" class="block mb-2">Audio Elements</label>
+          <select
+            id="audioElements"
+            bind:value={selectedAudio}
+            class="w-full p-2 border rounded"
+            multiple
+          >
+            {#each audioElements as audio}
+              <option value={audio}>{audio.name || audio.title}</option>
+            {/each}
+          </select>
         </div>
         <div class="flex justify-end gap-2">
           <button
