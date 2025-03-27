@@ -1,10 +1,8 @@
 <script>
-  export let isOpen = false;
-  export let onClose;
-  export let onSubmit;
+  let { isOpen = false, onClose, onSubmit } = $props();
 
-  let title = "";
-  let description = "";
+  let title = $state("");
+  let description = $state("");
 
   function handleSubmit() {
     onSubmit({ title, description });
@@ -20,7 +18,7 @@
   >
     <div class="bg-white p-6 rounded-lg w-96">
       <h3 class="text-xl mb-4">Add Mix Presentation</h3>
-      <form on:submit|preventDefault={handleSubmit}>
+      <form onsubmit={handleSubmit}>
         <div class="mb-4">
           <label for="title" class="block mb-2">Title</label>
           <input
@@ -43,7 +41,7 @@
         <div class="flex justify-end gap-2">
           <button
             type="button"
-            on:click={onClose}
+            onclick={onClose}
             class="px-4 py-2 border rounded"
           >
             Cancel

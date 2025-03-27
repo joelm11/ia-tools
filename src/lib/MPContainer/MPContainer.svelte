@@ -1,6 +1,6 @@
 <script>
-  import MPModal from "./MPModal.svelte";
-  import MPElem from "./MPElem.svelte";
+  import MPModal from "./MPModalForm.svelte";
+  import MPElem from "./MPContainerElem.svelte";
 
   let isModalOpen = false;
   let mixPresentations = [];
