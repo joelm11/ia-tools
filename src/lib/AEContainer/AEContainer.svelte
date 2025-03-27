@@ -1,4 +1,5 @@
 <script>
+  import AeContainerElem from "./AEContainerElem.svelte";
   let selectedFiles = [];
 
   function openFileDialog() {
@@ -12,6 +13,10 @@
       // Reset the input so the same file can be selected again
       event.target.value = "";
     }
+  }
+
+  function deleteFile(index) {
+    selectedFiles = selectedFiles.filter((_, i) => i !== index);
   }
 </script>
 
@@ -36,19 +41,11 @@
       accept=".wav"
       onchange={handleFileSelect}
     />
-    {#each selectedFiles as file}
-      <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
-        <p class="text-gray-700">{file.name}</p>
-        <button
-          class="text-red-500 hover:text-red-700"
-          aria-label="Delete Audio Element Button"
-          onclick={() => {
-            selectedFiles = selectedFiles.filter((f) => f !== file);
-          }}
-        >
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+    {#each selectedFiles as file, index}
+      <AeContainerElem
+        aeFilename={file.name}
+        onDelete={() => deleteFile(index)}
+      />
     {/each}
   </div>
 </div>
