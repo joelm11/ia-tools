@@ -1,5 +1,6 @@
 <script>
   import AeContainerElem from "./AEContainerElem.svelte";
+
   let selectedFiles = [];
 
   function openFileDialog() {
