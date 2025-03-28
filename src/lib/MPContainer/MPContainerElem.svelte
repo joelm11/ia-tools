@@ -1,6 +1,5 @@
 <script lang="ts">
   let { mixPresentation, onDelete } = $props();
-  console.log(mixPresentation);
 </script>
 
 <div class="flex justify-between items-center p-4 border rounded-lg">

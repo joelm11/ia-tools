@@ -12,7 +12,7 @@
 
   function handleSubmit() {
     // Create the new Mix Presentation.
-    createMixPresentation({ name, desc, selectedAudioElements });
+    createMixPresentation(name, desc, selectedAudioElements);
     // Reset form.
     name = "";
     desc = "";
