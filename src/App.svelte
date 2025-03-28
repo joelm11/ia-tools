@@ -17,25 +17,46 @@
   }
 
   function deleteAudioElement(idToDelete: string) {
+    removeAEFromMixPresentation(idToDelete);
     audioElements = audioElements.filter(
       (element) => element.id !== idToDelete
     );
   }
 
-  function createMixPresentation(name: string, elements: AudioElement[]) {
+  function createMixPresentation(
+    name: string,
+    desc: string,
+    elements: AudioElement[]
+  ) {
     mixPresentations.push({
-      name: "Default Mix Presentation",
+      name: name,
+      description: desc,
       id: uuidv4(),
-      audioElements: [],
+      audioElements: elements,
     });
   }
 
-  function deleteMixPresentation() {}
+  function deleteMixPresentation(idToDelete: string) {
+    mixPresentations = mixPresentations.filter(
+      (presentation) => presentation.id !== idToDelete
+    );
+  }
 
-  function removeAEFromMixPresentation() {}
+  function removeAEFromMixPresentation(idToDelete: string) {
+    for (const presentation of mixPresentations) {
+      presentation.audioElements = presentation.audioElements.filter(
+        (element) => element.id !== idToDelete
+      );
+    }
+  }
 </script>
 
 <main class="grid grid-cols-6 m-2 gap-2">
   <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
-  <MpContainer />
+  <MpContainer
+    {mixPresentations}
+    {createMixPresentation}
+    {deleteMixPresentation}
+    {removeAEFromMixPresentation}
+  />
 </main>
