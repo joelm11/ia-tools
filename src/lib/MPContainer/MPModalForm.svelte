@@ -1,16 +1,28 @@
-<script>
-  let { isOpen = false, onClose, onSubmit, audioElements = [] } = $props();
+<script lang="ts">
+  let {
+    isOpen = false,
+    onClose,
+    createMixPresentation,
+    audioElements = [],
+  } = $props();
 
-  let title = $state("");
-  let description = $state("");
-  let selectedAudio = $state([]);
+  let name = $state("");
+  let desc = $state("");
+  let selectedAudioElements = $state([]);
 
   function handleSubmit() {
-    onSubmit({ title, description, audioElements: selectedAudio });
-    title = "";
-    description = "";
-    selectedAudio = [];
+    // Create the new Mix Presentation.
+    createMixPresentation({ name, desc, selectedAudioElements });
+    // Reset form.
+    name = "";
+    desc = "";
+    selectedAudioElements = [];
     onClose();
+  }
+
+  function handleFormSubmit(e: Event) {
+    e.preventDefault();
+    handleSubmit();
   }
 </script>
 
@@ -20,13 +32,13 @@
   >
     <div class="bg-white p-6 rounded-lg w-96">
       <h3 class="text-xl mb-4">Add Mix Presentation</h3>
-      <form onsubmit={handleSubmit}>
+      <form onsubmit={handleFormSubmit}>
         <div class="mb-4">
-          <label for="title" class="block mb-2">Title</label>
+          <label for="name" class="block mb-2">Title</label>
           <input
             type="text"
-            id="title"
-            bind:value={title}
+            id="name"
+            bind:value={name}
             class="w-full p-2 border rounded"
             required
           />
@@ -35,12 +47,12 @@
           <label for="description" class="block mb-2">Description</label>
           <textarea
             id="description"
-            bind:value={description}
+            bind:value={desc}
             class="w-full p-2 border rounded"
             rows="3"
           ></textarea>
         </div>
-        <div class="mb-4">
+        <!-- <div class="mb-4">
           <label for="audioElements" class="block mb-2">Audio Elements</label>
           <select
             id="audioElements"
@@ -52,7 +64,7 @@
               <option value={audio}>{audio.name || audio.title}</option>
             {/each}
           </select>
-        </div>
+        </div> -->
         <div class="flex justify-end gap-2">
           <button
             type="button"

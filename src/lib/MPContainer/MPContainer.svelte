@@ -1,16 +1,18 @@
-<script>
+<script lang="ts">
   import MPModal from "./MPModalForm.svelte";
   import MPElem from "./MPContainerElem.svelte";
 
-  let isModalOpen = false;
-  let mixPresentations = [];
+  let {
+    mixPresentations,
+    createMixPresentation,
+    deleteMixPresentation,
+    removeAEFromMixPresentation,
+  } = $props();
+
+  let isModalOpen = $state(false);
 
   function handleAddMP(data) {
     mixPresentations = [...mixPresentations, data];
-  }
-
-  function deleteMP(index) {
-    mixPresentations = mixPresentations.filter((_, i) => i !== index);
   }
 </script>
 
@@ -20,11 +22,10 @@
     id="mix-presentation-container"
     class="flex flex-col gap-2 p-2 text-left border-2 border-gray-300 rounded-lg"
   >
-    {#each mixPresentations as mp, index}
+    {#each mixPresentations as mixPresentation}
       <MPElem
-        title={mp.title}
-        description={mp.description}
-        onDelete={() => deleteMP(index)}
+        {mixPresentation}
+        onDelete={() => deleteMixPresentation(mixPresentation.id)}
       />
     {/each}
     <button
@@ -41,5 +42,5 @@
 <MPModal
   isOpen={isModalOpen}
   onClose={() => (isModalOpen = false)}
-  onSubmit={handleAddMP}
+  {createMixPresentation}
 />

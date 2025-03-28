@@ -1,11 +1,12 @@
-<script>
-  let { title, description, onDelete } = $props();
+<script lang="ts">
+  let { mixPresentation, onDelete } = $props();
+  console.log(mixPresentation);
 </script>
 
 <div class="flex justify-between items-center p-4 border rounded-lg">
   <div>
-    <h3 class="font-bold">{title}</h3>
-    <p class="text-gray-600">{description}</p>
+    <h3 class="font-bold">{mixPresentation.name}</h3>
+    <p class="text-gray-600">{mixPresentation.description}</p>
   </div>
   <button
     onclick={() => onDelete()}
