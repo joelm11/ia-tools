@@ -1,7 +1,6 @@
-<script>
+<script lang="ts">
   import AeContainerElem from "./AEContainerElem.svelte";
-
-  let selectedFiles = [];
+  let { audioElements, createAudioElement, deleteAudioElement } = $props();
 
   function openFileDialog() {
     document.getElementById("file-input").click();
@@ -10,14 +9,12 @@
   function handleFileSelect(event) {
     const files = event.target.files;
     if (files.length > 0) {
-      selectedFiles = [...selectedFiles, ...Array.from(files)];
+      const file = files[0];
+      createAudioElement(file.name);
+
       // Reset the input so the same file can be selected again
       event.target.value = "";
     }
-  }
-
-  function deleteFile(index) {
-    selectedFiles = selectedFiles.filter((_, i) => i !== index);
   }
 </script>
 
@@ -27,10 +24,10 @@
     id="audio-element-container"
     class="flex flex-col gap-2 p-2 text-left border-2 border-gray-300 rounded-lg"
   >
-    {#each selectedFiles as file, index}
+    {#each audioElements as audioElement}
       <AeContainerElem
-        aeFilename={file.name}
-        onDelete={() => deleteFile(index)}
+        aeFilename={audioElement.name}
+        onDelete={() => deleteAudioElement(audioElement.id)}
       />
     {/each}
     <button

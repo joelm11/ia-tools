@@ -3,6 +3,7 @@
   import MpContainer from "./lib/MPContainer/MPContainer.svelte";
   import type { AudioElement } from "./types/AudioElement";
   import type { MixPresentation } from "./types/MixPresentation";
+  import { v4 as uuidv4 } from "uuid";
 
   /* State for Audio Elements and Mix Presentations */
   let audioElements: AudioElement[] = $state([]);
@@ -11,7 +12,7 @@
   function createAudioElement(filename: string) {
     audioElements.push({
       name: filename,
-      id: "Default UUID",
+      id: uuidv4(),
     });
   }
 
@@ -21,10 +22,10 @@
     );
   }
 
-  function createMixPresentation() {
+  function createMixPresentation(name: string, elements: AudioElement[]) {
     mixPresentations.push({
       name: "Default Mix Presentation",
-      id: "Default UUID",
+      id: uuidv4(),
       audioElements: [],
     });
   }
@@ -35,6 +36,6 @@
 </script>
 
 <main class="grid grid-cols-6 m-2 gap-2">
-  <AeContainer />
+  <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
   <MpContainer />
 </main>
