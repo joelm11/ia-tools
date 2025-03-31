@@ -3,6 +3,7 @@
   import MPElem from "./MPContainerElem.svelte";
 
   let {
+    audioElements,
     mixPresentations,
     createMixPresentation,
     deleteMixPresentation,
@@ -43,4 +44,5 @@
   isOpen={isModalOpen}
   onClose={() => (isModalOpen = false)}
   {createMixPresentation}
+  {audioElements}
 />

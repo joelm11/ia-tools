@@ -54,6 +54,7 @@
 <main class="grid grid-cols-6 m-2 gap-2">
   <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
   <MpContainer
+    {audioElements}
     {mixPresentations}
     {createMixPresentation}
     {deleteMixPresentation}

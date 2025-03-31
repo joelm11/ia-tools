@@ -11,7 +11,6 @@
   let selectedAudioElements = $state([]);
 
   function handleSubmit() {
-    // Create the new Mix Presentation.
     createMixPresentation(name, desc, selectedAudioElements);
     // Reset form.
     name = "";
@@ -28,43 +27,58 @@
 
 {#if isOpen}
   <div
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+    class="fixed inset-0 bg-gray-400 bg-opacity-50 flex items-center justify-center"
   >
-    <div class="bg-white p-6 rounded-lg w-96">
-      <h3 class="text-xl mb-4">Add Mix Presentation</h3>
+    <div class="bg-white p-6 rounded-lg w-[32rem]">
+      <h3 class="text-xl mb-6">Add Mix Presentation</h3>
       <form onsubmit={handleFormSubmit}>
-        <div class="mb-4">
-          <label for="name" class="block mb-2">Title</label>
-          <input
-            type="text"
-            id="name"
-            bind:value={name}
-            class="w-full p-2 border rounded"
-            required
-          />
+        <div class="space-y-4">
+          <div>
+            <label for="name" class="block mb-2">Name</label>
+            <input
+              type="text"
+              id="name"
+              bind:value={name}
+              class="w-full p-2 border rounded"
+              placeholder="Mix Presentation Name"
+              required
+            />
+          </div>
+          <div>
+            <label for="description" class="block mb-2">Description</label>
+            <textarea
+              id="description"
+              bind:value={desc}
+              class="w-full p-2 border rounded"
+              placeholder="Description..."
+            ></textarea>
+          </div>
         </div>
-        <div class="mb-4">
-          <label for="description" class="block mb-2">Description</label>
-          <textarea
-            id="description"
-            bind:value={desc}
-            class="w-full p-2 border rounded"
-            rows="3"
-          ></textarea>
-        </div>
-        <!-- <div class="mb-4">
-          <label for="audioElements" class="block mb-2">Audio Elements</label>
-          <select
-            id="audioElements"
-            bind:value={selectedAudio}
-            class="w-full p-2 border rounded"
-            multiple
+        <div>
+          <label for="form-audio-elements" class="block mb-2"
+            >Audio Elements</label
           >
-            {#each audioElements as audio}
-              <option value={audio}>{audio.name || audio.title}</option>
+          <div
+            id="form-audio-elements"
+            class="mt-2 flex flex-wrap items-start justify-start gap-2 space-y-2 max-h-48 overflow-y-auto"
+          >
+            {#each audioElements as audioElement}
+              <div
+                class="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-gray-100 gap-1"
+              >
+                <input
+                  type="checkbox"
+                  id={audioElement.id}
+                  value={audioElement.name}
+                  class="h-5 w-5"
+                />
+                <span class="font-medium text-gray-700">
+                  <label for={audioElement.id}>{audioElement.name}</label>
+                </span>
+              </div>
             {/each}
-          </select>
-        </div> -->
+          </div>
+        </div>
         <div class="flex justify-end gap-2">
           <button
             type="button"
