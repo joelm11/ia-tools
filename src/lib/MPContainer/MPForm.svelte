@@ -23,6 +23,16 @@
     e.preventDefault();
     handleSubmit();
   }
+
+  function handleCheckboxChange(audioElement: any, checked: boolean) {
+    if (checked) {
+      selectedAudioElements = [...selectedAudioElements, audioElement];
+    } else {
+      selectedAudioElements = selectedAudioElements.filter(
+        (el) => el.id !== audioElement.id
+      );
+    }
+  }
 </script>
 
 {#if isOpen}
@@ -71,6 +81,8 @@
                   id={audioElement.id}
                   value={audioElement.name}
                   class="h-5 w-5"
+                  onchange={(e) =>
+                    handleCheckboxChange(audioElement, e.currentTarget.checked)}
                 />
                 <span class="font-medium text-gray-700">
                   <label for={audioElement.id}>{audioElement.name}</label>

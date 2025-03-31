@@ -1,5 +1,5 @@
 <script lang="ts">
-  import MPModal from "./MPModalForm.svelte";
+  import MPModal from "./MPForm.svelte";
   import MPElem from "./MPContainerElem.svelte";
 
   let {

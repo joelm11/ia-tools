@@ -4,8 +4,16 @@
 
 <div class="flex justify-between items-center p-4 border rounded-lg">
   <div>
-    <h3 class="font-bold">{mixPresentation.name}</h3>
+    <h3 class="font-semibold">{mixPresentation.name}</h3>
     <p class="text-gray-600">{mixPresentation.description}</p>
+    <h3 class="">Audio Elements</h3>
+    <div class="flex flex-wrap gap-2">
+      {#each mixPresentation.audioElements as audioElement}
+        <div class="px-2 py-1 bg-gray-100 rounded-md text-sm">
+          {audioElement.name}
+        </div>
+      {/each}
+    </div>
   </div>
   <button
     onclick={() => onDelete()}
