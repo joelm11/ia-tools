@@ -51,7 +51,7 @@
   }
 </script>
 
-<main class="grid grid-cols-6 m-2 gap-2">
+<main class="grid grid-cols-6 gap-2">
   <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
   <MpContainer
     {audioElements}
