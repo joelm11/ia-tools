@@ -22,7 +22,7 @@
   <h2 class="text-2xl">Audio Elements</h2>
   <div
     id="audio-element-container"
-    class="flex flex-col text-left border-2 border-gray-300 h-[calc(100vh-7rem)] bg-gray-300 gap-1 p-1"
+    class="flex flex-col text-left border-2 border-gray-300 bg-gray-300 gap-1 p-1"
   >
     {#each audioElements as audioElement}
       <AeContainerElem
@@ -32,7 +32,7 @@
     {/each}
     <button
       id="add-audio-element"
-      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4"
+      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4 mb-2"
       aria-label="Add Audio Element Button"
       onclick={openFileDialog}
     >
