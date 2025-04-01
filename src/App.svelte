@@ -51,7 +51,7 @@
   }
 </script>
 
-<main class="grid grid-cols-6 gap-2">
+<main class="grid grid-cols-6 gap-2 bg-gray-400 min-h-screen w-full m-0">
   <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
   <MpContainer
     {audioElements}

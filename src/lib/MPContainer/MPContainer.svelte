@@ -21,7 +21,7 @@
   <h2 class="text-2xl">Mix Presentations</h2>
   <div
     id="mix-presentation-container"
-    class="flex flex-col gap-2 p-2 text-left border-2 border-gray-300 rounded-lg"
+    class="flex flex-col gap-2 p-2 text-left bg-gray-300 h-[calc(100vh-7rem)]"
   >
     {#each mixPresentations as mixPresentation}
       <MPElem
@@ -32,7 +32,7 @@
     <button
       id="add-mix-presentation"
       onclick={() => (isModalOpen = true)}
-      class="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mt-4"
+      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4"
       aria-label="Add Mix Presentation Button"
     >
       <i class="fas fa-plus text-xl"></i>

@@ -4,7 +4,7 @@
 
 <div
   id="aecontainer-elem"
-  class="flex items-center justify-between p-2 bg-gray-100 rounded"
+  class="flex items-center justify-between p-2 bg-gray-100"
 >
   <p class="text-gray-700">{aeFilename}</p>
   <button
