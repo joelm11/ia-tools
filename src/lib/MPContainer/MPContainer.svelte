@@ -17,8 +17,7 @@
   }
 </script>
 
-<div class="m-2 col-span-3">
-  <h2 class="text-2xl">Mix Presentations</h2>
+<div class="mt-2 col-span-1">
   <div
     id="mix-presentation-container"
     class="flex flex-col gap-2 p-2 text-left bg-gray-300"

@@ -1,7 +1,8 @@
 <script lang="ts">
   import AeContainer from "./lib/AEContainer/AEContainer.svelte";
   import MpContainer from "./lib/MPContainer/MPContainer.svelte";
-  import PbContainer from "./lib/PbContainer/PbContainer.svelte";
+  import HeaderBar from "./lib/HeaderBar.svelte";
+
   import type { AudioElement } from "./types/AudioElement";
   import type { MixPresentation } from "./types/MixPresentation";
   import { v4 as uuidv4 } from "uuid";
@@ -53,9 +54,10 @@
 </script>
 
 <main
-  class="grid grid-cols-6 grid-rows-[1fr_auto] gap-2 bg-gray-400 min-h-screen w-full m-0"
+  class="grid grid-rows-[auto_1fr] grid-cols-5 bg-gray-400 min-h-screen w-full m-0"
 >
-  <div class="col-span-6 grid grid-cols-6 gap-2">
+  <HeaderBar />
+  <div class="col-span-5 grid grid-cols-5 divide-x-2 divide-gray-600">
     <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
     <MpContainer
       {audioElements}
@@ -65,5 +67,4 @@
       {removeAEFromMixPresentation}
     />
   </div>
-  <PbContainer />
 </main>

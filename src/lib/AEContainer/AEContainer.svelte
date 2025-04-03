@@ -18,8 +18,7 @@
   }
 </script>
 
-<div class="m-2 col-span-2 h-full">
-  <h2 class="text-2xl">Audio Elements</h2>
+<div class="mt-2 col-span-1 h-full">
   <div
     id="audio-element-container"
     class="flex flex-col text-left border-2 border-gray-300 bg-gray-300 gap-1 p-1"
