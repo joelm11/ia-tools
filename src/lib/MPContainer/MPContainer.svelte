@@ -17,10 +17,10 @@
   }
 </script>
 
-<div class="mt-2 col-span-1">
+<div class="mt-2 col-span-1 bg-gray-300 h-full">
   <div
     id="mix-presentation-container"
-    class="flex flex-col gap-2 p-2 text-left bg-gray-300"
+    class="flex flex-col gap-2 p-2 text-left"
   >
     {#each mixPresentations as mixPresentation}
       <MPElem

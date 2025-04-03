@@ -18,11 +18,8 @@
   }
 </script>
 
-<div class="mt-2 col-span-1 h-full">
-  <div
-    id="audio-element-container"
-    class="flex flex-col text-left border-2 border-gray-300 bg-gray-300 gap-1 p-1"
-  >
+<div class="mt-2 col-span-1 h-full bg-gray-300">
+  <div id="audio-element-container" class="flex flex-col text-left gap-1 p-2">
     {#each audioElements as audioElement}
       <AeContainerElem
         aeFilename={audioElement.name}

@@ -2,13 +2,13 @@
   let { mixPresentation, onDelete } = $props();
 </script>
 
-<div class="flex justify-between items-center p-4 bg-gray-200">
-  <div>
-    <h3 class="text-xl">{mixPresentation.name}</h3>
-    <p class="text-gray-600 mb-2">{mixPresentation.description}</p>
+<div class="flex justify-between items-center p-2 bg-gray-200">
+  <div class="flex-1 min-w-0">
+    <h3 class="text-xl truncate">{mixPresentation.name}</h3>
+    <p class="text-gray-600 mb-2 line-clamp-2">{mixPresentation.description}</p>
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
-        <div class="px-2 py-1 bg-gray-100 rounded-md text-sm">
+        <div class="px-2 py-1 bg-gray-100 rounded-md text-sm truncate">
           {audioElement.name}
         </div>
       {/each}
@@ -16,7 +16,7 @@
   </div>
   <button
     onclick={() => onDelete()}
-    class="text-red-500 hover:text-red-700"
+    class="text-red-500 hover:text-red-700 p-2"
     aria-label="Delete mix presentation"
   >
     <i class="fas fa-trash"></i>
