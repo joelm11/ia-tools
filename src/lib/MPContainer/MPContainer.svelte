@@ -1,6 +1,7 @@
 <script lang="ts">
   import MPModal from "./MPForm.svelte";
   import MPElem from "./MPContainerElem.svelte";
+  import PBContainer from "./PBContainer/PBContainer.svelte";
 
   let {
     audioElements,
@@ -17,7 +18,7 @@
   }
 </script>
 
-<div class="mt-2 col-span-1 bg-gray-300 h-full">
+<div class="col-span-1 bg-gray-300 h-full">
   <div
     id="mix-presentation-container"
     class="flex flex-col gap-2 p-2 text-left"
@@ -38,6 +39,8 @@
     </button>
   </div>
 </div>
+
+<PBContainer></PBContainer>
 
 <MPModal
   isOpen={isModalOpen}

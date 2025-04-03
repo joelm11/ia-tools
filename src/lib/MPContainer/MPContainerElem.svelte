@@ -1,5 +1,11 @@
 <script lang="ts">
   let { mixPresentation, onDelete } = $props();
+
+  function removeAudioElement(id: string) {
+    mixPresentation.audioElements = mixPresentation.audioElements.filter(
+      (element) => element.id !== id
+    );
+  }
 </script>
 
 <div class="flex justify-between items-center p-2 bg-gray-200">
@@ -8,8 +14,17 @@
     <p class="text-gray-600 mb-2 line-clamp-2">{mixPresentation.description}</p>
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
-        <div class="px-2 py-1 bg-gray-100 rounded-md text-sm truncate">
-          {audioElement.name}
+        <div
+          class="px-2 py-1 bg-gray-100 rounded-md text-sm truncate flex items-center gap-2"
+        >
+          <span>{audioElement.name}</span>
+          <button
+            onclick={() => removeAudioElement(audioElement.id)}
+            class="text-gray-500 hover:text-red-600"
+            aria-label="Remove audio element"
+          >
+            <i class="fas fa-times text-xs"></i>
+          </button>
         </div>
       {/each}
     </div>

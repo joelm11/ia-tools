@@ -18,7 +18,7 @@
   }
 </script>
 
-<div class="mt-2 col-span-1 h-full bg-gray-300">
+<div class="col-span-1 h-full bg-gray-300">
   <div id="audio-element-container" class="flex flex-col text-left gap-1 p-2">
     {#each audioElements as audioElement}
       <AeContainerElem
