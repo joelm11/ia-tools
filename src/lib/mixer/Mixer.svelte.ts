@@ -1,8 +1,7 @@
 /*
-The mixer takes audio elements through a mix presentation, applies their gains, then mixes and applies the final gain.
+  A mixer is created for a given MixPresentation.
 */
 
-// import type { MixPresentation } from "../../types/MixPresentation";
 import type { MixPresentation } from "src/@types/MixPresentation";
 
 export class AudioMixer {
