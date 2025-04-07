@@ -1,8 +1,10 @@
 <script lang="ts">
   import PbElemAe from "./PBElemAE.svelte";
+
+  let { mixPresentation } = $props();
 </script>
 
-<div class="grid grid-cols-6 bg-gray-200 p-2 gap-2">
+<div class="grid grid-cols-6 bg-gray-200 gap-2">
   <!-- Play and Volume -->
   <div id="play-and-volume" class="col-span-2 h-24 flex items-center">
     <button
@@ -16,6 +18,8 @@
   <div class="col-span-4 h-24 flex items-center">Placeholder for Waveform</div>
   <!-- Render Audio Elements -->
   <div class="col-span-3">
-    <PbElemAe></PbElemAe>
+    {#each mixPresentation.audioElements as audioElement}
+      <PbElemAe {audioElement}></PbElemAe>
+    {/each}
   </div>
 </div>

@@ -40,7 +40,7 @@
   </div>
 </div>
 
-<PBContainer></PBContainer>
+<PBContainer {mixPresentations}></PBContainer>
 
 <MPModal
   isOpen={isModalOpen}
