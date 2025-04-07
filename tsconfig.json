@@ -1,4 +1,5 @@
 {
+  // "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "bundler",
     "target": "ESNext",
@@ -12,7 +13,13 @@
     "checkJs": true,
     "strict": true,
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["src/lib/*"],
+      "@types/*": ["src/types/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*"]
 }
