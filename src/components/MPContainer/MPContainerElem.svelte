@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type { AudioElement } from "../../types/AudioElement";
+
   let { mixPresentation, onDelete } = $props();
 
   function removeAudioElement(id: string) {
     mixPresentation.audioElements = mixPresentation.audioElements.filter(
-      (element) => element.id !== id
+      (element: AudioElement) => element.id !== id
     );
   }
 </script>

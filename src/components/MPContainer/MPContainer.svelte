@@ -2,6 +2,7 @@
   import MPModal from "./MPForm.svelte";
   import MPElem from "./MPContainerElem.svelte";
   import PBContainer from "./PBContainer/PBContainer.svelte";
+  import type { MixPresentation } from "../../types/MixPresentation";
 
   let {
     audioElements,
@@ -13,7 +14,7 @@
 
   let isModalOpen = $state(false);
 
-  function handleAddMP(data) {
+  function handleAddMP(data: MixPresentation) {
     mixPresentations = [...mixPresentations, data];
   }
 </script>

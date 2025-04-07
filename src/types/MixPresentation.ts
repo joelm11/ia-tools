@@ -1,9 +1,9 @@
 import type { AudioElement } from "./AudioElement";
-import type { UUID } from "crypto";
+import { v4 as uuidv4 } from "uuid";
 
 export interface MixPresentation {
   name: string;
   description: string;
-  id: UUID;
+  id: string;
   audioElements: AudioElement[];
 }

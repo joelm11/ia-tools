@@ -3,17 +3,22 @@
   let { audioElements, createAudioElement, deleteAudioElement } = $props();
 
   function openFileDialog() {
-    document.getElementById("file-input").click();
+    const fileInput = document.getElementById("file-input");
+    if (fileInput) {
+      fileInput.click();
+    }
   }
 
-  function handleFileSelect(event) {
-    const files = event.target.files;
-    if (files.length > 0) {
-      const file = files[0];
-      createAudioElement(file);
+  function handleFileSelect(event: Event) {
+    if (event.target) {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length) {
+        const file = files[0];
+        createAudioElement(file);
 
-      // Reset the input so the same file can be selected again
-      event.target.value = "";
+        // Reset the input so the same file can be selected again
+        (event.target as HTMLInputElement).value = "";
+      }
     }
   }
 </script>
