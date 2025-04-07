@@ -1,9 +1,13 @@
 <script lang="ts">
   import PbElem from "./PBElem.svelte";
   import { AudioMixer } from "src/@lib/mixer/Mixer.svelte";
-  // import type { MixPresentation } from "@types/MixPresentation";
+  import type { MixPresentation } from "src/@types/MixPresentation";
 
-  let { mixPresentations } = $props();
+  interface Props {
+    mixPresentations: MixPresentation[];
+  }
+
+  let { mixPresentations }: Props = $props();
   let mixer: AudioMixer;
 
   // onMount(() => {
