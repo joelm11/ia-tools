@@ -11,10 +11,11 @@
   let audioElements: AudioElement[] = $state([]);
   let mixPresentations: MixPresentation[] = $state([]);
 
-  function createAudioElement(filename: string) {
+  function createAudioElement(file: File) {
     audioElements.push({
-      name: filename,
+      name: file.name,
       id: uuidv4(),
+      audioFile: file,
     });
   }
 

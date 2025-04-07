@@ -10,7 +10,7 @@
     const files = event.target.files;
     if (files.length > 0) {
       const file = files[0];
-      createAudioElement(file.name);
+      createAudioElement(file);
 
       // Reset the input so the same file can be selected again
       event.target.value = "";
@@ -23,6 +23,7 @@
     {#each audioElements as audioElement}
       <AeContainerElem
         aeFilename={audioElement.name}
+        audioFile={audioElement.audioFile}
         onDelete={() => deleteAudioElement(audioElement.id)}
       />
     {/each}
