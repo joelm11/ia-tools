@@ -1,7 +1,7 @@
 <script lang="ts">
-  import AeContainer from "./lib/AEContainer/AEContainer.svelte";
-  import MpContainer from "./lib/MPContainer/MPContainer.svelte";
-  import HeaderBar from "./lib/HeaderBar.svelte";
+  import AeContainer from "./components/AEContainer/AEContainer.svelte";
+  import MpContainer from "./components/MPContainer/MPContainer.svelte";
+  import HeaderBar from "./components/HeaderBar.svelte";
 
   import type { AudioElement } from "./types/AudioElement";
   import type { MixPresentation } from "./types/MixPresentation";
