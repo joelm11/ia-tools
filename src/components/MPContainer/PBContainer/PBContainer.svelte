@@ -1,6 +1,6 @@
 <script lang="ts">
   import PbElem from "./PBElem.svelte";
-  import { AudioMixer } from "@lib/mixer/Mixer.svelte";
+  import { AudioMixer } from "src/@lib/mixer/Mixer.svelte";
   // import type { MixPresentation } from "@types/MixPresentation";
 
   let { mixPresentations } = $props();

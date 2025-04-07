@@ -16,8 +16,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["src/lib/*"],
-      "@types/*": ["src/types/*"]
+      "src/@lib/*": ["src/lib/*"],
+      "src/@types/*": ["src/types/*"]
     }
   },
   "include": ["src/**/*"],
