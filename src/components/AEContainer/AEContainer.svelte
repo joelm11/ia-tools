@@ -27,8 +27,7 @@
   <div id="audio-element-container" class="flex flex-col text-left gap-1 p-2">
     {#each audioElements as audioElement}
       <AeContainerElem
-        aeFilename={audioElement.name}
-        audioFile={audioElement.audioFile}
+        {audioElement}
         onDelete={() => deleteAudioElement(audioElement.id)}
       />
     {/each}
