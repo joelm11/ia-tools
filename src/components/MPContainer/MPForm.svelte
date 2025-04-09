@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { MixPresentation } from "src/@types/MixPresentation";
+
   let {
     isOpen = false,
     onClose,
@@ -6,16 +8,20 @@
     audioElements = [],
   } = $props();
 
-  let name = $state("");
-  let desc = $state("");
-  let selectedAudioElements = $state([]);
+  let mixPresentation: MixPresentation = $state({
+    name: "",
+    description: "",
+    id: "",
+    audioElements: [],
+  });
 
   function handleSubmit() {
-    createMixPresentation(name, desc, selectedAudioElements);
+    const mixPresentationCopy = { ...mixPresentation };
+    createMixPresentation(mixPresentationCopy);
     // Reset form.
-    name = "";
-    desc = "";
-    selectedAudioElements = [];
+    mixPresentation.name = "";
+    mixPresentation.description = "";
+    mixPresentation.audioElements = [];
     onClose();
   }
 
@@ -26,9 +32,12 @@
 
   function handleCheckboxChange(audioElement: any, checked: boolean) {
     if (checked) {
-      selectedAudioElements = [...selectedAudioElements, audioElement];
+      mixPresentation.audioElements = [
+        ...mixPresentation.audioElements,
+        audioElement,
+      ];
     } else {
-      selectedAudioElements = selectedAudioElements.filter(
+      mixPresentation.audioElements = mixPresentation.audioElements.filter(
         (el) => el.id !== audioElement.id
       );
     }
@@ -48,7 +57,7 @@
             <input
               type="text"
               id="name"
-              bind:value={name}
+              bind:value={mixPresentation.name}
               class="w-full p-2 border rounded"
               placeholder="Mix Presentation Name"
               required
@@ -58,7 +67,7 @@
             <label for="description" class="block mb-2">Description</label>
             <textarea
               id="description"
-              bind:value={desc}
+              bind:value={mixPresentation.description}
               class="w-full p-2 border rounded"
               placeholder="Description..."
             ></textarea>

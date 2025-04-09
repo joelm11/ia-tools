@@ -26,17 +26,8 @@
     );
   }
 
-  function createMixPresentation(
-    name: string,
-    desc: string,
-    elements: AudioElement[]
-  ) {
-    mixPresentations.push({
-      name: name,
-      description: desc,
-      id: uuidv4(),
-      audioElements: elements,
-    });
+  function createMixPresentation(mixPresentation: MixPresentation) {
+    mixPresentations.push(mixPresentation);
   }
 
   function deleteMixPresentation(idToDelete: string) {

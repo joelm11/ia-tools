@@ -1,17 +1,20 @@
 <script lang="ts">
   import PbElemAe from "./PBElemAE.svelte";
-  import { onMount } from "svelte";
+  import { getContext, setContext } from "svelte";
   import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
 
   let { mixPresentation } = $props();
-  let mixer: PresentationMixer;
-
-  onMount(() => {
-    mixer = new PresentationMixer(mixPresentation);
-  });
+  let mixer = getContext<PresentationMixer>("presentationMixer");
 
   function handlePlayPause() {
-    mixer?.playpause();
+    if (!mixer) {
+      console.log("Constructing");
+      mixer = new PresentationMixer(mixPresentation);
+    } else if (mixer.getActive() != mixPresentation.id) {
+      console.log("Reconfiguring");
+      mixer.configureMixer(mixPresentation);
+    }
+    mixer.playpause();
   }
 </script>
 
