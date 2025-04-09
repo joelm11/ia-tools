@@ -1,21 +1,21 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
 
 export class PresentationMixer {
-  private audioContext: AudioContext;
-  private elemGainNodes: Map<string, GainNode>;
-  private mixGainNode: GainNode;
+  private audioContext: AudioContext = new AudioContext();
+  private elemGainNodes: Map<string, GainNode> = new Map();
+  private mixGainNode: GainNode = null as any;
+  private activeMixPres: string = "";
 
   constructor(mixPresentation: MixPresentation) {
-    this.audioContext = new AudioContext();
-    this.elemGainNodes = new Map();
-    this.initAudioSources(mixPresentation);
-    // Connect audio sources and gain nodes to mixer node.
-    this.mixGainNode = this.audioContext.createGain();
-    this.elemGainNodes.forEach((gainNode) => {
-      gainNode.connect(this.mixGainNode);
-    });
-    // Connect the mixer node to the output.
-    this.mixGainNode.connect(this.audioContext.destination);
+    this.configureMixer(mixPresentation);
+  }
+
+  public getActive(): string {
+    return this.activeMixPres;
+  }
+
+  public setActive(mixPresentation: MixPresentation) {
+    this.configureMixer(mixPresentation);
   }
 
   public playpause() {
@@ -36,11 +36,29 @@ export class PresentationMixer {
   }
 
   /**
+   * @brief Initializes the mixer for playback of a new or modified mix presentation.
+   *
+   */
+  public configureMixer(mixPresentation: MixPresentation) {
+    this.activeMixPres = mixPresentation.id;
+    this.initAudioSources(mixPresentation);
+    // Connect audio sources and gain nodes to output mixer node.
+    this.mixGainNode = this.audioContext.createGain();
+    this.elemGainNodes.forEach((gainNode) => {
+      gainNode.connect(this.mixGainNode);
+    });
+    // Connect the mixer node to the output.
+    this.mixGainNode.connect(this.audioContext.destination);
+  }
+
+  /**
    *
    * @param mixPresentation
    * @brief Creates source nodes in the graph and attaches gain nodes to each source.
    */
   private initAudioSources(mixPresentation: MixPresentation) {
+    this.elemGainNodes.clear();
+
     for (const audioElement of mixPresentation.audioElements) {
       // Get each audio source from the DOM.
       const audioDOMElem = document.getElementById(
