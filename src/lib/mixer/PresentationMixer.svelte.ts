@@ -18,6 +18,23 @@ export class PresentationMixer {
     this.mixGainNode.connect(this.audioContext.destination);
   }
 
+  public playpause() {
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    this.elemGainNodes.forEach((_, id) => {
+      const audioElem = document.getElementById(id) as HTMLMediaElement;
+      if (audioElem) {
+        if (audioElem.paused) {
+          audioElem.play();
+        } else {
+          audioElem.pause();
+        }
+      }
+    });
+  }
+
   /**
    *
    * @param mixPresentation
