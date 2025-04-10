@@ -3,6 +3,8 @@ import type { MixPresentation } from "src/@types/MixPresentation";
 export class PresentationMixer {
   private audioContext: AudioContext = new AudioContext();
   private elemGainNodes: Map<string, GainNode> = new Map();
+  private mediaElementSources: Map<string, MediaElementAudioSourceNode> =
+    new Map();
   private mixGainNode: GainNode = null as any;
   private activeMixPres: string = "";
 
@@ -23,6 +25,7 @@ export class PresentationMixer {
    */
   public reconfigureMixer(mixPresentation: MixPresentation) {
     this.activeMixPres = mixPresentation.id;
+    this.clearGraph();
     this.initAudioSources(mixPresentation);
     // Connect audio sources and gain nodes to output mixer node.
     this.elemGainNodes.forEach((gainNode) => {
@@ -36,8 +39,6 @@ export class PresentationMixer {
    * @brief Creates source nodes in the graph and attaches gain nodes to each source.
    */
   private initAudioSources(mixPresentation: MixPresentation) {
-    this.elemGainNodes.clear();
-
     for (const audioElement of mixPresentation.audioElements) {
       // Get each audio source from the DOM.
       const audioDOMElem = document.getElementById(
@@ -47,13 +48,30 @@ export class PresentationMixer {
         console.error(`Audio element with id "${audioElement.id}" not found`);
         continue;
       }
-      // Make a source node in the audio context.
-      const track = this.audioContext.createMediaElementSource(audioDOMElem);
+
+      // Reuse existing source or create new one
+      let track = this.mediaElementSources.get(audioElement.id);
+      if (!track) {
+        track = this.audioContext.createMediaElementSource(audioDOMElem);
+        this.mediaElementSources.set(audioElement.id, track);
+      } else {
+      }
+
       // Connect gain nodes to each source node.
       const elemGainNode = this.audioContext.createGain();
       this.elemGainNodes.set(audioElement.id, elemGainNode);
       track.connect(elemGainNode);
     }
+  }
+
+  /**
+   * @brief Clears old audio sources and gain nodes before reconstructing graph.
+   */
+  private clearGraph() {
+    this.elemGainNodes.forEach((gainNode) => {
+      gainNode.disconnect();
+    });
+    this.elemGainNodes.clear();
   }
 
   public getActive(): string {
@@ -79,5 +97,17 @@ export class PresentationMixer {
         }
       }
     });
+  }
+
+  public resetTrack(elementId: string) {
+    const audioElem = document.getElementById(elementId) as HTMLMediaElement;
+    if (audioElem && this.mediaElementSources.has(elementId)) {
+      audioElem.pause();
+      audioElem.currentTime = 0;
+    }
+  }
+
+  public resetAllTracks() {
+    this.mediaElementSources.forEach((_, id) => this.resetTrack(id));
   }
 }
