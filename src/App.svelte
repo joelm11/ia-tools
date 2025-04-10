@@ -27,6 +27,7 @@
   }
 
   function createMixPresentation(mixPresentation: MixPresentation) {
+    mixPresentation.id = uuidv4();
     mixPresentations.push(mixPresentation);
   }
 

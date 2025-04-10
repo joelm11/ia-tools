@@ -6,49 +6,28 @@ export class PresentationMixer {
   private mixGainNode: GainNode = null as any;
   private activeMixPres: string = "";
 
-  constructor(mixPresentation: MixPresentation) {
-    this.configureMixer(mixPresentation);
-  }
+  /**
+   * @brief Full initialization of the object is left to the children. We simply
+   * create the context here, the mix gain node, and connect the mgn to the output.
+   */
+  public constructor() {
+    this.audioContext = new AudioContext();
 
-  public getActive(): string {
-    return this.activeMixPres;
-  }
-
-  public setActive(mixPresentation: MixPresentation) {
-    this.configureMixer(mixPresentation);
-  }
-
-  public playpause() {
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
-
-    this.elemGainNodes.forEach((_, id) => {
-      const audioElem = document.getElementById(id) as HTMLMediaElement;
-      if (audioElem) {
-        if (audioElem.paused) {
-          audioElem.play();
-        } else {
-          audioElem.pause();
-        }
-      }
-    });
+    this.mixGainNode = this.audioContext.createGain();
+    this.mixGainNode.connect(this.audioContext.destination);
   }
 
   /**
    * @brief Initializes the mixer for playback of a new or modified mix presentation.
    *
    */
-  public configureMixer(mixPresentation: MixPresentation) {
+  public reconfigureMixer(mixPresentation: MixPresentation) {
     this.activeMixPres = mixPresentation.id;
     this.initAudioSources(mixPresentation);
     // Connect audio sources and gain nodes to output mixer node.
-    this.mixGainNode = this.audioContext.createGain();
     this.elemGainNodes.forEach((gainNode) => {
       gainNode.connect(this.mixGainNode);
     });
-    // Connect the mixer node to the output.
-    this.mixGainNode.connect(this.audioContext.destination);
   }
 
   /**
@@ -75,5 +54,30 @@ export class PresentationMixer {
       this.elemGainNodes.set(audioElement.id, elemGainNode);
       track.connect(elemGainNode);
     }
+  }
+
+  public getActive(): string {
+    return this.activeMixPres;
+  }
+
+  public setActive(mixPresentation: MixPresentation) {
+    this.reconfigureMixer(mixPresentation);
+  }
+
+  public playpause() {
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    this.elemGainNodes.forEach((_, id) => {
+      const audioElem = document.getElementById(id) as HTMLMediaElement;
+      if (audioElem) {
+        if (audioElem.paused) {
+          audioElem.play();
+        } else {
+          audioElem.pause();
+        }
+      }
+    });
   }
 }
