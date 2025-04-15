@@ -11,7 +11,7 @@
 </script>
 
 <div
-  class="col-span-3 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4"
+  class="col-span-3 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4 border border-ae-card-background"
 >
   <div class="text-card-p-text mb-1 text-2xl">Playback</div>
   <div class="border-b border-ae-card-background mb-2"></div>

@@ -12,7 +12,7 @@
   <div class="flex items-center justify-between">
     <div class="text-card-p-text flex-1 text-center">{audioElement.name}</div>
     <button
-      class="text-card-s-text hover:text-red-700 ml-2"
+      class="text-card-s-text hover:text-red-800 ml-2"
       aria-label="Delete Audio Element Button"
       onclick={onDelete}
     >

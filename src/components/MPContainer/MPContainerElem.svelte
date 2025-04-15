@@ -15,7 +15,7 @@
 >
   <div class="flex-1 min-w-0">
     <div
-      class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md"
+      class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md py-2"
     >
       {mixPresentation.name}
     </div>
@@ -23,12 +23,12 @@
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
         <div
-          class="px-2 py-1rounded-md text-md text-card-s-text truncate flex items-center gap-2 bg-ae-card-background rounded-sm"
+          class="px-2 py-1rounded-md text-md text-card-p-text truncate flex items-center gap-2 bg-ae-card-background rounded-sm"
         >
           <span>{audioElement.name}</span>
           <button
             onclick={() => removeAudioElement(audioElement.id)}
-            class="text-gray-500 hover:text-red-600"
+            class="text-card-s-text hover:text-red-800"
             aria-label="Remove audio element"
           >
             <i class="fas fa-times text-xs"></i>

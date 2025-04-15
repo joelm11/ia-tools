@@ -7,7 +7,7 @@
   }
 </script>
 
-<div class="flex p-2 bg-gray-100 justify-between gap-2">
+<div class="flex p-2 bg-ae-card-background rounded-md justify-between gap-2">
   <span class="flex justify-center items-center flex-none">
     <input
       type="range"
@@ -19,5 +19,5 @@
       oninput={updateGain}
     />
   </span>
-  <span class="text-sm p-1">{audioElement.name}</span>
+  <span class="text-sm p-1 truncate">{audioElement.name}</span>
 </div>
