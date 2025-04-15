@@ -16,6 +16,24 @@
       id: uuidv4(),
       audioFile: file,
     });
+    // Send to server.
+    logAudioElementCreation(file);
+  }
+
+  // Log audio element creation on server.
+  async function logAudioElementCreation(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await fetch("http://localhost:3000/log", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error sending form data:", error);
+    }
   }
 
   function deleteAudioElement(idToDelete: string) {
