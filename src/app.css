@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+@theme {
+  --color-app: #1e293b;
+  --color-card-background: #334155;
+  --color-card-p-text: #e2e8f0;
+  --color-card-s-text: #94a3b8;
+  --color-ae-card-background: #475569;
+  --color-mp-card-background: #1e293b;
+  --color-card-h-line: #475569;
+  --color-mp-card-t-background: #0a91b1;
+}
