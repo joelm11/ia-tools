@@ -16,11 +16,11 @@
 </script>
 
 <div
-  class="col-span-1 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4"
+  class="col-span-1 h-full flex flex-col text-left gap-1 bg-card-background border border-ae-card-background rounded-2xl p-4"
 >
   <div class="text-card-p-text mb-1 text-2xl">Mix Presentations</div>
   <div class="border-b border-ae-card-background mb-2"></div>
-  <div id="mix-presentation-container">
+  <div id="mix-presentation-container" class="flex flex-col gap-3">
     {#each mixPresentations as mixPresentation}
       <MPElem
         {mixPresentation}
@@ -30,7 +30,7 @@
     <button
       id="add-mix-presentation"
       onclick={() => (isModalOpen = true)}
-      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4 mb-2"
+      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-1 mb-2"
       aria-label="Add Mix Presentation Button"
     >
       <i class="fas fa-plus text-xl"></i>

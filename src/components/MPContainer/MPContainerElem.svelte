@@ -11,15 +11,19 @@
 </script>
 
 <div
-  class="flex justify-between items-center p-2 bg-mp-card-background border-card-s-text"
+  class="flex justify-between items-center p-3 bg-mp-card-background border border-ae-card-background rounded-md"
 >
   <div class="flex-1 min-w-0">
-    <h3 class="text-xl truncate">{mixPresentation.name}</h3>
+    <div
+      class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md"
+    >
+      {mixPresentation.name}
+    </div>
     <p class="text-gray-600 mb-2 line-clamp-2">{mixPresentation.description}</p>
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
         <div
-          class="px-2 py-1 bg-gray-100 rounded-md text-sm truncate flex items-center gap-2"
+          class="px-2 py-1rounded-md text-md text-card-s-text truncate flex items-center gap-2 bg-ae-card-background rounded-sm"
         >
           <span>{audioElement.name}</span>
           <button
@@ -33,11 +37,11 @@
       {/each}
     </div>
   </div>
-  <button
+  <!-- <button
     onclick={() => onDelete()}
     class="text-red-500 hover:text-red-700 p-2"
     aria-label="Delete mix presentation"
   >
     <i class="fas fa-trash"></i>
-  </button>
+  </button> -->
 </div>

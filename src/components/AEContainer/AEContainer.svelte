@@ -25,16 +25,18 @@
 
 <div
   id="audio-element-container"
-  class="col-span-1 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4"
+  class="col-span-1 h-full flex flex-col text-left gap-1 border border-ae-card-background bg-card-background rounded-2xl p-4"
 >
   <div class="text-card-p-text mb-1 text-2xl">Audio Elements</div>
   <div class="border-b border-ae-card-background mb-2"></div>
-  {#each audioElements as audioElement}
-    <AeContainerElem
-      {audioElement}
-      onDelete={() => deleteAudioElement(audioElement.id)}
-    />
-  {/each}
+  <div class="flex flex-col gap-3">
+    {#each audioElements as audioElement}
+      <AeContainerElem
+        {audioElement}
+        onDelete={() => deleteAudioElement(audioElement.id)}
+      />
+    {/each}
+  </div>
   <button
     id="add-audio-element"
     class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4 mb-2"
