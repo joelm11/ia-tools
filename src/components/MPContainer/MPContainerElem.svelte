@@ -10,7 +10,9 @@
   }
 </script>
 
-<div class="flex justify-between items-center p-2 bg-gray-200">
+<div
+  class="flex justify-between items-center p-2 bg-mp-card-background border-card-s-text"
+>
   <div class="flex-1 min-w-0">
     <h3 class="text-xl truncate">{mixPresentation.name}</h3>
     <p class="text-gray-600 mb-2 line-clamp-2">{mixPresentation.description}</p>

@@ -15,11 +15,12 @@
   let isModalOpen = $state(false);
 </script>
 
-<div class="col-span-1 h-full">
-  <div
-    id="mix-presentation-container"
-    class="flex flex-col gap-2 p-2 text-left"
-  >
+<div
+  class="col-span-1 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4"
+>
+  <div class="text-card-p-text mb-1 text-2xl">Mix Presentations</div>
+  <div class="border-b border-ae-card-background mb-2"></div>
+  <div id="mix-presentation-container">
     {#each mixPresentations as mixPresentation}
       <MPElem
         {mixPresentation}
