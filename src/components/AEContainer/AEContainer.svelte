@@ -23,28 +23,31 @@
   }
 </script>
 
-<div class="col-span-1 h-full bg-gray-300">
-  <div id="audio-element-container" class="flex flex-col text-left gap-1 p-2">
-    {#each audioElements as audioElement}
-      <AeContainerElem
-        {audioElement}
-        onDelete={() => deleteAudioElement(audioElement.id)}
-      />
-    {/each}
-    <button
-      id="add-audio-element"
-      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4 mb-2"
-      aria-label="Add Audio Element Button"
-      onclick={openFileDialog}
-    >
-      <i class="fas fa-plus text-xl"></i>
-    </button>
-    <input
-      class="hidden"
-      id="file-input"
-      type="file"
-      accept=".wav"
-      onchange={handleFileSelect}
+<div
+  id="audio-element-container"
+  class="col-span-1 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4"
+>
+  <div class="text-card-p-text mb-1 text-2xl">Audio Elements</div>
+  <div class="border-b border-ae-card-background mb-2"></div>
+  {#each audioElements as audioElement}
+    <AeContainerElem
+      {audioElement}
+      onDelete={() => deleteAudioElement(audioElement.id)}
     />
-  </div>
+  {/each}
+  <button
+    id="add-audio-element"
+    class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-4 mb-2"
+    aria-label="Add Audio Element Button"
+    onclick={openFileDialog}
+  >
+    <i class="fas fa-plus text-xl"></i>
+  </button>
+  <input
+    class="hidden"
+    id="file-input"
+    type="file"
+    accept=".wav"
+    onchange={handleFileSelect}
+  />
 </div>

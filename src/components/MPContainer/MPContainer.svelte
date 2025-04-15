@@ -15,7 +15,7 @@
   let isModalOpen = $state(false);
 </script>
 
-<div class="col-span-1 bg-gray-300 h-full">
+<div class="col-span-1 h-full">
   <div
     id="mix-presentation-container"
     class="flex flex-col gap-2 p-2 text-left"
