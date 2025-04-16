@@ -3,7 +3,10 @@
   import MpContainer from "./components/MPContainer/MPContainer.svelte";
 
   import type { AudioElement } from "./types/AudioElement";
-  import type { MixPresentation } from "./types/MixPresentation";
+  import type {
+    MixPresentation,
+    MixPresentationAudioElement,
+  } from "./types/MixPresentation";
   import { v4 as uuidv4 } from "uuid";
 
   /* State for Audio Elements and Mix Presentations */
@@ -17,24 +20,24 @@
       audioFile: file,
     });
     // Send to server.
-    logAudioElementCreation(file);
+    // logAudioElementCreation(file);
   }
 
-  // Log audio element creation on server.
-  async function logAudioElementCreation(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const response = await fetch("http://localhost:3000/log", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Error sending form data:", error);
-    }
-  }
+  // // Log audio element creation on server.
+  // async function logAudioElementCreation(file: File) {
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+  //   try {
+  //     const response = await fetch("http://localhost:3000/log", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //     const data = await response.json();
+  //     console.log(data);
+  //   } catch (error) {
+  //     console.error("Error sending form data:", error);
+  //   }
+  // }
 
   function deleteAudioElement(idToDelete: string) {
     removeAEFromMixPresentation(idToDelete);
@@ -46,6 +49,7 @@
   function createMixPresentation(mixPresentation: MixPresentation) {
     mixPresentation.id = uuidv4();
     mixPresentations.push(mixPresentation);
+    sendMixPresentations();
   }
 
   function deleteMixPresentation(idToDelete: string) {
@@ -59,6 +63,37 @@
       presentation.audioElements = presentation.audioElements.filter(
         (element) => element.id !== idToDelete
       );
+    }
+  }
+
+  // Send mix presentations to server.
+  async function sendMixPresentations() {
+    const formData = new FormData();
+    // Append data for each mix presentation. We only attach the id of the audio elements here.
+    for (const presentation of mixPresentations) {
+      const { id, name, audioElements } = presentation;
+      const mpAudioElements = audioElements.map((element) => ({
+        id: element.id,
+        name: element.name,
+      }));
+      formData.append(
+        "mixPresentations",
+        JSON.stringify({ id, name, mpAudioElements })
+      );
+      // Append audio element files to the form data.
+      for (const element of audioElements) {
+        formData.append("audioFiles", element.audioFile);
+      }
+    }
+    try {
+      const response = await fetch("http://localhost:3000/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      // TODO: Optional response status check.
+    } catch (error) {
+      console.error("Error sending mix presentations:", error);
     }
   }
 </script>
