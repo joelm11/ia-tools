@@ -6,6 +6,7 @@
     "module": "ES2022",
     "useDefineForClassFields": true,
     "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
     "sourceMap": true,
