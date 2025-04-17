@@ -1,12 +1,12 @@
 <script lang="ts">
   import AeContainer from "./components/AEContainer/AEContainer.svelte";
   import MpContainer from "./components/MPContainer/MPContainer.svelte";
-
   import type { AudioElement } from "./types/AudioElement";
   import type {
     MixPresentation,
     MixPresentationAudioElement,
   } from "./types/MixPresentation";
+  import type { AudioChFormat } from "./types/AudioChFormat";
   import { v4 as uuidv4 } from "uuid";
 
   /* State for Audio Elements and Mix Presentations */
@@ -19,25 +19,7 @@
       id: uuidv4(),
       audioFile: file,
     });
-    // Send to server.
-    // logAudioElementCreation(file);
   }
-
-  // // Log audio element creation on server.
-  // async function logAudioElementCreation(file: File) {
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-  //   try {
-  //     const response = await fetch("http://localhost:3000/log", {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  //     const data = await response.json();
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.error("Error sending form data:", error);
-  //   }
-  // }
 
   function deleteAudioElement(idToDelete: string) {
     removeAEFromMixPresentation(idToDelete);
@@ -48,6 +30,7 @@
 
   function createMixPresentation(mixPresentation: MixPresentation) {
     mixPresentation.id = uuidv4();
+    mixPresentation.playbackFormat = AudioChFormat.Stereo;
     mixPresentations.push(mixPresentation);
     sendMixPresentations();
   }
@@ -71,14 +54,14 @@
     const formData = new FormData();
     // Append data for each mix presentation. We only attach the id of the audio elements here.
     for (const presentation of mixPresentations) {
-      const { id, name, audioElements } = presentation;
+      const { id, name, playbackFormat, audioElements } = presentation;
       const mpAudioElements = audioElements.map((element) => ({
         id: element.id,
-        name: element.name,
+        chFormat: element.audioChFormat,
       }));
       formData.append(
         "mixPresentations",
-        JSON.stringify({ id, name, mpAudioElements })
+        JSON.stringify({ id, name, playbackFormat, mpAudioElements })
       );
       // Append audio element files to the form data.
       for (const element of audioElements) {

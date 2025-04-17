@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from "uuid";
+import type { AudioChFormat } from "./AudioFormats";
 
 export interface AudioElement {
   name: string;
   id: string;
   audioFile: File;
+  audioChFormat: AudioChFormat;
 }

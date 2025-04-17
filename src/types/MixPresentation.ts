@@ -1,5 +1,5 @@
 import type { AudioElement } from "./AudioElement";
-import { v4 as uuidv4 } from "uuid";
+import type { AudioChFormat } from "./AudioFormats";
 
 export interface MixPresentationAudioElement extends AudioElement {
   gain: number;
@@ -9,5 +9,6 @@ export interface MixPresentation {
   name: string;
   description: string;
   id: string;
+  playbackFormat: AudioChFormat;
   audioElements: MixPresentationAudioElement[];
 }
