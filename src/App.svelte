@@ -158,6 +158,14 @@
         formData.append("audioFiles", element.audioFile);
       }
     }
+    // Log form data for debugging.
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}: ${value.name}`);
+      } else {
+        console.log(`${key}: ${value}`);
+      }
+    }
     try {
       const response = await fetch("http://localhost:3000/upload", {
         method: "POST",

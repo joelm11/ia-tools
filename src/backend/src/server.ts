@@ -2,6 +2,7 @@ import express, { type Request, type Response } from "express";
 import multer from "multer";
 import bodyParser from "body-parser";
 import { v4 as uuidv4 } from "uuid";
+import cors from "cors";
 
 export class AppServer {
   app: express.Application;
@@ -26,6 +27,14 @@ export class AppServer {
   private configureMiddleware() {
     // Middleware to parse JSON request bodies
     this.app.use(bodyParser.json());
+
+    // Enable CORS for requests from http://localhost:5173
+    this.app.use(
+      cors({
+        origin: "http://localhost:5173",
+      })
+    );
+
     this.configureStorage();
   }
 
@@ -81,6 +90,9 @@ export class AppServer {
       console.log("No files were uploaded.");
     }
 
-    res.send("FormData received and logged!");
+    // Send a JSON response back to the client
+    res.json({
+      message: "Files uploaded successfully",
+    });
   }
 }
