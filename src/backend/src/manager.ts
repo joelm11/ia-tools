@@ -20,7 +20,7 @@ export class Manager {
   private registerEvents() {
     // Listen for payload upload to the server.
     this.server.on(UserEvents.PAYLOADUPLOAD, (job) => {
-      console.log("Job received:", job);
+      console.log("Job received");
       // Parse payload.
     });
   }

@@ -2,10 +2,7 @@
   import AeContainer from "./components/AEContainer/AEContainer.svelte";
   import MpContainer from "./components/MPContainer/MPContainer.svelte";
   import type { AudioElement } from "./types/AudioElement";
-  import type {
-    MixPresentation,
-    MixPresentationAudioElement,
-  } from "./types/MixPresentation";
+  import type { MixPresentation } from "./types/MixPresentation";
   import { AudioChFormat } from "./types/AudioFormats";
   import { v4 as uuidv4 } from "uuid";
   import { WaveFile } from "wavefile";
@@ -20,6 +17,7 @@
       id: uuidv4(),
       audioFile: file,
       audioChFormat: await audioFormatFromFile(file),
+      gain: 20,
     });
   }
 
@@ -139,33 +137,36 @@
     }
   }
 
-  // Send mix presentations to server.
+  // Format and send mix presentations to the server.
+  // We serialize mix presentations and audio elements to their base formats and attach referenced files to the form data.
   async function sendMixPresentations() {
     const formData = new FormData();
-    // Append data for each mix presentation. We only attach the id of the audio elements here.
+    // Construct a set of audio elements to avoid duplicates.
+    const activeAudioElementSet = new Set<string>();
     for (const presentation of mixPresentations) {
-      const { id, name, playbackFormat, audioElements } = presentation;
-      const mpAudioElements = audioElements.map((element) => ({
-        id: element.id,
-        chFormat: element.audioChFormat,
-      }));
+      const { audioElements, ...rest } = presentation;
+      const baseAudioElements = audioElements.map(
+        ({ audioFile, ...audioElementBase }) => audioElementBase
+      );
+      const serializablePresentation = {
+        ...rest,
+        audioElements: baseAudioElements,
+      };
+      for (const element of audioElements) {
+        activeAudioElementSet.add(element.id);
+      }
+
       formData.append(
         "mixPresentations",
-        JSON.stringify({ id, name, playbackFormat, mpAudioElements })
+        JSON.stringify(serializablePresentation)
       );
-      // Append audio element files to the form data.
-      for (const element of audioElements) {
+    }
+    // Append active audio element files to the form data.
+    audioElements
+      .filter((element) => activeAudioElementSet.has(element.id))
+      .forEach((element) => {
         formData.append("audioFiles", element.audioFile);
-      }
-    }
-    // Log form data for debugging.
-    for (const [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}: ${value.name}`);
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
+      });
     try {
       const response = await fetch("http://localhost:3000/upload", {
         method: "POST",

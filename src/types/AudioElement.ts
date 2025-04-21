@@ -1,8 +1,12 @@
 import type { AudioChFormat } from "./AudioFormats";
 
-export interface AudioElement {
+export interface AudioElementBase {
   name: string;
   id: string;
-  audioFile: File;
   audioChFormat: AudioChFormat;
+  gain: number;
+}
+
+export interface AudioElement extends AudioElementBase {
+  audioFile: File;
 }
