@@ -21,7 +21,7 @@ export class Manager {
     // Listen for payload upload to the server.
     this.server.on(UserEvents.PAYLOADUPLOAD, (job) => {
       console.log("Job received:", job);
-      // Process the job here.
+      // Parse payload.
     });
   }
 }

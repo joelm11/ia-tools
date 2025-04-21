@@ -70,6 +70,26 @@ export class AppServer extends EventEmitter {
   private handlePayloadUpload(req: Request, res: Response) {
     console.log("Server: Received payload upload.");
 
+    // Log text fields
+    console.log("Fields:", req.body);
+
+    // Log files (if any)
+    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+      console.log("Files:");
+      req.files.forEach((file: Express.Multer.File) => {
+        // Use the correct type here
+        console.log(`  - Fieldname: ${file.fieldname}`);
+        console.log(`  - Original Name: ${file.originalname}`);
+        console.log(`  - Mimetype: ${file.mimetype}`);
+        console.log(`  - Size: ${file.size} bytes`);
+        // If you configured storage with multer, file.path or file.buffer would be available
+        console.log(`  - Path: ${file.path}`);
+        // Save the the file to the server
+      });
+    } else {
+      console.log("No files were uploaded.");
+    }
+
     // Send a JSON response back to the client
     res.json({
       message: "Files uploaded successfully",
