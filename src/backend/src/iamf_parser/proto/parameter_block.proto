@@ -12,8 +12,8 @@ syntax = "proto2";
 
 package iamf_tools_cli_proto;
 
-import "iamf/cli/proto/obu_header.proto";
-import "iamf/cli/proto/parameter_data.proto";
+import "obu_header.proto";
+import "parameter_data.proto";
 
 message ParameterDataExtension {
   optional uint32 parameter_data_size = 1;

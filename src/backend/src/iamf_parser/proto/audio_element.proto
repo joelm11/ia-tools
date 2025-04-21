@@ -12,8 +12,8 @@ syntax = "proto2";
 
 package iamf_tools_cli_proto;
 
-import "iamf/cli/proto/obu_header.proto";
-import "iamf/cli/proto/param_definitions.proto";
+import "obu_header.proto";
+import "param_definitions.proto";
 
 enum AudioElementType {
   AUDIO_ELEMENT_INVALID = 0;

@@ -12,7 +12,7 @@ syntax = "proto2";
 
 package iamf_tools_cli_proto;
 
-import "iamf/cli/proto/obu_header.proto";
+import "obu_header.proto";
 
 enum ArbitraryObuType {
   OBU_IA_INVALID = 0;
