@@ -1,3 +1,4 @@
+import { UserEvents } from "../events/events.ts";
 import { AppServer } from "./server.ts";
 
 /**
@@ -13,5 +14,14 @@ export class Manager {
   constructor() {
     // Initialize the server, job parser, job queue, and job executor.
     this.server = new AppServer();
+    this.registerEvents();
+  }
+
+  private registerEvents() {
+    // Listen for payload upload to the server.
+    this.server.on(UserEvents.PAYLOADUPLOAD, (job) => {
+      console.log("Job received:", job);
+      // Process the job here.
+    });
   }
 }

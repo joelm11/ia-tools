@@ -3,8 +3,10 @@ import multer from "multer";
 import bodyParser from "body-parser";
 import { v4 as uuidv4 } from "uuid";
 import cors from "cors";
+import EventEmitter from "events";
+import { UserEvents } from "../events/events.ts";
 
-export class AppServer {
+export class AppServer extends EventEmitter {
   app: express.Application;
   port: number;
   upload: multer.Multer;
@@ -12,15 +14,16 @@ export class AppServer {
   fileNameMap: Map<string, string>;
 
   constructor() {
+    super();
     this.app = express();
     this.port = 3000;
     this.fileNameMap = new Map<string, string>();
-    this.upload = multer(); // Initialize with an empty multer instance
+    this.upload = multer(); // Initialize with an empty multer instance before configuring storage.
 
     this.configureMiddleware();
     this.configurePayloadUpload("/upload");
     this.app.listen(this.port, () => {
-      console.log(`Server listening on port ${this.port}`);
+      console.log(`Server: Listening on port ${this.port}`);
     });
   }
 
@@ -65,34 +68,16 @@ export class AppServer {
   }
 
   private handlePayloadUpload(req: Request, res: Response) {
-    console.log("Received FormData:");
-
-    // Validate the request.
-    // TODO:
-
-    // Log text fields
-    console.log("Fields:", req.body);
-
-    // Log files (if any)
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      console.log("Files:");
-      req.files.forEach((file: Express.Multer.File) => {
-        // Use the correct type here
-        console.log(`  - Fieldname: ${file.fieldname}`);
-        console.log(`  - Original Name: ${file.originalname}`);
-        console.log(`  - Mimetype: ${file.mimetype}`);
-        console.log(`  - Size: ${file.size} bytes`);
-        // If you configured storage with multer, file.path or file.buffer would be available
-        console.log(`  - Path: ${file.path}`);
-        // Save the the file to the server
-      });
-    } else {
-      console.log("No files were uploaded.");
-    }
+    console.log("Server: Received payload upload.");
 
     // Send a JSON response back to the client
     res.json({
       message: "Files uploaded successfully",
+    });
+
+    // Emit an event after the payload is uploaded
+    this.emit(UserEvents.PAYLOADUPLOAD, {
+      fields: req.body,
     });
   }
 }
