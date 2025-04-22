@@ -76,7 +76,7 @@ export class AppServer extends EventEmitter {
     // Log text fields
     console.log("Fields:", req.body);
     // Log the fields to a JSON file.
-    this.logPayloadMetadata(req);
+    // this.logPayloadMetadata(req);
 
     // Log files (if any)
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {

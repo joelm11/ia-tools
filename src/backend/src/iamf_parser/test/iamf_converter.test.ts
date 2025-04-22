@@ -1,14 +1,14 @@
-// src/math.test.ts
 import { expect, describe, it } from "vitest"; // If globals are not enabled
+import { payloadToIAMF } from "../iamf_converter";
+import fs from "fs";
 
-function add(a: number, b: number): number {
-  return a + b;
-}
-
-describe("add", () => {
-  it("should return the sum of two numbers", () => {
-    expect(add(2, 3)).toBe(5);
-    expect(add(-1, 5)).toBe(4);
-    expect(add(0, 0)).toBe(0);
+describe("1ae1mp", () => {
+  it("Generate IAMF Metadata from internal state representation", () => {
+    // Read a JSON file in as data and pass it to the function
+    const payload = fs.readFileSync(
+      "./src/backend/src/iamf_parser/test/resources/1ae1mp.json",
+      "utf-8"
+    );
+    payloadToIAMF(JSON.parse(payload));
   });
 });
