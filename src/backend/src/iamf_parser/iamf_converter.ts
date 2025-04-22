@@ -10,18 +10,20 @@ import { UserMetadata } from "./protoc/user_metadata";
 export function payloadToIAMF(payload: any) {
   let metadata = UserMetadata.create();
 
-  addDefaultMetadata();
-  addAudioFileData();
-  addAudioElementData();
-  addMixPresentationData();
+  addDefaultMetadata(metadata);
+  addAudioFileData(metadata);
+  addAudioElementData(metadata);
+  addMixPresentationData(metadata);
   // Print the metadata to check its validity.
   console.log("Metadata: ", metadata);
 }
 
-function addDefaultMetadata() {}
+function addDefaultMetadata(metadata: UserMetadata) {
+  metadata.testVectorMetadata = TestVectorMetadata.create({ isValid: true });
+}
 
-function addAudioFileData() {}
+function addAudioFileData(metadata: UserMetadata) {}
 
-function addAudioElementData() {}
+function addAudioElementData(metadata: UserMetadata) {}
 
-function addMixPresentationData() {}
+function addMixPresentationData(metadata: UserMetadata) {}
