@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import cors from "cors";
 import EventEmitter from "events";
 import { UserEvents } from "../events/events.ts";
+import fs from "fs";
+import type { MixPresentationBase } from "src/@types/MixPresentation.ts";
+import { log } from "console";
 
 export class AppServer extends EventEmitter {
   app: express.Application;
@@ -72,6 +75,8 @@ export class AppServer extends EventEmitter {
 
     // Log text fields
     console.log("Fields:", req.body);
+    // Log the fields to a JSON file.
+    this.logPayloadMetadata(req);
 
     // Log files (if any)
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
@@ -99,5 +104,27 @@ export class AppServer extends EventEmitter {
     this.emit(UserEvents.PAYLOADUPLOAD, {
       fields: req.body,
     });
+  }
+
+  private logPayloadMetadata(req: any) {
+    let mixPresentationsObjects;
+    if (Array.isArray(req.body.mixPresentations)) {
+      mixPresentationsObjects = [];
+      for (const presentationString of req.body.mixPresentations) {
+        try {
+          const parsedObject = JSON.parse(presentationString);
+          mixPresentationsObjects.push(parsedObject);
+        } catch (error) {
+          console.error("Error parsing a mixPresentation JSON string:", error);
+          mixPresentationsObjects.push(presentationString); // Keep the raw string in case of parsing error for a specific item
+        }
+      }
+    } else {
+      mixPresentationsObjects = req.body.mixPresentations; // Keep the original value if it's not a string or array
+    }
+    fs.writeFileSync(
+      "/tmp/fields.json",
+      JSON.stringify(mixPresentationsObjects, null, 2) + "\n"
+    );
   }
 }

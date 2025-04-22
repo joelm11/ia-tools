@@ -1,0 +1,14 @@
+{
+  "name": "My Mix Presentation",
+  "description": "",
+  "id": "d257308e-c40d-4da6-a5a5-46405472d4a3",
+  "playbackFormat": "none",
+  "audioElements": [
+    {
+      "name": "BassNote.wav",
+      "id": "cb048a87-41f2-4d09-9371-3882a277d8b3",
+      "audioChFormat": "stereo",
+      "gain": 20
+    }
+  ]
+}

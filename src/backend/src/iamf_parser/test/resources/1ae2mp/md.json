@@ -1,0 +1,30 @@
+[
+  {
+    "name": "My Mix Presentation",
+    "description": "",
+    "id": "7132c66d-2a78-47f7-99fa-08bbcb2249bb",
+    "playbackFormat": "none",
+    "audioElements": [
+      {
+        "name": "BassNote.wav",
+        "id": "4ddd0291-65c1-4c3d-9c9c-d9ff6d20e493",
+        "audioChFormat": "stereo",
+        "gain": 20
+      }
+    ]
+  },
+  {
+    "name": "Foo Bar",
+    "description": "",
+    "id": "e3a4304c-6687-4acb-98b9-8699c39e6032",
+    "playbackFormat": "none",
+    "audioElements": [
+      {
+        "name": "BassNote.wav",
+        "id": "4ddd0291-65c1-4c3d-9c9c-d9ff6d20e493",
+        "audioChFormat": "stereo",
+        "gain": 20
+      }
+    ]
+  }
+]
