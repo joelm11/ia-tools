@@ -17,6 +17,7 @@ import {
   HeadPhonesRenderingMode,
   MixPresentationAnnotations,
   MixPresentationObuMetadata,
+  SubMixAudioElement,
 } from "./protoc/mix_presentation";
 import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
 import { UserMetadata } from "./protoc/user_metadata";
@@ -35,6 +36,10 @@ interface AudioElementMetadata extends AudioElementBase {
   channelLabels: ChannelLabel[];
 }
 
+interface MixPresentationMetadata extends MixPresentationBase {
+  audioElements: AudioElementMetadata[];
+}
+
 const CODEC_CONFIG_ID = 200;
 const CODEC_SR = 48000;
 const CODEC_BIT_DEPTH = 16;
@@ -45,14 +50,20 @@ export function payloadToIAMF(mixPresentations: MixPresentationBase[]) {
     mixPresentations = [mixPresentations];
   }
 
-  const audioElements = augmentAudioElementMetadata(mixPresentations);
+  const audioElementsMetadata = augmentAudioElementMetadata(mixPresentations);
+  const mixPresentationsMetadata = mixPresentations.map((mixPresentation) => {
+    return {
+      ...mixPresentation,
+      audioElements: audioElementsMetadata,
+    };
+  });
 
   let metadata = UserMetadata.create();
 
-  addDefaultMetadata(mixPresentations, metadata);
-  addAudioFileData(audioElements, metadata);
-  addAudioElementData(audioElements, metadata);
-  addMixPresentationData(mixPresentations, metadata);
+  addDefaultMetadata(mixPresentationsMetadata, metadata);
+  addAudioFileData(audioElementsMetadata, metadata);
+  addAudioElementData(audioElementsMetadata, metadata);
+  addMixPresentationData(mixPresentationsMetadata, metadata);
   // Write the metadata to a JSON file.
   metadataToTextProto(metadata);
 }
@@ -183,56 +194,67 @@ function addAudioElementData(
 }
 
 function addMixPresentationData(
-  mixPresentations: MixPresentationBase[],
+  mixPresentations: MixPresentationMetadata[],
   metadata: UserMetadata
 ) {
   for (const mixPresentation of mixPresentations) {
     metadata.mixPresentationMetadata.push(
       MixPresentationObuMetadata.create({
-        mixPresentationId: 0, // TODO
+        mixPresentationId: uuidToNumber(mixPresentation.id),
         countLabel: 1,
-        annotationsLanguage: ["en-us"], // TODO
-        localizedPresentationAnnotations: ["MP Name"], // TODO
+        annotationsLanguage: ["en-us"], // TODO (?)
+        localizedPresentationAnnotations: [mixPresentation.name],
         subMixes: [
           {
-            audioElements: [
-              {
-                audioElementId: 300,
-                localizedElementAnnotations: ["ah"],
-                renderingConfig: {
-                  headphonesRenderingMode:
-                    HeadPhonesRenderingMode.HEADPHONES_RENDERING_MODE_BINAURAL,
-                },
-                // TODO?
-                elementMixGain: {
-                  paramDefinition: {
-                    parameterId: 999,
-                    parameterRate: 48000,
-                    paramDefinitionMode: true,
-                  },
-                  defaultMixGain: 0,
-                },
-              }, // TODO
-            ],
+            audioElements: mixpresentationAudioElements(mixPresentation),
+            // TODO?
             outputMixGain: {
               paramDefinition: {
                 parameterId: 998,
                 parameterRate: 48000,
                 paramDefinitionMode: true,
               },
-              defaultMixGain: 0,
+              defaultMixGain: 0, // TODO
             },
             // Let's see if we can get away without loudness information.
             // Otherwise, TODO.
           },
-        ], // TODO
+        ],
       })
     );
   }
 }
 
+function mixpresentationAudioElements(
+  mixPresentation: MixPresentationMetadata
+): SubMixAudioElement[] {
+  const mixpresentationAudioElements: SubMixAudioElement[] = [];
+
+  for (const element of mixPresentation.audioElements) {
+    mixpresentationAudioElements.push(
+      SubMixAudioElement.create({
+        audioElementId: element.idInt,
+        localizedElementAnnotations: [element.name],
+        renderingConfig: {
+          headphonesRenderingMode:
+            HeadPhonesRenderingMode.HEADPHONES_RENDERING_MODE_BINAURAL,
+        },
+        elementMixGain: {
+          paramDefinition: {
+            parameterId: 999,
+            parameterRate: 48000,
+            paramDefinitionMode: true,
+          },
+          defaultMixGain: element.gain,
+        },
+      })
+    );
+  }
+  return mixpresentationAudioElements;
+}
+
 function metadataToTextProto(metadata: UserMetadata) {
   const foo = UserMetadata.toJSON(metadata);
-  // console.log("-- Constructed MD --");
-  // console.log(foo);
+  console.log("-- Constructed MD --");
+  console.log(foo);
 }
