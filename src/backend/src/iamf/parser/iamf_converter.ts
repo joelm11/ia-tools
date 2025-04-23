@@ -15,14 +15,12 @@ import {
 } from "./protoc/audio_element";
 import {
   HeadPhonesRenderingMode,
-  MixPresentationAnnotations,
   MixPresentationObuMetadata,
   SubMixAudioElement,
 } from "./protoc/mix_presentation";
 import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
 import { UserMetadata } from "./protoc/user_metadata";
 import type { MixPresentationBase } from "src/@types/MixPresentation";
-import type { AudioChFormat } from "src/@types/AudioFormats";
 import type { AudioElementBase } from "src/@types/AudioElement";
 import {
   getChannelCountRaw,
@@ -30,6 +28,7 @@ import {
   getChannelLabels,
   getIAMFLayout,
 } from "./AudioFormat_tools";
+import fs from "fs";
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;
@@ -143,7 +142,7 @@ function addAudioFileData(
         samplesToTrimAtStartIncludesCodecDelay: false,
         samplesToTrimAtEnd: 0,
         samplesToTrimAtStart: 0,
-        audioElementId: element.idInt,
+        audioElementId: 333,
         channelMetadatas: element.channelLabels.map((label, index) => {
           return {
             channelId: index,
@@ -165,7 +164,7 @@ function addAudioElementData(
       getCoupledChannelCount(element.audioChFormat);
     metadata.audioElementMetadata.push(
       AudioElementObuMetadata.create({
-        audioElementId: element.idInt,
+        audioElementId: 333,
         audioElementType: AudioElementType.AUDIO_ELEMENT_CHANNEL_BASED,
         codecConfigId: CODEC_CONFIG_ID,
         numSubstreams: numSubstreams,
@@ -200,7 +199,7 @@ function addMixPresentationData(
   for (const mixPresentation of mixPresentations) {
     metadata.mixPresentationMetadata.push(
       MixPresentationObuMetadata.create({
-        mixPresentationId: uuidToNumber(mixPresentation.id),
+        mixPresentationId: 444,
         countLabel: 1,
         annotationsLanguage: ["en-us"], // TODO (?)
         localizedPresentationAnnotations: [mixPresentation.name],
@@ -233,7 +232,7 @@ function mixpresentationAudioElements(
   for (const element of mixPresentation.audioElements) {
     mixpresentationAudioElements.push(
       SubMixAudioElement.create({
-        audioElementId: element.idInt,
+        audioElementId: 333,
         localizedElementAnnotations: [element.name],
         renderingConfig: {
           headphonesRenderingMode:
@@ -254,7 +253,25 @@ function mixpresentationAudioElements(
 }
 
 function metadataToTextProto(metadata: UserMetadata) {
-  const foo = UserMetadata.toJSON(metadata);
-  console.log("-- Constructed MD --");
-  console.log(foo);
+  const bin = UserMetadata.encode(metadata).finish();
+  // Write binary to a temporary file.
+  fs.writeFileSync("configured_iamf_md.bin", bin);
+  // Convert the binary file to a .textproto file using the protoc command.
+  const cwd = process.cwd();
+  // Append the path to the file
+  const filePath = `${cwd}/src/backend/src/iamf/parser/proto`;
+  console.log(filePath);
+  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > configured_iamf_md.textproto`;
+  const exec = require("child_process").exec;
+  exec(command, (error: any, stdout: any, stderr: any) => {
+    if (error) {
+      console.error(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
 }

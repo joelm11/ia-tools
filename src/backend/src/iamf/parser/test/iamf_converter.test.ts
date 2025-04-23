@@ -4,11 +4,11 @@ import fs from "fs";
 
 describe("1ae1mp", () => {
   it("Generate IAMF Metadata from internal state representation", () => {
-    // Read a JSON file in as data and pass it to the function
-    const payload = fs.readFileSync(
-      "./src/backend/src/iamf_parser/test/resources/1ae1mp.json",
-      "utf-8"
-    );
+    // Get the path to the CWD
+    const cwd = process.cwd();
+    // Append the path to the file
+    const filePath = `${cwd}/src/backend/src/iamf/parser/test/resources/1ae1mp.json`;
+    const payload = fs.readFileSync(filePath, "utf-8");
     payloadToIAMF(JSON.parse(payload));
   });
 });
