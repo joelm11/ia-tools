@@ -6,25 +6,25 @@
   "audioElements": [
     {
       "name": "BassNote.wav",
-      "id": "23bb2e95-e532-48a6-b09f-90bc97aeacf8",
+      "id": "BassNote.wav",
       "audioChFormat": "stereo",
       "gain": 20
     },
     {
       "name": "dialog_clip_stereo.wav",
-      "id": "f92b8503-a1e5-424a-80b0-ccad5965a8e0",
+      "id": "dialog_clip_stereo.wav",
       "audioChFormat": "stereo",
       "gain": 20
     },
     {
       "name": "BassNote.wav",
-      "id": "e842b70c-44e5-4e16-9c7b-0bd85e1b8b7b",
+      "id": "BassNote.wav",
       "audioChFormat": "stereo",
       "gain": 20
     },
     {
       "name": "dialog_clip_stereo.wav",
-      "id": "98122b03-3ab7-43f6-b4a2-4f108e952a5a",
+      "id": "dialog_clip_stereo.wav",
       "audioChFormat": "stereo",
       "gain": 20
     }

@@ -7,7 +7,7 @@
     "audioElements": [
       {
         "name": "BassNote.wav",
-        "id": "8b92cc3f-ada5-4d5a-bb00-b3dc995d18be",
+        "id": "BassNote.wav",
         "audioChFormat": "stereo",
         "gain": 20
       }
@@ -21,7 +21,7 @@
     "audioElements": [
       {
         "name": "dialog_clip_stereo.wav",
-        "id": "732bf525-d5d0-43dd-8626-cbe090690a6a",
+        "id": "dialog_clip_stereo.wav",
         "audioChFormat": "stereo",
         "gain": 20
       }
