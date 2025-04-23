@@ -15,7 +15,9 @@ import {
 } from "./protoc/audio_element";
 import {
   HeadPhonesRenderingMode,
+  LayoutType,
   MixPresentationObuMetadata,
+  SoundSystem,
   SubMixAudioElement,
 } from "./protoc/mix_presentation";
 import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
@@ -40,9 +42,7 @@ interface MixPresentationMetadata extends MixPresentationBase {
 }
 
 const CODEC_CONFIG_ID = 200;
-const CODEC_SR = 48000;
-const CODEC_BIT_DEPTH = 16;
-const PROTO_OUT_DIR = `${process.cwd()}/tmp`;
+const CODEC_BIT_DEPTH = 24;
 
 export function payloadToIAMF(mixPresentations: MixPresentationBase[]): string {
   // Safety check in case of single mix presentation.
@@ -86,13 +86,12 @@ function augmentAudioElementMetadata(
 }
 
 function uuidToNumber(uuid: string): number {
-  // Remove hyphens from the UUID string
   const hexString = uuid.replace(/-/g, "");
-  // Take the last 8 hexadecimal characters (32 bits)
   const last8Hex = hexString.slice(-8);
-  // Convert the hexadecimal string to a number (base 16)
   const integerValue = parseInt(last8Hex, 16);
-  return integerValue;
+
+  // Ensure the result is a 32-bit unsigned integer and never NaN
+  return integerValue >>> 0;
 }
 
 function addDefaultMetadata(
@@ -100,7 +99,11 @@ function addDefaultMetadata(
   metadata: UserMetadata
 ) {
   // Test vector field
-  metadata.testVectorMetadata = TestVectorMetadata.create({ isValid: true });
+  metadata.testVectorMetadata = TestVectorMetadata.create({
+    isValid: true,
+    fileNamePrefix: "boo",
+    humanReadableDescription: "This is required?",
+  });
 
   // Sequence header field
   metadata.iaSequenceHeaderMetadata.push(
@@ -121,7 +124,7 @@ function addDefaultMetadata(
         decoderConfigLpcm: {
           sampleFormatFlags: LpcmFormatFlags.LPCM_LITTLE_ENDIAN,
           sampleSize: CODEC_BIT_DEPTH,
-          sampleRate: CODEC_SR,
+          sampleRate: 44100, // TODO: This has to match the sample rate of the input files.
         },
       },
     })
@@ -222,6 +225,15 @@ function addMixPresentationData(
             },
             // Let's see if we can get away without loudness information.
             // Otherwise, TODO.
+            // Looks like I can just hardcode stereo loudness stuff for now(?)
+            layouts: [
+              {
+                loudnessLayout: {
+                  layoutType: LayoutType.LAYOUT_TYPE_LOUDSPEAKERS_SS_CONVENTION,
+                  ssLayout: { soundSystem: SoundSystem.SOUND_SYSTEM_A_0_2_0 }, // TODO
+                },
+              },
+            ],
           },
         ],
       })
@@ -265,8 +277,7 @@ function metadataToTextProto(metadata: UserMetadata) {
   const cwd = process.cwd();
   // Append the path to the file
   const filePath = `${cwd}/src/backend/src/iamf/parser/proto`;
-  console.log(filePath);
-  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > ${PROTO_OUT_DIR}/iamf_md.textproto`;
+  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > iamf_md.textproto`;
   const exec = require("child_process").exec;
   exec(command, (error: any, stdout: any, stderr: any) => {
     if (error) {
@@ -279,5 +290,5 @@ function metadataToTextProto(metadata: UserMetadata) {
     }
     console.log(`stdout: ${stdout}`);
   });
-  return `${PROTO_OUT_DIR}/iamf_md.textproto`;
+  return `iamf_md.textproto`;
 }
