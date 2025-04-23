@@ -31,6 +31,8 @@ import {
   getIAMFLayout,
 } from "./AudioFormat_tools";
 import fs from "fs";
+import { exec } from "child_process";
+import { promisify } from "util";
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;
@@ -44,7 +46,9 @@ interface MixPresentationMetadata extends MixPresentationBase {
 const CODEC_CONFIG_ID = 200;
 const CODEC_BIT_DEPTH = 24;
 
-export function payloadToIAMF(mixPresentations: MixPresentationBase[]): string {
+export async function payloadToIAMF(
+  mixPresentations: MixPresentationBase[]
+): Promise<string> {
   // Safety check in case of single mix presentation.
   if (!Array.isArray(mixPresentations)) {
     mixPresentations = [mixPresentations];
@@ -269,7 +273,7 @@ function mixpresentationAudioElements(
   return mixpresentationAudioElements;
 }
 
-function metadataToTextProto(metadata: UserMetadata) {
+async function metadataToTextProto(metadata: UserMetadata) {
   const bin = UserMetadata.encode(metadata).finish();
   // Write binary to a temporary file.
   fs.writeFileSync("configured_iamf_md.bin", bin);
@@ -278,17 +282,17 @@ function metadataToTextProto(metadata: UserMetadata) {
   // Append the path to the file
   const filePath = `${cwd}/src/backend/src/iamf/parser/proto`;
   const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > iamf_md.textproto`;
-  const exec = require("child_process").exec;
-  exec(command, (error: any, stdout: any, stderr: any) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
-    }
+  const promisedExec = promisify(exec);
+  try {
+    const { stdout, stderr } = await promisedExec(command);
     if (stderr) {
       console.error(`stderr: ${stderr}`);
-      return;
     }
-    console.log(`stdout: ${stdout}`);
-  });
+    if (stdout) {
+      console.log(`stdout: ${stdout}`);
+    }
+  } catch (error: any) {
+    console.error(`Error: ${error.message}`);
+  }
   return `iamf_md.textproto`;
 }
