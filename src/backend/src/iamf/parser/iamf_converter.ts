@@ -42,8 +42,9 @@ interface MixPresentationMetadata extends MixPresentationBase {
 const CODEC_CONFIG_ID = 200;
 const CODEC_SR = 48000;
 const CODEC_BIT_DEPTH = 16;
+const PROTO_OUT_DIR = `${process.cwd()}/tmp`;
 
-export function payloadToIAMF(mixPresentations: MixPresentationBase[]) {
+export function payloadToIAMF(mixPresentations: MixPresentationBase[]): string {
   // Safety check in case of single mix presentation.
   if (!Array.isArray(mixPresentations)) {
     mixPresentations = [mixPresentations];
@@ -63,8 +64,7 @@ export function payloadToIAMF(mixPresentations: MixPresentationBase[]) {
   addAudioFileData(audioElementsMetadata, metadata);
   addAudioElementData(audioElementsMetadata, metadata);
   addMixPresentationData(mixPresentationsMetadata, metadata);
-  // Write the metadata to a JSON file.
-  metadataToTextProto(metadata);
+  return metadataToTextProto(metadata);
 }
 
 function augmentAudioElementMetadata(
@@ -86,8 +86,13 @@ function augmentAudioElementMetadata(
 }
 
 function uuidToNumber(uuid: string): number {
+  // Remove hyphens from the UUID string
   const hexString = uuid.replace(/-/g, "");
-  return Number(`0x${hexString.slice(-16)}`);
+  // Take the last 8 hexadecimal characters (32 bits)
+  const last8Hex = hexString.slice(-8);
+  // Convert the hexadecimal string to a number (base 16)
+  const integerValue = parseInt(last8Hex, 16);
+  return integerValue;
 }
 
 function addDefaultMetadata(
@@ -142,7 +147,7 @@ function addAudioFileData(
         samplesToTrimAtStartIncludesCodecDelay: false,
         samplesToTrimAtEnd: 0,
         samplesToTrimAtStart: 0,
-        audioElementId: 333,
+        audioElementId: element.idInt,
         channelMetadatas: element.channelLabels.map((label, index) => {
           return {
             channelId: index,
@@ -164,7 +169,7 @@ function addAudioElementData(
       getCoupledChannelCount(element.audioChFormat);
     metadata.audioElementMetadata.push(
       AudioElementObuMetadata.create({
-        audioElementId: 333,
+        audioElementId: element.idInt,
         audioElementType: AudioElementType.AUDIO_ELEMENT_CHANNEL_BASED,
         codecConfigId: CODEC_CONFIG_ID,
         numSubstreams: numSubstreams,
@@ -199,7 +204,7 @@ function addMixPresentationData(
   for (const mixPresentation of mixPresentations) {
     metadata.mixPresentationMetadata.push(
       MixPresentationObuMetadata.create({
-        mixPresentationId: 444,
+        mixPresentationId: uuidToNumber(mixPresentation.id),
         countLabel: 1,
         annotationsLanguage: ["en-us"], // TODO (?)
         localizedPresentationAnnotations: [mixPresentation.name],
@@ -232,7 +237,7 @@ function mixpresentationAudioElements(
   for (const element of mixPresentation.audioElements) {
     mixpresentationAudioElements.push(
       SubMixAudioElement.create({
-        audioElementId: 333,
+        audioElementId: element.idInt,
         localizedElementAnnotations: [element.name],
         renderingConfig: {
           headphonesRenderingMode:
@@ -261,7 +266,7 @@ function metadataToTextProto(metadata: UserMetadata) {
   // Append the path to the file
   const filePath = `${cwd}/src/backend/src/iamf/parser/proto`;
   console.log(filePath);
-  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > configured_iamf_md.textproto`;
+  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > ${PROTO_OUT_DIR}/iamf_md.textproto`;
   const exec = require("child_process").exec;
   exec(command, (error: any, stdout: any, stderr: any) => {
     if (error) {
@@ -274,4 +279,5 @@ function metadataToTextProto(metadata: UserMetadata) {
     }
     console.log(`stdout: ${stdout}`);
   });
+  return `${PROTO_OUT_DIR}/iamf_md.textproto`;
 }

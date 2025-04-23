@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>IAMF Binaural Web Demo</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>IAMF Binaural Web Demo</h1>
+      
+      <div class="card">
+        <img
+          src="./data/iamf_logo_transparent.png"
+          alt="The letters IAMF next to a triangular purple, green, and yellow logo which is a modification of the Alliance for Open Media logo."
+        />
+        <h2>What is IAMF?</h2>
+        <p>
+          <a href="https://aomediacodec.github.io/iamf/v1.0.0-errata.html">IAMF</a> is a new open
+          source spatial audio format from
+          <a href="https://aomedia.org/iamf/">Alliance for Open Media</a> that enables immersive
+          audio experiences. IAMF specifies the audio compression and rendering that every
+          compatible device should implement, from living-room devices to mobile and web.
+        </p>
+      </div>
+      <div class="card">
+        <h2>About this demo</h2>
+        <p>
+          This is a demo of the
+          <a href="https://github.com/AOMediaCodec/libiamf" target="_blank">libiamf decoder</a>
+          compiled into WebAssembly and decoding IAMF in the browser.
+        </p>
+        <p>
+          To get the spatial, binaural audio experience and hear the direction of sounds, you need
+          to both use <b>headphones</b> and to use an IAMF file that has the
+          <code
+            ><a
+              href="https://aomediacodec.github.io/iamf/#headphones_rendering_mode"
+              target="_blank"
+              >headphones_rendering_mode</a
+            ></code
+          >
+          set to <code>HEADPHONES_RENDERING_MODE_BINAURAL</code>.
+        </p>
+        <p>
+          Our team keeps on improving the binaural rendering quality and will update the demo as
+          work progresses.
+        </p>
+        <p>Things to listen for:</p>
+        <ul>
+          <li>
+            Regular stereo playback in headphones is often described as hearing the sounds "inside
+            your head" or "between your ears."
+          </li>
+          <li>
+            Binaural playback creates the perception of sounds originating outside your head,
+            similar to natural hearing.
+          </li>
+          <li>
+            Sounds will be perceived as having directionality, such as behind, above, below, or even
+            moving around you.
+          </li>
+          <li>
+            IAMF can utilize ambisonic sound fields, creating a spherical auditory experience. Some
+            audio samples will effectively demonstrate this immersive sound sphere.
+          </li>
+        </ul>
+        <p>How to run the demo:</p>
+        <ul>
+          <li>
+            Choose a file from the dropdown menu to start decoding. (Please be patient as decoding
+            time may vary depending on your machine's processing power and the file's length and
+            type of content.) Alternatively, you can drag and drop your own IAMF file for decoding.
+          </li>
+          <li>
+            With your headphones on, play the stereo and binaural versions to hear the differences
+            in immersion, directionality, and fullness.
+          </li>
+        </ul>
+        
+        <p>Questions or feedback: <a target="_blank" href="https://github.com/AOMediaCodec/iamf-tools/issues/new?title=[Web%20demo]%20%28Put%20a%20short%20title%20here%29&body=Please%20describe%20in%20detail:%0A-%20What%20did%20you%20do?%0A-%20What%20happened?%0A-%20What%20did%20you%20expect?">Please file an issue on GitHub</a>.</p>
+      </div>
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="dropdown">
+          <label for="demoFile">Select a demo file</label><br />
+          <select id="demoFile" name="demoFile">
+            <option disabled selected value>
+              (Select a demo file here or drop your own file below.)
+            </option>
+            <option value="Animated demo (3rd-order ambisonics)">
+              Animated demo (3rd-order ambisonics)
+            </option>
+            <option value="Animated demo (3rd-order ambisonics + stereo)">
+              Animated demo (3rd-order ambisonics + stereo)
+            </option>
+          </select>
+        </div>
+        <label for="fileDrop">Or drag and drop an audio IAMF file</label><br />
+        <div id="fileDrop">Drag and drop here</div>
+        <p>
+          Note: Only standalone .iamf files are supported and very large files (> 1GB) may exhaust
+          the browser sandbox's memory.
+        </p>
+        <br />
+        <div>
+          <input type="checkbox" id="advancedSettingsCheckbox" name="advancedSettingsCheckbox" />
+          <label for="advancedSettingsCheckbox">Advanced settings</label>
+          <div id="advancedSettings" hidden="true">
+            <h2>Advanced settings</h2>
+            <p>
+              These settings are for debugging and testing purposes. Changing some settings may have
+              unintended consequences, for example, setting a higher output sample rate than used in
+              the input file will result in upsampling.
+            </p>
+            <div class="dropdown">
+              <select id="outputSampleRate" name="outputSampleRate">
+                <option value="16000">16000</option>
+                <option value="24000">24000</option>
+                <option value="48000" selected="selected">48000</option>
+              </select>
+              <label for="outputSampleRate">Output sample rate</label>
+            </div>
+            <p>
+              By checking this box, you can access the stereo and binaural audio elements directly
+              to, most usefully, download audio.
+            </p>
+            <input
+              type="checkbox"
+              id="showAudioElementsCheckbox"
+              name="showAudioElementsCheckbox"
+            />
+            <label for="showAudioElementsCheckbox">Show audio elements</label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Audio Playback</h2>
+        <p>After a file is finished decoding, you can listen to the results here.</p>
+        <p>
+          You can click the [Stereo] and [Binaural] buttons to switch between the binaural and
+          stereo versions and hear the difference in spatalization.
+        </p>
+        <p>
+          Clicking on the waveform/timeline allows you to jump to a particular point and clicking
+          and dragging allows you to select a section for looping.
+        </p>
+        <p>Remember to use headphones!</p>
+        <video id="videoPlayback" hidden="true"></video>
+        <canvas id="timelineCanvas" width="932" , height="120"></canvas>
+        <div class="flexBox">
+          <div class="audioDiv">
+            <button id="stereoButton">Stereo</button>
+            <audio id="stereoPlayback"></audio>
+          </div>
+          <button id="playPauseButton" disabled="true"></button>
+          <div class="audioDiv">
+            <button id="binauralButton">Binaural</button>
+            <audio id="binauralPlayback"></audio>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="logBox"></div>
+      <div class="fineprint" id="fineprint"><p>Built 2024-10-18 14:04:01 UTC - Renderers: <a href="https://resonance-audio.github.io/resonance-audio/">Resonance Audio</a> and <a href="https://github.com/ebu/bear">BEAR</a></p></div>
+    </div>
+    <script src="./decoder/wasm/wrapper.js"></script>
+    <script src="./app_bundle.js"></script>
+  </body>
+</html>

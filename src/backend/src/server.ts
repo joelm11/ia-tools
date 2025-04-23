@@ -6,8 +6,6 @@ import cors from "cors";
 import EventEmitter from "events";
 import { UserEvents } from "../events/events.ts";
 import fs from "fs";
-import type { MixPresentationBase } from "src/@types/MixPresentation.ts";
-import { log } from "console";
 
 export class AppServer extends EventEmitter {
   app: express.Application;
