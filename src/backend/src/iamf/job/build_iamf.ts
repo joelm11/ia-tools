@@ -32,7 +32,6 @@ export async function buildIAMFFile(iamfMetaDataFilePath: string) {
     });
 
     iamfProcess.on("close", (code) => {
-      console.log(`IAMF process exited with code ${code}`);
       fs.unlinkSync("iamf_md.textproto");
       resolve(null);
     });

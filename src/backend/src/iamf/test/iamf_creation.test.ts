@@ -3,6 +3,7 @@ import { payloadToIAMF } from "../parser/iamf_converter";
 import fs from "fs";
 import path from "path";
 import { buildIAMFFile } from "../job/build_iamf";
+import { AudioChFormat } from "src/@types/AudioFormats";
 
 describe("Test create IAMF files from given payloads", async () => {
   it("1AE1MP", async () => {
@@ -19,5 +20,33 @@ describe("Test create IAMF files from given payloads", async () => {
     // Check if the IAMF file is created.
     const iamfFilePath = cwd + "/boo.iamf";
     expect(fs.existsSync(iamfFilePath)).toBe(true);
+  });
+
+  it("All audio element formats", async () => {
+    for (const layout of Object.keys(AudioChFormat)) {
+      const payloadPath = path.join(
+        process.cwd(),
+        "src/backend/src/iamf/test/resources",
+        "1ae1mp.json"
+      );
+      let payload = fs.readFileSync(payloadPath, "utf-8");
+      payload = payload.replace(
+        /"audioElementFormat": ".*?"/,
+        `"audioElementFormat": "${layout}"`
+      );
+      const protofile = await payloadToIAMF(JSON.parse(payload));
+      await buildIAMFFile(protofile);
+      // Check if the IAMF file is created.
+      const iamfFilePath = process.cwd() + "/boo.iamf";
+      expect(fs.existsSync(iamfFilePath)).toBe(true);
+      // If not, throw an error.
+      if (!fs.existsSync(iamfFilePath)) {
+        throw new Error(`IAMF file not created for layout ${layout}`);
+      } else {
+        console.log(`IAMF file created for layout ${layout}`);
+        // Delete the IAMF file.
+        fs.unlinkSync(iamfFilePath);
+      }
+    }
   });
 });
