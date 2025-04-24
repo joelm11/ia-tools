@@ -18,8 +18,6 @@ export async function buildIAMFFile(iamfMetaDataFilePath: string) {
     "--output_iamf_directory=" + outputIamfDirectory,
   ];
 
-  console.log(`${command} ${args.join(" ")}`);
-
   return new Promise((resolve, reject) => {
     const iamfProcess = spawn(command, args);
 

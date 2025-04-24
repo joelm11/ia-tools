@@ -69,42 +69,17 @@ export class AppServer extends EventEmitter {
   }
 
   private handlePayloadUpload(req: Request, res: Response) {
-    console.log("Server: Received payload upload.");
-
-    // Log text fields
-    console.log("Fields:", req.body);
-    // Log the fields to a JSON file.
-    // this.logPayloadMetadata(req);
-
-    // Log files (if any)
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      console.log("Files:");
-      req.files.forEach((file: Express.Multer.File) => {
-        // Use the correct type here
-        console.log(`  - Fieldname: ${file.fieldname}`);
-        console.log(`  - Original Name: ${file.originalname}`);
-        console.log(`  - Mimetype: ${file.mimetype}`);
-        console.log(`  - Size: ${file.size} bytes`);
-        // If you configured storage with multer, file.path or file.buffer would be available
-        console.log(`  - Path: ${file.path}`);
-        // Save the the file to the server
-      });
-    } else {
-      console.log("No files were uploaded.");
-    }
-
     // Send a JSON response back to the client
     res.json({
       message: "Files uploaded successfully",
     });
 
     // Emit an event after the payload is uploaded
-    this.emit(UserEvents.PAYLOADUPLOAD, {
-      fields: req.body,
-    });
+    const parsedPayload = this.payloadMetadata(req);
+    this.emit(UserEvents.PAYLOADUPLOAD, parsedPayload);
   }
 
-  private logPayloadMetadata(req: any) {
+  private payloadMetadata(req: any) {
     let mixPresentationsObjects;
     if (Array.isArray(req.body.mixPresentations)) {
       mixPresentationsObjects = [];
@@ -114,15 +89,12 @@ export class AppServer extends EventEmitter {
           mixPresentationsObjects.push(parsedObject);
         } catch (error) {
           console.error("Error parsing a mixPresentation JSON string:", error);
-          mixPresentationsObjects.push(presentationString); // Keep the raw string in case of parsing error for a specific item
+          mixPresentationsObjects.push(presentationString);
         }
       }
     } else {
-      mixPresentationsObjects = req.body.mixPresentations; // Keep the original value if it's not a string or array
+      mixPresentationsObjects = req.body.mixPresentations;
     }
-    fs.writeFileSync(
-      "/tmp/fields.json",
-      JSON.stringify(mixPresentationsObjects, null, 2) + "\n"
-    );
+    return mixPresentationsObjects;
   }
 }

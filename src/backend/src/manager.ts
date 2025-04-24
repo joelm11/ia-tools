@@ -19,9 +19,11 @@ export class Manager {
 
   private registerEvents() {
     // Listen for payload upload to the server.
-    this.server.on(UserEvents.PAYLOADUPLOAD, (job) => {
-      console.log("Job received");
-      // Parse payload.
+    this.server.on(UserEvents.PAYLOADUPLOAD, (payload) => {
+      console.log("Received payload upload event:", payload);
+      // Process the payload here.
+      // For example, you can call a function to handle the payload.
+      // processPayload(payload);
     });
   }
 }
