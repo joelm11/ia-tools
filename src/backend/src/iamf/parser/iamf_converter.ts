@@ -294,5 +294,9 @@ async function metadataToTextProto(metadata: UserMetadata) {
   } catch (error: any) {
     console.error(`Error: ${error.message}`);
   }
+
+  // Delete the binary file.
+  fs.unlinkSync("configured_iamf_md.bin");
+
   return `iamf_md.textproto`;
 }
