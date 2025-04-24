@@ -77,6 +77,10 @@ function augmentAudioElementMetadata(
   const audioElements: AudioElementMetadata[] = [];
   for (const mixPresentation of mixPresentations) {
     for (const audioElement of mixPresentation.audioElements) {
+      // Only add the audio element if it is not already present.
+      if (audioElements.some((el) => el.id === audioElement.id)) {
+        continue;
+      }
       const elementId = uuidToNumber(audioElement.id);
       const channelLabels = getChannelLabels(audioElement.audioChFormat);
       audioElements.push({
@@ -89,13 +93,26 @@ function augmentAudioElementMetadata(
   return audioElements;
 }
 
+// For unit tests where we use strings to easily identify audio source files rather than UUIDs.
+function stringToNumber(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+  }
+  // Convert to 32bit unsigned integer
+  return hash >>> 0;
+}
+
 function uuidToNumber(uuid: string): number {
   const hexString = uuid.replace(/-/g, "");
-  const last8Hex = hexString.slice(-8);
-  const integerValue = parseInt(last8Hex, 16);
-
-  // Ensure the result is a 32-bit unsigned integer and never NaN
-  return integerValue >>> 0;
+  if (hexString.length === 32 && /^[0-9a-fA-F]+$/.test(hexString)) {
+    const last8Hex = hexString.slice(-8);
+    const integerValue = parseInt(last8Hex, 16);
+    return integerValue >>> 0;
+  } else {
+    return stringToNumber(uuid);
+  }
 }
 
 function addDefaultMetadata(
@@ -106,14 +123,14 @@ function addDefaultMetadata(
   metadata.testVectorMetadata = TestVectorMetadata.create({
     isValid: true,
     fileNamePrefix: "boo",
-    humanReadableDescription: "This is required?",
+    humanReadableDescription: "This IAMF file generated from ia-tools",
   });
 
   // Sequence header field
   metadata.iaSequenceHeaderMetadata.push(
     IASequenceHeaderObuMetadata.create({
-      primaryProfile: ProfileVersion.PROFILE_VERSION_SIMPLE,
-      additionalProfile: ProfileVersion.PROFILE_VERSION_SIMPLE,
+      primaryProfile: ProfileVersion.PROFILE_VERSION_BASE,
+      additionalProfile: ProfileVersion.PROFILE_VERSION_BASE,
     })
   );
 
@@ -121,14 +138,14 @@ function addDefaultMetadata(
   metadata.codecConfigMetadata.push(
     CodecConfigObuMetadata.create({
       codecConfigId: CODEC_CONFIG_ID,
-      // Hardcoding these for now as params are independent of input files.
+      // TODO Hardcoding these for now but these must become common between input files.
       codecConfig: {
         codecId: CodecId.CODEC_ID_LPCM,
         numSamplesPerFrame: 512,
         decoderConfigLpcm: {
           sampleFormatFlags: LpcmFormatFlags.LPCM_LITTLE_ENDIAN,
           sampleSize: CODEC_BIT_DEPTH,
-          sampleRate: 44100, // TODO: This has to match the sample rate of the input files.
+          sampleRate: 44100,
         },
       },
     })
@@ -155,6 +172,7 @@ function addAudioFileData(
         samplesToTrimAtEnd: 0,
         samplesToTrimAtStart: 0,
         audioElementId: element.idInt,
+        // TODO: This syntax is incorrect (bunch of arrays of single values).
         channelMetadatas: element.channelLabels.map((label, index) => {
           return {
             channelId: index,
@@ -170,6 +188,7 @@ function addAudioElementData(
   audioElements: AudioElementMetadata[],
   metadata: UserMetadata
 ) {
+  let substreamIdentifier = 0;
   for (const element of audioElements) {
     const numSubstreams =
       getChannelCountRaw(element.audioChFormat) -
@@ -182,7 +201,7 @@ function addAudioElementData(
         numSubstreams: numSubstreams,
         audioSubstreamIds: Array.from(
           { length: numSubstreams },
-          (_, index) => index
+          (_, index) => index + substreamIdentifier
         ),
         numParameters: 0,
         scalableChannelLayoutConfig: {
@@ -201,6 +220,7 @@ function addAudioElementData(
         },
       })
     );
+    substreamIdentifier += numSubstreams;
   }
 }
 

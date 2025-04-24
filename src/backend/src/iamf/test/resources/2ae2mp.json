@@ -20,8 +20,8 @@
     "playbackFormat": "none",
     "audioElements": [
       {
-        "name": "dialog_clip_stereo.wav",
-        "id": "dialog_clip_stereo.wav",
+        "name": "shots.wav",
+        "id": "shots.wav",
         "audioChFormat": "stereo",
         "gain": 20
       }
