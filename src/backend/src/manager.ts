@@ -1,5 +1,6 @@
 import { UserEvents } from "../events/events.ts";
 import { AppServer } from "./server.ts";
+import { Queue } from "bullmq";
 
 /**
  * @brief
@@ -10,6 +11,7 @@ import { AppServer } from "./server.ts";
  */
 export class Manager {
   server: AppServer;
+  iamfJobQueue = new Queue("construct-iamf");
 
   constructor() {
     // Initialize the server, job parser, job queue, and job executor.
@@ -21,9 +23,9 @@ export class Manager {
     // Listen for payload upload to the server.
     this.server.on(UserEvents.PAYLOADUPLOAD, (payload) => {
       console.log("Received payload upload event:", payload);
-      // Process the payload here.
-      // For example, you can call a function to handle the payload.
-      // processPayload(payload);
+      this.iamfJobQueue.add("construct-iamf", payload);
     });
   }
 }
+
+// Construct a flow

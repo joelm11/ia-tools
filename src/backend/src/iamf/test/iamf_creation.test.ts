@@ -1,8 +1,8 @@
 import { expect, describe, it } from "vitest";
-import { payloadToIAMF } from "../parser/iamf_converter";
+import { payloadToIAMF } from "../parser/iamf_proto";
 import fs from "fs";
 import path from "path";
-import { buildIAMFFile } from "../job/build_iamf";
+import { buildIAMFFile } from "../parser/iamf_file";
 import { AudioChFormat } from "src/@types/AudioFormats";
 
 describe("Test create IAMF files from given payloads", async () => {
