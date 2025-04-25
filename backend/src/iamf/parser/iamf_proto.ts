@@ -22,8 +22,8 @@ import {
 } from "./protoc/mix_presentation";
 import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
 import { UserMetadata } from "./protoc/user_metadata";
-import type { MixPresentationBase } from "src/@types/MixPresentation";
-import type { AudioElementBase } from "src/@types/AudioElement";
+import type { MixPresentationBase } from "../../../../common/types/MixPresentation";
+import type { AudioElementBase } from "../../../../common/types/AudioElement";
 import {
   getChannelCountRaw,
   getCoupledChannelCount,

@@ -1,4 +1,4 @@
-import type { MixPresentationBase } from "src/@types/MixPresentation";
+import type { MixPresentationBase } from "../../common/types/MixPresentation";
 import { UserEvents } from "../events/events";
 import { AppServer } from "./server";
 import { Queue } from "bullmq";

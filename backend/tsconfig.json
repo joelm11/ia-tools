@@ -9,9 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./node_modules/@types"],
+    "baseUrl": ".",
     "paths": {
-      "src/@lib/*": ["../frontend/src/lib/*"],
-      "src/@types/*": ["../frontend/src/types/*"]
+      "src/@types/*": ["../common/types/*"]
     }
   },
   "include": ["./src/**/*", "./index.ts"],

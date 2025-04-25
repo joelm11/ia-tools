@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node index.ts",
-    "worker": "ts-node src/jobs/iamf_job.ts",
+    "worker": "ts-node -r tsconfig-paths/register src/jobs/iamf_job.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/bull": "^3.15.9",
     "@types/cors": "^2.8.17",
-    "@types/multer": "^1.4.12"
+    "@types/multer": "^1.4.12",
+    "tsconfig-paths": "^4.2.0"
   }
 }
