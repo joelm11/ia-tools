@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "src/@lib/*": ["../frontend/src/lib/*"],
+      "src/@types/*": ["../frontend/src/types/*"]
+    }
+  },
+  "include": ["./src/**/*", "./index.ts"],
+  "exclude": ["node_modules"]
+}
