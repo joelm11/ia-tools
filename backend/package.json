@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node index.ts",
+    "dev": "ts-node -r tsconfig-paths/register index.ts",
     "worker": "ts-node -r tsconfig-paths/register src/jobs/iamf_job.ts",
     "build": "tsc",
     "start": "node dist/index.js"

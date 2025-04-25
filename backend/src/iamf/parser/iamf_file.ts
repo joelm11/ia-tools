@@ -2,8 +2,9 @@ import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 
-const AUDIO_SRC_DIR = `${process.cwd()}/src/backend/src/iamf/test/resources/audio_sources`;
-const IAMF_EXE = `${process.cwd()}/src/backend/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
+// const AUDIO_SRC_DIR = `${process.cwd()}/src/iamf/test/resources/audio_sources`;
+const AUDIO_SRC_DIR = `/tmp/AudioElements`;
+const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
 
 export async function buildIAMFFile(iamfMetaDataFilePath: string) {
   const cwd = process.cwd();

@@ -22,8 +22,8 @@ import {
 } from "./protoc/mix_presentation";
 import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
 import { UserMetadata } from "./protoc/user_metadata";
-import type { MixPresentationBase } from "../../../../common/types/MixPresentation";
-import type { AudioElementBase } from "../../../../common/types/AudioElement";
+import type { MixPresentationBase } from "src/@types/MixPresentation";
+import type { AudioElementBase } from "src/@types/AudioElement";
 import {
   getChannelCountRaw,
   getCoupledChannelCount,
@@ -299,8 +299,8 @@ async function metadataToTextProto(metadata: UserMetadata) {
   fs.writeFileSync("configured_iamf_md.bin", bin);
   // Convert the binary file to a .textproto file using the protoc command.
   const cwd = process.cwd();
-  // Append the path to the file
-  const filePath = `${cwd}/src/backend/src/iamf/parser/proto`;
+  // We need to indicate where the source proto files are located.
+  const filePath = `${cwd}/src/iamf/parser/proto`;
   const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > iamf_md.textproto`;
   const promisedExec = promisify(exec);
   try {
