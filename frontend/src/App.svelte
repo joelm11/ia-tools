@@ -1,8 +1,8 @@
 <script lang="ts">
   import AeContainer from "./components/AEContainer/AEContainer.svelte";
   import MpContainer from "./components/MPContainer/MPContainer.svelte";
-  import type { AudioElement } from "./types/AudioElement";
-  import type { MixPresentation } from "./types/MixPresentation";
+  import type { AudioElement } from "src/@types/AudioElement";
+  import type { MixPresentation } from "src/@types/MixPresentation";
   import { AudioChFormat } from "src/@types/AudioFormats";
   import { v4 as uuidv4 } from "uuid";
   import { WaveFile } from "wavefile";

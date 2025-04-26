@@ -5,11 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 import cors from "cors";
 import EventEmitter from "events";
 import { UserEvents } from "../events/events";
+import { StorageService } from "./storage/storage_fs";
 
 export class AppServer extends EventEmitter {
   app: express.Application;
   port: number;
-  upload: multer.Multer;
+  upload: any;
+  storageService: StorageService;
   // Map for a newly created file UUID to the original file name.
   fileNameMap: Map<string, string>;
 
@@ -18,7 +20,10 @@ export class AppServer extends EventEmitter {
     this.app = express();
     this.port = 3000;
     this.fileNameMap = new Map<string, string>();
-    this.upload = multer(); // Initialize with an empty multer instance before configuring storage.
+    this.storageService = new StorageService("/tmp", "SSAudioElements");
+    this.upload = multer({ storage: multer.memoryStorage() }).array(
+      "audioFiles"
+    );
 
     this.configureMiddleware();
     this.configurePayloadUpload("/upload");
@@ -57,12 +62,46 @@ export class AppServer extends EventEmitter {
   }
 
   private configurePayloadUpload(uploadURL: string) {
-    // Configure the upload URL
     this.app.post(
       uploadURL,
-      this.upload.any(),
-      (req: Request, res: Response) => {
-        this.handlePayloadUpload(req, res);
+      this.upload,
+      async (req: Request, res: Response) => {
+        try {
+          if (!req.files || req.files.length === 0) {
+            res.status(400).send("No audio files were uploaded.");
+            return;
+          }
+
+          const uploadedUrls: string[] = [];
+          const files = req.files as Express.Multer.File[]; // Type assertion for req.files
+
+          for (const file of files) {
+            let fileData: Buffer;
+            if (file.buffer) {
+              // Using memory storage
+              fileData = file.buffer;
+            } else {
+              console.error("Error: File data not found.");
+              continue; // Skip to the next file
+            }
+
+            const originalFilename = file.originalname;
+            const contentType = file.mimetype;
+
+            // Need the associated audio element ID for each file?
+            const fileUrl = await this.storageService.uploadFile(
+              fileData,
+              originalFilename,
+              contentType
+            );
+            uploadedUrls.push(fileUrl);
+          }
+
+          res.status(200).json({ urls: uploadedUrls });
+        } catch (error) {
+          console.error("Error uploading audio files:", error);
+          res.status(500).send("Failed to upload audio files.");
+        }
       }
     );
   }
