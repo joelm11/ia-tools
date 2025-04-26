@@ -10,7 +10,11 @@ export type StorageReturn = {
  * This ID acts as the handle to the file.
  */
 export interface Storage {
-  create(file: Express.Multer.File, fileID: string): Promise<StorageReturn>;
+  // Can create from a File or a Buffer.
+  create(
+    file: Express.Multer.File | Buffer<ArrayBufferLike>,
+    fileID: string
+  ): Promise<StorageReturn>;
   exists(fileID: string): Promise<StorageReturn>;
   delete(fileID: string): Promise<StorageReturn>;
 }

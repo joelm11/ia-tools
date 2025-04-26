@@ -6,13 +6,17 @@ import cors from "cors";
 import EventEmitter from "events";
 import { UserEvents } from "../events/events";
 import { StorageService } from "./storage/storage_fs";
+import {
+  MixPresentation,
+  MixPresentationBase,
+} from "src/@types/MixPresentation";
 
 export class AppServer extends EventEmitter {
   app: express.Application;
   port: number;
   upload: any;
   storageService: StorageService;
-  // Map for a newly created file UUID to the original file name.
+  // Map for a filename to its ID.
   fileNameMap: Map<string, string>;
 
   constructor() {
@@ -42,23 +46,6 @@ export class AppServer extends EventEmitter {
         origin: "http://localhost:5173",
       })
     );
-
-    this.configureStorage();
-  }
-
-  private configureStorage() {
-    // Configure multer to handle multipart/form-data (which is typically used for FormData)
-    const storage = multer.diskStorage({
-      destination: "/tmp/AudioElements",
-      filename: (req, file, cb) => {
-        // Changed to an arrow function
-        // Generate a unique filename and Store the original file name in the map.
-        const uniqueName = uuidv4();
-        this.fileNameMap.set(uniqueName, file.originalname);
-        cb(null, uniqueName);
-      },
-    });
-    this.upload = multer({ storage: storage });
   }
 
   private configurePayloadUpload(uploadURL: string) {
@@ -66,6 +53,8 @@ export class AppServer extends EventEmitter {
       uploadURL,
       this.upload,
       async (req: Request, res: Response) => {
+        const parsedPayload = this.payloadMetadata(req);
+        // Handle the uploaded audio files.
         try {
           if (!req.files || req.files.length === 0) {
             res.status(400).send("No audio files were uploaded.");
@@ -85,19 +74,13 @@ export class AppServer extends EventEmitter {
               continue; // Skip to the next file
             }
 
-            const originalFilename = file.originalname;
-            const contentType = file.mimetype;
-
-            // Need the associated audio element ID for each file?
-            const fileUrl = await this.storageService.uploadFile(
-              fileData,
-              originalFilename,
-              contentType
-            );
+            const fileID = this.fileNameMap.get(file.originalname);
+            const fileUrl = this.storageService.create(fileData, fileID);
             uploadedUrls.push(fileUrl);
           }
 
           res.status(200).json({ urls: uploadedUrls });
+          this.emit(UserEvents.PAYLOADUPLOAD, parsedPayload);
         } catch (error) {
           console.error("Error uploading audio files:", error);
           res.status(500).send("Failed to upload audio files.");
@@ -106,25 +89,19 @@ export class AppServer extends EventEmitter {
     );
   }
 
-  private handlePayloadUpload(req: Request, res: Response) {
-    // Send a JSON response back to the client
-    res.json({
-      message: "Files uploaded successfully",
-    });
-
-    // Emit an event after the payload is uploaded
-    const parsedPayload = this.payloadMetadata(req);
-    this.emit(UserEvents.PAYLOADUPLOAD, parsedPayload);
-  }
-
   private payloadMetadata(req: any) {
     let mixPresentationsObjects;
     if (Array.isArray(req.body.mixPresentations)) {
       mixPresentationsObjects = [];
       for (const presentationString of req.body.mixPresentations) {
         try {
-          const parsedObject = JSON.parse(presentationString);
-          mixPresentationsObjects.push(parsedObject);
+          const parsedPresentation = JSON.parse(
+            presentationString
+          ) as MixPresentationBase;
+          mixPresentationsObjects.push(parsedPresentation);
+          parsedPresentation.audioElements.map((audioElement) => {
+            this.addAudioElementToMap(audioElement.name, audioElement.id);
+          });
         } catch (error) {
           console.error("Error parsing a mixPresentation JSON string:", error);
           mixPresentationsObjects.push(presentationString);
@@ -134,5 +111,10 @@ export class AppServer extends EventEmitter {
       mixPresentationsObjects = req.body.mixPresentations;
     }
     return mixPresentationsObjects;
+  }
+
+  // Add audio element {name,id} to the map
+  private addAudioElementToMap(fileName: string, audioElementID: string) {
+    this.fileNameMap.set(fileName, audioElementID);
   }
 }
