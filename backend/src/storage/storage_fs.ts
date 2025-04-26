@@ -7,9 +7,9 @@ export class StorageFS implements Storage {
   storageRoot: string;
   storageDir: string;
 
-  constructor(storageRoot: string, objectLabel: string) {
+  constructor(storageRoot: string, containerLabel: string) {
     this.storageRoot = storageRoot;
-    this.storageDir = `${this.storageRoot}/${objectLabel}`;
+    this.storageDir = `${this.storageRoot}/${containerLabel}`;
 
     // Create the storage directory at path.join(storageRoot, objectLabel) if it doesn't exist
     if (!fs.existsSync(this.storageDir)) {
@@ -17,21 +17,24 @@ export class StorageFS implements Storage {
     }
   }
 
-  async create(file: Express.Multer.File): Promise<StorageReturn> {
-    const fileUuid = uuidv4();
-    // Get the file extension from the original filename
-    const fileExtension = path.extname(file.originalname);
-    // const newFilename = `${fileUuid}${fileExtension}`;
-    const newFilename = fileUuid; // Removing the extension for now.
-    const filePath = path.join(this.storageDir, newFilename);
+  async create(
+    file: Express.Multer.File,
+    fileID: string
+  ): Promise<StorageReturn> {
+    // Before storing the file, check if the file exists in the filesystem
+    const fileExists = await this.exists(fileID);
+    if (fileExists.success) {
+      return { success: true, url: fileExists.url };
+    }
 
     // Attempt to write the file to the filesystem
+    const filePath = path.join(this.storageDir, fileID);
     return new Promise((resolve, reject) => {
       fs.writeFile(filePath, file.buffer, (err) => {
         if (err) {
           reject({ success: false, error: err.message });
         } else {
-          resolve({ success: true, url: this.storageDir + "/" + newFilename });
+          resolve({ success: true, url: filePath });
         }
       });
     });
@@ -45,14 +48,19 @@ export class StorageFS implements Storage {
         if (err) {
           resolve({ success: false });
         } else {
-          resolve({ success: true });
+          resolve({ success: true, url: filePath });
         }
       });
     });
   }
 
   async delete(fileID: string): Promise<StorageReturn> {
-    // Implement the logic to delete a file from the filesystem
+    // Check if the file exists before attempting to delete it
+    const fileExists = await this.exists(fileID);
+    if (!fileExists.success) {
+      return { success: true };
+    }
+    // Attempt to delete the file from the filesystem
     return new Promise((resolve, reject) => {
       const filePath = `/tmp/AudioElements/${fileID}`;
       fs.unlink(filePath, (err) => {
