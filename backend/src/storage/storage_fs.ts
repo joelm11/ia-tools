@@ -1,9 +1,8 @@
 import path from "path";
 import { Storage, StorageReturn } from "./storage";
 import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 
-export class StorageFS implements Storage {
+export class StorageService implements Storage {
   storageRoot: string;
   storageDir: string;
 
@@ -62,7 +61,7 @@ export class StorageFS implements Storage {
     }
     // Attempt to delete the file from the filesystem
     return new Promise((resolve, reject) => {
-      const filePath = `/tmp/AudioElements/${fileID}`;
+      const filePath = path.join(this.storageDir, fileID);
       fs.unlink(filePath, (err) => {
         if (err) {
           reject({ success: false, error: err.message });
