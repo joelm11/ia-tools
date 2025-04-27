@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node -r tsconfig-paths/register index.ts",
-    "worker": "ts-node -r tsconfig-paths/register src/jobs/iamf_job.ts",
+    "worker": "ts-node -r tsconfig-paths/register src/jobs/iamf_worker.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest"
@@ -29,6 +29,8 @@
     "@types/bull": "^3.15.9",
     "@types/cors": "^2.8.17",
     "@types/multer": "^1.4.12",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.0",
     "tsconfig-paths": "^4.2.0",
     "vitest": "^3.1.2"
   }
