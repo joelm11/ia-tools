@@ -24,14 +24,16 @@ export const BULLMQ_REDIS_CONNECTION = {
 
 export class Manager {
   server: AppServer;
-  storageService: StorageService;
+  audioStorage: StorageService;
+  iamfStorage: StorageService;
   iamfJobQueue: Queue<MixPresentationBase[]>;
   workers: Worker[] = [];
 
   constructor() {
     // Initialize the server, job parser, job queue, and job executor.
-    this.storageService = new StorageService("/tmp", "SSAudioElements");
-    this.server = new AppServer(this.storageService);
+    this.audioStorage = new StorageService("/tmp", "SSAudioElements");
+    this.iamfStorage = new StorageService("/tmp", "SSIAMF");
+    this.server = new AppServer(this.audioStorage);
     // Catch if IAMF job queue is not initialized
     this.iamfJobQueue = new Queue(BULLMQ_IAMF_JOB_QUEUE);
     this.registerEvents();
@@ -50,7 +52,7 @@ export class Manager {
   }
 
   private registerWorkers() {
-    this.workers.push(new IAMFWorker(this.storageService));
+    this.workers.push(new IAMFWorker(this.audioStorage));
   }
 
   stop() {
