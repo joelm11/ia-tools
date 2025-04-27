@@ -30,7 +30,7 @@ describe("StorageFS", () => {
     const fakeFile = {
       buffer: Buffer.from(testContent),
     } as Express.Multer.File;
-    const createResult = await storage.create(fakeFile, fileID);
+    const createResult = await storage.create(fakeFile.buffer, fileID);
     expect(createResult.success).toBe(true);
     const existsResult = await storage.exists(fileID);
     expect(existsResult.success).toBe(true);
@@ -47,9 +47,9 @@ describe("StorageFS", () => {
     const fakeFile = {
       buffer: Buffer.from(testContent),
     } as Express.Multer.File;
-    const createResult = await storage.create(fakeFile, fileID);
+    const createResult = await storage.create(fakeFile.buffer, fileID);
     expect(createResult.success).toBe(true);
-    const createAgainResult = await storage.create(fakeFile, fileID);
+    const createAgainResult = await storage.create(fakeFile.buffer, fileID);
     expect(createAgainResult.success).toBe(true);
     expect(createAgainResult.url).toBe(path.join(storage.storageDir, fileID));
     // Delete the file after checking existence
