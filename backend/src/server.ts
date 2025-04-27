@@ -75,8 +75,14 @@ export class AppServer extends EventEmitter {
             }
 
             const fileID = this.fileNameMap.get(file.originalname);
+            if (!fileID) {
+              console.error(
+                `Error: File ID not found for file name ${file.originalname}.`
+              );
+              continue; // Skip to the next file
+            }
             const fileUrl = this.storageService.create(fileData, fileID);
-            uploadedUrls.push(fileUrl);
+            uploadedUrls.push((await fileUrl).url as string);
           }
 
           res.status(200).json({ urls: uploadedUrls });
