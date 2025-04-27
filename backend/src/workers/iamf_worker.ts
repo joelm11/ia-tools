@@ -4,9 +4,10 @@ import { payloadToIAMF } from "../iamf/parser/iamf_proto";
 import { buildIAMFFile } from "../iamf/parser/iamf_file";
 import type { MixPresentationBase } from "src/@types/MixPresentation";
 import { StorageService } from "src/storage/storage_fs";
+import path from "path";
 
 export class IAMFWorker extends Worker<MixPresentationBase[]> {
-  storageService: StorageService;
+  audioSourceStore: StorageService;
   constructor(storageService: StorageService) {
     // Call the Worker constructor with the job processor
     super(
@@ -17,10 +18,14 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         const protoFilePath = await payloadToIAMF(job.data);
         console.log("IAMF proto file path:", protoFilePath);
         // Use the proto file to encode the IAMF file
-        return await buildIAMFFile(protoFilePath);
+        return await buildIAMFFile(
+          path.join(process.cwd(), protoFilePath),
+          this.audioSourceStore.storageDir,
+          process.cwd()
+        );
       },
       BULLMQ_REDIS_CONNECTION
     );
-    this.storageService = storageService;
+    this.audioSourceStore = storageService;
   }
 }

@@ -1,26 +1,21 @@
 import { spawn } from "child_process";
 import fs from "fs";
-import path from "path";
 
-// const AUDIO_SRC_DIR = `${process.cwd()}/src/iamf/test/resources/audio_sources`;
-const AUDIO_SRC_DIR = `/tmp/AudioElements`;
 const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
 
-export async function buildIAMFFile(iamfMetaDataFilePath: string) {
-  const cwd = process.cwd();
-  const command = IAMF_EXE;
-  const userMetadataFilename = path.join(cwd, iamfMetaDataFilePath);
-  const inputWavDirectory = AUDIO_SRC_DIR;
-  const outputIamfDirectory = cwd;
-
+export async function buildIAMFFile(
+  iamfMetaDataURL: string,
+  inputWavDirURL: string,
+  iamfOutputDirURL: string
+) {
   const args = [
-    "--user_metadata_filename=" + userMetadataFilename,
-    "--input_wav_directory=" + inputWavDirectory,
-    "--output_iamf_directory=" + outputIamfDirectory,
+    "--user_metadata_filename=" + iamfMetaDataURL,
+    "--input_wav_directory=" + inputWavDirURL,
+    "--output_iamf_directory=" + iamfOutputDirURL,
   ];
 
   return new Promise((resolve, reject) => {
-    const iamfProcess = spawn(command, args);
+    const iamfProcess = spawn(IAMF_EXE, args);
 
     iamfProcess.stdout.on("data", (data) => {
       console.log(`Stdout from command: ${data.toString()}`);
