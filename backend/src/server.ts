@@ -16,22 +16,23 @@ export class AppServer extends EventEmitter {
   port: number;
   upload: any;
   storageService: StorageService;
-  // Map for a filename to its ID.
   fileNameMap: Map<string, string>;
+  httpServer: ReturnType<typeof this.app.listen>; // added property
 
-  constructor() {
+  constructor(storageService: StorageService) {
     super();
     this.app = express();
     this.port = 3000;
     this.fileNameMap = new Map<string, string>();
-    this.storageService = new StorageService("/tmp", "SSAudioElements");
+    this.storageService = storageService;
     this.upload = multer({ storage: multer.memoryStorage() }).array(
       "audioFiles"
     );
 
     this.configureMiddleware();
     this.configurePayloadUpload("/upload");
-    this.app.listen(this.port, () => {
+    // Changed: store the server reference.
+    this.httpServer = this.app.listen(this.port, () => {
       console.log(`Server: Listening on port ${this.port}`);
     });
   }
@@ -119,8 +120,14 @@ export class AppServer extends EventEmitter {
     return mixPresentationsObjects;
   }
 
-  // Add audio element {name,id} to the map
   private addAudioElementToMap(fileName: string, audioElementID: string) {
     this.fileNameMap.set(fileName, audioElementID);
+  }
+
+  close() {
+    // Added method to stop the server
+    if (this.httpServer) {
+      this.httpServer.close();
+    }
   }
 }

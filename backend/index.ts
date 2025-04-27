@@ -1,3 +1,3 @@
 import { Manager } from "./src/manager";
 
-const app = new Manager();
+export const appInstance = new Manager();
