@@ -27,14 +27,16 @@
         onDelete={() => deleteMixPresentation(mixPresentation.id)}
       />
     {/each}
-    <button
-      id="add-mix-presentation"
-      onclick={() => (isModalOpen = true)}
-      class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-1 mb-2"
-      aria-label="Add Mix Presentation Button"
-    >
-      <i class="fas fa-plus text-xl"></i>
-    </button>
+    {#if audioElements.length > 0}
+      <button
+        id="add-mix-presentation"
+        onclick={() => (isModalOpen = true)}
+        class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mt-1 mb-2"
+        aria-label="Add Mix Presentation Button"
+      >
+        <i class="fas fa-plus text-xl"></i>
+      </button>
+    {/if}
   </div>
 </div>
 

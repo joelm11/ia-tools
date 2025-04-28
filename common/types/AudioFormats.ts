@@ -1,7 +1,7 @@
 export enum AudioChFormat {
   NONE = "none",
-  MONO = "mono",
-  STEREO = "stereo",
+  MONO = "Mono",
+  STEREO = "Stereo",
   K3P1P2 = "3.1.2",
   K5P1 = "5.1",
   K5P1P2 = "5.1.2",

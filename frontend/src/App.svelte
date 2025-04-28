@@ -6,6 +6,7 @@
   import { AudioChFormat } from "src/@types/AudioFormats";
   import { v4 as uuidv4 } from "uuid";
   import { WaveFile } from "wavefile";
+  import { audioFormatFromChannels } from "src/@common/AudioFormatsTools";
 
   /* State for Audio Elements and Mix Presentations */
   let audioElements: AudioElement[] = $state([]);
@@ -74,39 +75,6 @@
       };
       reader.readAsArrayBuffer(file);
     });
-  }
-
-  function audioFormatFromChannels(
-    numChannels: number,
-    channelMask?: number
-  ): AudioChFormat {
-    switch (numChannels) {
-      case 1:
-        return AudioChFormat.MONO;
-      case 2:
-        return AudioChFormat.STEREO;
-      case 6:
-        if (channelMask === 0x3f) {
-          return AudioChFormat.K5P1;
-        } else {
-          return AudioChFormat.K3P1P2;
-        }
-      case 8:
-        if (channelMask === 0x503f) {
-          return AudioChFormat.K5P1P2;
-        } else {
-          return AudioChFormat.K7P1;
-        }
-      case 10:
-        if (channelMask === 0x2d03f) {
-          return AudioChFormat.K5P1P4;
-        } else {
-          return AudioChFormat.K7P1P2;
-        }
-      case 12:
-        return AudioChFormat.K7P1P4;
-    }
-    return AudioChFormat.NONE;
   }
 
   function deleteAudioElement(idToDelete: string) {

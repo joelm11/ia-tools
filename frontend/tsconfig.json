@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "src/@lib/*": ["src/lib/*"],
-      "src/@types/*": ["../common/types/*"]
+      "src/@types/*": ["../common/types/*"],
+      "src/@common/*": ["../common/lib/*"]
     }
   },
   "include": ["src/**/*"],

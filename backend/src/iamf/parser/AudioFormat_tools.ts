@@ -121,33 +121,6 @@ export function getCoupledChannelCount(chFormat: AudioChFormat): number {
   }
 }
 
-export function getChannelCountRaw(chFormat: AudioChFormat): number {
-  switch (chFormat) {
-    case AudioChFormat.MONO:
-      return 1;
-    case AudioChFormat.STEREO:
-      return 2;
-    case AudioChFormat.K3P1P2:
-      return 6;
-    case AudioChFormat.K5P1:
-      return 6;
-    case AudioChFormat.K5P1P2:
-      return 8;
-    case AudioChFormat.K5P1P4:
-      return 10;
-    case AudioChFormat.K7P1:
-      return 8;
-    case AudioChFormat.K7P1P2:
-      return 10;
-    case AudioChFormat.K7P1P4:
-      return 12;
-    default:
-      throw new Error(
-        `getChannelCountRaw(): Unknown channel format: ${chFormat}`
-      );
-  }
-}
-
 export function getIAMFLayout(chFormat: AudioChFormat): any {
   switch (chFormat) {
     case AudioChFormat.MONO:

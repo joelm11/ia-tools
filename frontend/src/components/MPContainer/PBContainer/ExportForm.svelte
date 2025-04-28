@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick } from "svelte"; // For focusing after opening
+  import { fade } from "svelte/transition";
 
   // Props - control visibility from parent
   let { show, closeModal } = $props();
@@ -52,6 +53,7 @@
 {#if show}
   <div
     bind:this={modalElement}
+    transition:fade={{ duration: 100 }}
     onclick={handleBackdropClick}
     onkeydown={handleBackdropClick}
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 transition-opacity duration-300 ease-in-out"
