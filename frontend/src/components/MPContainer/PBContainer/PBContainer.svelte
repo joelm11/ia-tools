@@ -10,8 +10,12 @@
 
   const presentationMixer = $state<PresentationMixer>(new PresentationMixer());
   let showExportForm = $state(false);
+  let exportButton: HTMLButtonElement; // Add a reference to the button
   function closeExportForm() {
-    showExportForm = !showExportForm;
+    showExportForm = false;
+    if (exportButton) {
+      exportButton.blur(); // Remove focus from the button
+    }
   }
 </script>
 
@@ -23,8 +27,9 @@
     <!-- Use fontawesome icon for download button. -->
     {#if mixPresentations.length > 0}
       <button
+        bind:this={exportButton}
         onclick={() => (showExportForm = true)}
-        id="add-mix-presentation"
+        id="export-mix-presentations"
         class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center"
         aria-label="Export mix presentations as IAMF file button"
       >
