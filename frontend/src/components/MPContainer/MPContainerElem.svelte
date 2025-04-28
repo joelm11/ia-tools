@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AudioElement } from "../../types/AudioElement";
+  import type { AudioElement } from "src/@types/AudioElement";
 
   let { mixPresentation, onDelete } = $props();
 
@@ -15,33 +15,28 @@
 >
   <div class="flex-1 min-w-0">
     <div
-      class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md py-2"
+      class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md py-2 mb-2"
     >
       {mixPresentation.name}
     </div>
-    <p class="text-gray-600 mb-2 line-clamp-2">{mixPresentation.description}</p>
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
         <div
-          class="px-2 py-1rounded-md text-md text-card-p-text truncate flex items-center gap-2 bg-ae-card-background rounded-sm"
+          class="px-2 pr-0 py-1 text-md text-card-p-text truncate gap-2 bg-ae-card-background rounded-sm flex items-center w-full"
         >
-          <span>{audioElement.name}</span>
+          <span
+            class="flex-grow flex-shrink min-w-0 whitespace-nowrap overflow-hidden text-ellipsis"
+            >{audioElement.name}</span
+          >
           <button
             onclick={() => removeAudioElement(audioElement.id)}
-            class="text-card-s-text hover:text-red-800"
+            class="text-card-s-text hover:text-red-800 flex-shrink-0 px-3 py-1"
             aria-label="Remove audio element"
           >
-            <i class="fas fa-times text-xs"></i>
+            <i class="fas fa-times text-s"></i>
           </button>
         </div>
       {/each}
     </div>
   </div>
-  <!-- <button
-    onclick={() => onDelete()}
-    class="text-red-500 hover:text-red-700 p-2"
-    aria-label="Delete mix presentation"
-  >
-    <i class="fas fa-trash"></i>
-  </button> -->
 </div>

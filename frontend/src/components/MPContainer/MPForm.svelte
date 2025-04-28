@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { MixPresentation } from "src/@types/MixPresentation";
+  import { fade } from "svelte/transition";
 
   let {
     isOpen = false,
@@ -46,35 +47,67 @@
 
 {#if isOpen}
   <div
-    class="fixed inset-0 bg-gray-400 bg-opacity-50 flex items-center justify-center"
+    class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 transition-opacity duration-300 ease-in-out z-50"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    tabindex="-1"
+    transition:fade={{ duration: 100 }}
   >
-    <div class="bg-white p-6 rounded-lg w-[32rem]">
-      <h3 class="text-xl mb-6">Add Mix Presentation</h3>
-      <form onsubmit={handleFormSubmit}>
+    <div
+      class="bg-slate-800 rounded-lg shadow-xl border border-slate-600 w-full max-w-md"
+      aria-labelledby="modal-title"
+      onclick={(e) => e.stopPropagation()}
+      role="presentation"
+    >
+      <div
+        class="flex justify-between items-center border-b border-slate-600 p-4 sm:p-6"
+      >
+        <h3 id="modal-title" class="text-xl font-semibold text-slate-200">
+          Add Mix Presentation
+        </h3>
+        <button
+          onclick={onClose}
+          class="text-slate-400 hover:text-slate-200 text-2xl leading-none focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-sm"
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
+      </div>
+      <form onsubmit={handleFormSubmit} class="p-4 sm:p-6">
         <div class="space-y-4">
           <div>
-            <label for="name" class="block mb-2">Name</label>
+            <label
+              for="name"
+              class="block text-sm font-medium text-slate-400 mb-1">Name</label
+            >
             <input
               type="text"
               id="name"
               bind:value={mixPresentation.name}
-              class="w-full p-2 border rounded"
+              class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition"
               placeholder="Mix Presentation Name"
               required
             />
           </div>
           <div>
-            <label for="description" class="block mb-2">Description</label>
+            <label
+              for="description"
+              class="block text-sm font-medium text-slate-400 mb-1"
+              >Description</label
+            >
             <textarea
               id="description"
               bind:value={mixPresentation.description}
-              class="w-full p-2 border rounded"
+              class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition"
               placeholder="Description..."
             ></textarea>
           </div>
         </div>
         <div>
-          <label for="form-audio-elements" class="block mb-2"
+          <label
+            for="form-audio-elements"
+            class="block text-sm font-medium text-slate-400 mb-1"
             >Audio Elements</label
           >
           <div
@@ -83,7 +116,7 @@
           >
             {#each audioElements as audioElement}
               <div
-                class="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-gray-100 gap-1"
+                class="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-gray-700 gap-1"
               >
                 <input
                   type="checkbox"
@@ -93,24 +126,24 @@
                   onchange={(e) =>
                     handleCheckboxChange(audioElement, e.currentTarget.checked)}
                 />
-                <span class="font-medium text-gray-700">
+                <span class="font-medium text-gray-300">
                   <label for={audioElement.id}>{audioElement.name}</label>
                 </span>
               </div>
             {/each}
           </div>
         </div>
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 border-t border-slate-600 pt-4 mt-4">
           <button
             type="button"
             onclick={onClose}
-            class="px-4 py-2 border rounded"
+            class="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-slate-200 font-medium rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded"
+            class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800"
           >
             Add
           </button>
