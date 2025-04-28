@@ -2,7 +2,7 @@
   import MPModal from "./MPForm.svelte";
   import MPElem from "./MPContainerElem.svelte";
   import PBContainer from "./PBContainer/PBContainer.svelte";
-  import type { MixPresentation } from "../../types/MixPresentation";
+  import type { MixPresentation } from "src/@types/MixPresentation";
 
   let {
     audioElements,
