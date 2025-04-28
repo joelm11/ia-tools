@@ -2,12 +2,17 @@
   import PbElem from "./PBElem.svelte";
   import type { MixPresentation } from "src/@types/MixPresentation";
   import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
+  import ExportForm from "./ExportForm.svelte";
 
   const { mixPresentations } = $props<{
     mixPresentations: MixPresentation[];
   }>();
 
   const presentationMixer = $state<PresentationMixer>(new PresentationMixer());
+  let showExportForm = $state(false);
+  function closeExportForm() {
+    showExportForm = !showExportForm;
+  }
 </script>
 
 <div
@@ -18,6 +23,7 @@
     <!-- Use fontawesome icon for download button. -->
     {#if mixPresentations.length > 0}
       <button
+        onclick={() => (showExportForm = true)}
         id="add-mix-presentation"
         class="bg-slate-500 hover:bg-slate-600 text-white rounded-full w-8 h-8 flex items-center justify-center"
         aria-label="Export mix presentations as IAMF file button"
@@ -32,4 +38,5 @@
       <PbElem {mixPresentation} {presentationMixer}></PbElem>
     {/each}
   </div>
+  <ExportForm show={showExportForm} closeModal={closeExportForm}></ExportForm>
 </div>
