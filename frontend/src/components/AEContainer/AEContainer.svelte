@@ -1,6 +1,11 @@
 <script lang="ts">
   import AeContainerElem from "./AEContainerElem.svelte";
-  let { audioElements, createAudioElement, deleteAudioElement } = $props();
+  let {
+    audioElements,
+    createAudioElement,
+    deleteAudioElement,
+    modifyAudioElement,
+  } = $props();
 
   function openFileDialog() {
     const fileInput = document.getElementById("file-input");
@@ -30,10 +35,11 @@
   <div class="text-card-p-text mb-1 text-2xl">Audio Elements</div>
   <div class="border-b border-ae-card-background mb-2"></div>
   <div class="flex flex-col gap-3">
-    {#each audioElements as audioElement}
+    {#each audioElements as audioElement, idx}
       <AeContainerElem
         {audioElement}
         onDelete={() => deleteAudioElement(audioElement.id)}
+        {modifyAudioElement}
       />
     {/each}
   </div>

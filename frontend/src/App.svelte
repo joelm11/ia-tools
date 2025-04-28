@@ -22,6 +22,25 @@
     });
   }
 
+  function deleteAudioElement(idToDelete: string) {
+    removeAEFromMixPresentation(idToDelete);
+    audioElements = audioElements.filter(
+      (element) => element.id !== idToDelete
+    );
+  }
+
+  function modifyAudioElement(
+    idToModify: string,
+    newAudioElement: AudioElement
+  ) {
+    const index = audioElements.findIndex(
+      (element) => element.id === idToModify
+    );
+    if (index !== -1) {
+      audioElements[index] = newAudioElement;
+    }
+  }
+
   async function audioFormatFromFile(file: File): Promise<AudioChFormat> {
     const characteristics = await getWavCharacteristics(file);
     if (characteristics) {
@@ -75,13 +94,6 @@
       };
       reader.readAsArrayBuffer(file);
     });
-  }
-
-  function deleteAudioElement(idToDelete: string) {
-    removeAEFromMixPresentation(idToDelete);
-    audioElements = audioElements.filter(
-      (element) => element.id !== idToDelete
-    );
   }
 
   function createMixPresentation(mixPresentation: MixPresentation) {
@@ -150,7 +162,12 @@
 
 <div class="min-h-screen bg-app">
   <main class="col-span-5 grid grid-cols-5 h-screen p-4 gap-2">
-    <AeContainer {audioElements} {createAudioElement} {deleteAudioElement} />
+    <AeContainer
+      {audioElements}
+      {createAudioElement}
+      {deleteAudioElement}
+      {modifyAudioElement}
+    />
     <MpContainer
       {audioElements}
       {mixPresentations}
