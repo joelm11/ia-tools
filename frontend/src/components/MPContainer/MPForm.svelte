@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { AudioChFormat } from "src/@types/AudioFormats";
   import type { MixPresentation } from "src/@types/MixPresentation";
   import { fade } from "svelte/transition";
 
@@ -13,6 +14,7 @@
     name: "",
     description: "",
     id: "",
+    playbackFormat: AudioChFormat.STEREO,
     audioElements: [],
   });
 
@@ -22,6 +24,7 @@
     // Reset form.
     mixPresentation.name = "";
     mixPresentation.description = "";
+    mixPresentation.playbackFormat = AudioChFormat.STEREO;
     mixPresentation.audioElements = [];
     onClose();
   }
@@ -106,23 +109,39 @@
         </div>
         <div>
           <label
-            for="form-audio-elements"
+            for="playback-format"
             class="block text-sm font-medium text-slate-400 mb-1"
+            >Playback Format</label
+          >
+          <select
+            id="playback-format"
+            bind:value={mixPresentation.playbackFormat}
+            class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition mb-1"
+          >
+            {#each Object.values(AudioChFormat) as format}
+              <option value={format}>{format}</option>
+            {/each}
+          </select>
+        </div>
+        <div>
+          <label
+            for="form-audio-elements"
+            class="block text-sm font-medium text-slate-400"
             >Audio Elements</label
           >
           <div
             id="form-audio-elements"
-            class="mt-2 flex flex-wrap items-start justify-start gap-2 space-y-2 max-h-48 overflow-y-auto"
+            class="m-1 flex flex-wrap items-start justify-start gap-2 space-y-2 max-h-48 overflow-y-auto"
           >
             {#each audioElements as audioElement}
               <div
-                class="flex cursor-pointer items-center space-x-3 rounded-lg border p-4 hover:bg-gray-700 gap-1"
+                class="flex cursor-pointer items-center space-x-3 rounded-md border-2 p-2 border-card-h-line hover:ring-1 hover:ring-cyan-500 hover:border-cyan-500 gap-1"
               >
                 <input
                   type="checkbox"
                   id={audioElement.id}
                   value={audioElement.name}
-                  class="h-5 w-5"
+                  class="h-5 w-5 accent-mp-card-t-background"
                   onchange={(e) =>
                     handleCheckboxChange(audioElement, e.currentTarget.checked)}
                 />

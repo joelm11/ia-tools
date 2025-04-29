@@ -98,7 +98,6 @@
 
   function createMixPresentation(mixPresentation: MixPresentation) {
     mixPresentation.id = uuidv4();
-    mixPresentation.playbackFormat = AudioChFormat.NONE;
     mixPresentations.push(mixPresentation);
     sendMixPresentations();
   }

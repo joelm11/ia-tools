@@ -18,6 +18,11 @@
       class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md py-2 mb-2"
     >
       {mixPresentation.name}
+      <div
+        class="text-sm text-card-p-text text-center bg-mp-card-t-background rounded-md py-1"
+      >
+        {mixPresentation.playbackFormat}
+      </div>
     </div>
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
