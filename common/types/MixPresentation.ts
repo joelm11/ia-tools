@@ -6,6 +6,7 @@ export interface MixPresentationBase {
   description: string;
   id: string;
   playbackFormat: AudioChFormat;
+  mixGain: number;
   audioElements: AudioElementBase[];
 }
 

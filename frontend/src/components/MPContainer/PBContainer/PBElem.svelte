@@ -4,6 +4,7 @@
 
   let { mixPresentation } = $props();
   let isPlaying = $state(false);
+  let mixGain = $state(50);
   let presentationMixer: PresentationMixer;
 
   function handlePlayPause() {
@@ -25,6 +26,12 @@
       "allElementsFinished",
       handleAllElementsFinished
     );
+    return () => {
+      presentationMixer.removeEventListener(
+        "allElementsFinished",
+        handleAllElementsFinished
+      );
+    };
   });
 </script>
 
@@ -54,10 +61,14 @@
       type="range"
       min="0"
       max="100"
-      value="50"
       class="col-span-3 mt-2 w-full h-2 bg-mp-card-t-background
       rounded-lg appearance-none cursor-pointer hover:bg-mp-card-t-background-dark accent-ae-card-background self-center"
       aria-label="Volume Slider"
+      bind:value={mixGain}
+      oninput={() => {
+        mixPresentation.mixGain = mixGain / 100;
+        presentationMixer.setGain(mixGain / 100);
+      }}
     />
   </div>
   <div id="mp-audio-elements" class="col-span-1 h-24 items-center m-2 gap-2">

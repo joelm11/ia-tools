@@ -1,6 +1,7 @@
 <script lang="ts">
   import { AudioChFormat } from "src/@types/AudioFormats";
   import type { MixPresentation } from "src/@types/MixPresentation";
+  import type { AudioElement } from "src/@types/AudioElement";
   import { fade } from "svelte/transition";
 
   let {
@@ -8,13 +9,19 @@
     onClose,
     createMixPresentation,
     audioElements = [],
-  } = $props();
+  } = $props<{
+    isOpen: boolean;
+    onClose: () => void;
+    createMixPresentation: (mixPresentation: MixPresentation) => void;
+    audioElements: AudioElement[];
+  }>();
 
   let mixPresentation: MixPresentation = $state({
     name: "",
     description: "",
     id: "",
     playbackFormat: AudioChFormat.STEREO,
+    mixGain: 0.5,
     audioElements: [],
   });
 
@@ -25,6 +32,7 @@
     mixPresentation.name = "";
     mixPresentation.description = "";
     mixPresentation.playbackFormat = AudioChFormat.STEREO;
+    mixPresentation.mixGain = 0.5;
     mixPresentation.audioElements = [];
     onClose();
   }
@@ -34,7 +42,7 @@
     handleSubmit();
   }
 
-  function handleCheckboxChange(audioElement: any, checked: boolean) {
+  function handleCheckboxChange(audioElement: AudioElement, checked: boolean) {
     if (checked) {
       mixPresentation.audioElements = [
         ...mixPresentation.audioElements,

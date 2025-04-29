@@ -3,6 +3,7 @@
   import MPElem from "./MPContainerElem.svelte";
   import PBContainer from "./PBContainer/PBContainer.svelte";
   import type { MixPresentation } from "src/@types/MixPresentation";
+  import type { AudioElement } from "src/@types/AudioElement";
 
   let {
     audioElements,
@@ -10,7 +11,13 @@
     createMixPresentation,
     deleteMixPresentation,
     removeAEFromMixPresentation,
-  } = $props();
+  } = $props<{
+    audioElements: AudioElement[];
+    mixPresentations: MixPresentation[];
+    createMixPresentation: (mixPresentation: MixPresentation) => void;
+    deleteMixPresentation: (idToDelete: string) => void;
+    removeAEFromMixPresentation: (idToDelete: string) => void;
+  }>();
 
   let isModalOpen = $state(false);
 </script>

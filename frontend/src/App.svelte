@@ -7,24 +7,30 @@
   import { v4 as uuidv4 } from "uuid";
   import { WaveFile } from "wavefile";
   import { audioFormatFromChannels } from "src/@common/AudioFormatsTools";
+  import audioElementsStore from "./lib/stores/audioElementsStore";
+  import mixPresentationsStore from "./lib/stores/mixPresentationsStore";
+  import { get } from "svelte/store";
 
   /* State for Audio Elements and Mix Presentations */
-  let audioElements: AudioElement[] = $state([]);
-  let mixPresentations: MixPresentation[] = $state([]);
+  let audioElements: AudioElement[] = $audioElementsStore;
+  let mixPresentations: MixPresentation[] = $mixPresentationsStore;
 
   async function createAudioElement(file: File) {
-    audioElements.push({
-      name: file.name,
-      id: uuidv4(),
-      audioFile: file,
-      audioChFormat: await audioFormatFromFile(file),
-      gain: 20,
-    });
+    $audioElementsStore = [
+      ...$audioElementsStore,
+      {
+        name: file.name,
+        id: uuidv4(),
+        audioFile: file,
+        audioChFormat: await audioFormatFromFile(file),
+        gain: 20,
+      },
+    ];
   }
 
   function deleteAudioElement(idToDelete: string) {
     removeAEFromMixPresentation(idToDelete);
-    audioElements = audioElements.filter(
+    $audioElementsStore = $audioElementsStore.filter(
       (element) => element.id !== idToDelete
     );
   }
@@ -33,11 +39,13 @@
     idToModify: string,
     newAudioElement: AudioElement
   ) {
-    const index = audioElements.findIndex(
+    const index = $audioElementsStore.findIndex(
       (element) => element.id === idToModify
     );
     if (index !== -1) {
-      audioElements[index] = newAudioElement;
+      const tempAudioElements = [...$audioElementsStore];
+      tempAudioElements[index] = newAudioElement;
+      $audioElementsStore = tempAudioElements;
     }
   }
 
@@ -98,22 +106,23 @@
 
   function createMixPresentation(mixPresentation: MixPresentation) {
     mixPresentation.id = uuidv4();
-    mixPresentations.push(mixPresentation);
+    $mixPresentationsStore = [...$mixPresentationsStore, mixPresentation];
     sendMixPresentations();
   }
 
   function deleteMixPresentation(idToDelete: string) {
-    mixPresentations = mixPresentations.filter(
+    $mixPresentationsStore = $mixPresentationsStore.filter(
       (presentation) => presentation.id !== idToDelete
     );
   }
 
   function removeAEFromMixPresentation(idToDelete: string) {
-    for (const presentation of mixPresentations) {
-      presentation.audioElements = presentation.audioElements.filter(
+    $mixPresentationsStore = $mixPresentationsStore.map((presentation) => ({
+      ...presentation,
+      audioElements: presentation.audioElements.filter(
         (element) => element.id !== idToDelete
-      );
-    }
+      ),
+    }));
   }
 
   // Format and send mix presentations to the server.
@@ -141,7 +150,8 @@
       );
     }
     // Append active audio element files to the form data.
-    audioElements
+    const currentAudioElements = get(audioElementsStore);
+    currentAudioElements
       .filter((element) => activeAudioElementSet.has(element.id))
       .forEach((element) => {
         formData.append("audioFiles", element.audioFile);
@@ -162,14 +172,14 @@
 <div class="min-h-screen bg-app">
   <main class="col-span-5 grid grid-cols-5 h-screen p-4 gap-2">
     <AeContainer
-      {audioElements}
+      audioElements={$audioElementsStore}
       {createAudioElement}
       {deleteAudioElement}
       {modifyAudioElement}
     />
     <MpContainer
-      {audioElements}
-      {mixPresentations}
+      audioElements={$audioElementsStore}
+      mixPresentations={$mixPresentationsStore}
       {createMixPresentation}
       {deleteMixPresentation}
       {removeAEFromMixPresentation}

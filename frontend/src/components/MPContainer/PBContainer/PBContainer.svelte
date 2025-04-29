@@ -8,7 +8,8 @@
   }>();
 
   let showExportForm = $state(false);
-  let exportButton: HTMLButtonElement; // Add a reference to the button
+  let exportButton: HTMLButtonElement | null = $state(null);
+
   function closeExportForm() {
     showExportForm = false;
     if (exportButton) {

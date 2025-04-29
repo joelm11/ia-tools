@@ -45,6 +45,10 @@ export class PresentationMixer extends EventTarget {
     });
   }
 
+  public setGain(gain: number) {
+    this.mixGainNode.gain.setValueAtTime(gain, this.audioContext.currentTime);
+  }
+
   /**
    * @brief Full initialization of the object is left to the children. We simply
    * create the context here, the mix gain node, and connect the mgn to the output.
