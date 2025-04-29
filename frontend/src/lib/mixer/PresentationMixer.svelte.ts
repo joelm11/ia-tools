@@ -20,6 +20,31 @@ export class PresentationMixer {
     return this.instance;
   }
 
+  public getActive(): string {
+    return this.activeMixPres;
+  }
+
+  public setActive(mixPresentation: MixPresentation) {
+    this.reconfigureMixer(mixPresentation);
+  }
+
+  public playpause() {
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    this.elemGainNodes.forEach((_, id) => {
+      const audioElem = document.getElementById(id) as HTMLMediaElement;
+      if (audioElem) {
+        if (audioElem.paused) {
+          audioElem.play();
+        } else {
+          audioElem.pause();
+        }
+      }
+    });
+  }
+
   /**
    * @brief Full initialization of the object is left to the children. We simply
    * create the context here, the mix gain node, and connect the mgn to the output.
@@ -35,7 +60,7 @@ export class PresentationMixer {
    * @brief Initializes the mixer for playback of a new or modified mix presentation.
    *
    */
-  public reconfigureMixer(mixPresentation: MixPresentation) {
+  private reconfigureMixer(mixPresentation: MixPresentation) {
     this.activeMixPres = mixPresentation.id;
     this.resetAudioSources();
     this.clearGraph();
@@ -90,7 +115,7 @@ export class PresentationMixer {
   /**
    * @brief Pauses all audio elements and resets their current time to 0.
    */
-  public resetAudioSources() {
+  private resetAudioSources() {
     this.mediaElementSources.forEach((source, id) => {
       const audioElem = document.getElementById(id) as HTMLMediaElement;
       if (audioElem) {
@@ -98,42 +123,5 @@ export class PresentationMixer {
         audioElem.currentTime = 0;
       }
     });
-  }
-
-  public getActive(): string {
-    return this.activeMixPres;
-  }
-
-  public setActive(mixPresentation: MixPresentation) {
-    this.reconfigureMixer(mixPresentation);
-  }
-
-  public playpause() {
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
-
-    this.elemGainNodes.forEach((_, id) => {
-      const audioElem = document.getElementById(id) as HTMLMediaElement;
-      if (audioElem) {
-        if (audioElem.paused) {
-          audioElem.play();
-        } else {
-          audioElem.pause();
-        }
-      }
-    });
-  }
-
-  public resetTrack(elementId: string) {
-    const audioElem = document.getElementById(elementId) as HTMLMediaElement;
-    if (audioElem && this.mediaElementSources.has(elementId)) {
-      audioElem.pause();
-      audioElem.currentTime = 0;
-    }
-  }
-
-  public resetAllTracks() {
-    this.mediaElementSources.forEach((_, id) => this.resetTrack(id));
   }
 }

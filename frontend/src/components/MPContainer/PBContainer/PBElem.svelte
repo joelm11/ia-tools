@@ -9,7 +9,7 @@
     presentationMixer = PresentationMixer.getInstance();
     if (presentationMixer.getActive() != mixPresentation.id) {
       console.log("Reconfiguring");
-      presentationMixer.reconfigureMixer(mixPresentation);
+      presentationMixer.setActive(mixPresentation);
     }
     presentationMixer.playpause();
   }
