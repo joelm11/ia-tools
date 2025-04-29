@@ -60,8 +60,19 @@
       aria-label="Volume Slider"
     />
   </div>
-  <div
-    id="mp-audio-elements"
-    class="col-span-1 h-24 flex items-center p-2"
-  ></div>
+  <div id="mp-audio-elements" class="col-span-1 h-24 items-center m-2 gap-2">
+    {#if mixPresentation.audioElements.length < 4}
+      <div class="grid grid-cols-1 gap-2">
+        {#each mixPresentation.audioElements as audioElement}
+          <PbElemAe {audioElement} />
+        {/each}
+      </div>
+    {:else}
+      <div class="grid grid-cols-2 gap-2">
+        {#each mixPresentation.audioElements as audioElement}
+          <PbElemAe {audioElement} />
+        {/each}
+      </div>
+    {/if}
+  </div>
 </div>

@@ -1,23 +1,17 @@
 <script lang="ts">
   let { audioElement } = $props();
-
-  function updateGain(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    audioElement.gain = parseInt(value) / 10;
-  }
+  let gain = $state(audioElement.gain);
 </script>
 
-<div class="flex p-2 bg-ae-card-background rounded-md justify-between gap-2">
-  <span class="flex justify-center items-center flex-none">
-    <input
-      type="range"
-      id="volume"
-      name="volume"
-      min="0"
-      max="20"
-      value={audioElement.gain * 10}
-      oninput={updateGain}
-    />
-  </span>
-  <span class="text-sm p-1 truncate">{audioElement.name}</span>
+<div class="p-2 bg-ae-card-background rounded-md gap-2">
+  <span class="text-xs text-card-p-text truncate">{audioElement.name}</span>
+  <input
+    class="flex justify-center items-center"
+    type="range"
+    id="volume"
+    name="volume"
+    min="0"
+    max="100"
+    bind:value={gain}
+  />
 </div>
