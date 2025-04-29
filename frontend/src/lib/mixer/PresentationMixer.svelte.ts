@@ -1,6 +1,7 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
 
 export class PresentationMixer {
+  private static instance: PresentationMixer | null = null;
   private audioContext: AudioContext = new AudioContext();
   private elemGainNodes: Map<string, GainNode> = new Map();
   private mediaElementSources: Map<string, MediaElementAudioSourceNode> =
@@ -9,10 +10,21 @@ export class PresentationMixer {
   private activeMixPres: string = "";
 
   /**
+   * @brief Singleton pattern to ensure only one instance of the mixer exists.
+   * @returns The singleton instance of the PresentationMixer.
+   */
+  public static getInstance(): PresentationMixer {
+    if (this.instance === null) {
+      this.instance = new PresentationMixer();
+    }
+    return this.instance;
+  }
+
+  /**
    * @brief Full initialization of the object is left to the children. We simply
    * create the context here, the mix gain node, and connect the mgn to the output.
    */
-  public constructor() {
+  private constructor() {
     this.audioContext = new AudioContext();
 
     this.mixGainNode = this.audioContext.createGain();
@@ -25,6 +37,7 @@ export class PresentationMixer {
    */
   public reconfigureMixer(mixPresentation: MixPresentation) {
     this.activeMixPres = mixPresentation.id;
+    this.resetAudioSources();
     this.clearGraph();
     this.initAudioSources(mixPresentation);
     // Connect audio sources and gain nodes to output mixer node.
@@ -72,6 +85,19 @@ export class PresentationMixer {
       gainNode.disconnect();
     });
     this.elemGainNodes.clear();
+  }
+
+  /**
+   * @brief Pauses all audio elements and resets their current time to 0.
+   */
+  public resetAudioSources() {
+    this.mediaElementSources.forEach((source, id) => {
+      const audioElem = document.getElementById(id) as HTMLMediaElement;
+      if (audioElem) {
+        audioElem.pause();
+        audioElem.currentTime = 0;
+      }
+    });
   }
 
   public getActive(): string {

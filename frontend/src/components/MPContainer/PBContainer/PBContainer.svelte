@@ -1,14 +1,12 @@
 <script lang="ts">
   import PbElem from "./PBElem.svelte";
   import type { MixPresentation } from "src/@types/MixPresentation";
-  import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
   import ExportForm from "./ExportForm.svelte";
 
   const { mixPresentations } = $props<{
     mixPresentations: MixPresentation[];
   }>();
 
-  const presentationMixer = $state<PresentationMixer>(new PresentationMixer());
   let showExportForm = $state(false);
   let exportButton: HTMLButtonElement; // Add a reference to the button
   function closeExportForm() {
@@ -40,7 +38,7 @@
   <div class="border-b border-ae-card-background mb-2"></div>
   <div class="flex flex-col gap-2">
     {#each mixPresentations as mixPresentation}
-      <PbElem {mixPresentation} {presentationMixer}></PbElem>
+      <PbElem {mixPresentation}></PbElem>
     {/each}
   </div>
   <ExportForm show={showExportForm} closeModal={closeExportForm}></ExportForm>

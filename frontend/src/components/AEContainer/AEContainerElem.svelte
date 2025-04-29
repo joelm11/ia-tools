@@ -48,5 +48,12 @@
     >
       <i class="fas fa-times"></i>
     </button>
+    <audio
+      id={audioElement.id}
+      class="hidden"
+      controls
+      src={audioUrl}
+      aria-label="Audio Element Player"
+    ></audio>
   </div>
 </div>

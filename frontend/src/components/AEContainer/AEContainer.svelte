@@ -35,7 +35,7 @@
   <div class="text-card-p-text mb-1 text-2xl">Audio Elements</div>
   <div class="border-b border-ae-card-background mb-2"></div>
   <div class="flex flex-col gap-3">
-    {#each audioElements as audioElement, idx}
+    {#each audioElements as audioElement}
       <AeContainerElem
         {audioElement}
         onDelete={() => deleteAudioElement(audioElement.id)}

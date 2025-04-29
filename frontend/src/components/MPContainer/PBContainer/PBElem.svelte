@@ -1,9 +1,12 @@
 <script lang="ts">
   import PbElemAe from "./PBElemAE.svelte";
+  import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
 
-  let { mixPresentation, presentationMixer } = $props();
+  let { mixPresentation } = $props();
+  let presentationMixer: PresentationMixer;
 
   function handlePlayPause() {
+    presentationMixer = PresentationMixer.getInstance();
     if (presentationMixer.getActive() != mixPresentation.id) {
       console.log("Reconfiguring");
       presentationMixer.reconfigureMixer(mixPresentation);
