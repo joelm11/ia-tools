@@ -1,6 +1,6 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
 
-export class PresentationMixer {
+export class PresentationMixer extends EventTarget {
   private static instance: PresentationMixer | null = null;
   private audioContext: AudioContext = new AudioContext();
   private elemGainNodes: Map<string, GainNode> = new Map();
@@ -50,6 +50,7 @@ export class PresentationMixer {
    * create the context here, the mix gain node, and connect the mgn to the output.
    */
   private constructor() {
+    super();
     this.audioContext = new AudioContext();
 
     this.mixGainNode = this.audioContext.createGain();
@@ -61,6 +62,8 @@ export class PresentationMixer {
    *
    */
   private reconfigureMixer(mixPresentation: MixPresentation) {
+    // Let the children know that the mixer is being reconfigured.
+    this.dispatchEvent(new Event("allElementsFinished"));
     this.activeMixPres = mixPresentation.id;
     this.resetAudioSources();
     this.clearGraph();
@@ -90,9 +93,11 @@ export class PresentationMixer {
       // Reuse existing source or create new one
       let track = this.mediaElementSources.get(audioElement.id);
       if (!track) {
+        audioDOMElem.addEventListener("ended", () => {
+          this.onEnded();
+        });
         track = this.audioContext.createMediaElementSource(audioDOMElem);
         this.mediaElementSources.set(audioElement.id, track);
-      } else {
       }
 
       // Connect gain nodes to each source node.
@@ -123,5 +128,19 @@ export class PresentationMixer {
         audioElem.currentTime = 0;
       }
     });
+  }
+
+  private onEnded() {
+    let allAudioEnded = true;
+    this.mediaElementSources.forEach((source, id) => {
+      const audioElem = document.getElementById(id) as HTMLMediaElement;
+      if (audioElem && !audioElem.ended) {
+        allAudioEnded = false;
+      }
+    });
+
+    if (allAudioEnded) {
+      this.dispatchEvent(new Event("allElementsFinished"));
+    }
   }
 }

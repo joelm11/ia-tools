@@ -3,16 +3,29 @@
   import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
 
   let { mixPresentation } = $props();
+  let isPlaying = $state(false);
   let presentationMixer: PresentationMixer;
 
   function handlePlayPause() {
     presentationMixer = PresentationMixer.getInstance();
     if (presentationMixer.getActive() != mixPresentation.id) {
-      console.log("Reconfiguring");
       presentationMixer.setActive(mixPresentation);
     }
     presentationMixer.playpause();
+    isPlaying = !isPlaying;
   }
+
+  function handleAllElementsFinished() {
+    isPlaying = false;
+  }
+
+  $effect(() => {
+    presentationMixer = PresentationMixer.getInstance();
+    presentationMixer.addEventListener(
+      "allElementsFinished",
+      handleAllElementsFinished
+    );
+  });
 </script>
 
 <div
@@ -29,8 +42,23 @@
       onclick={handlePlayPause}
       aria-label="Play/Pause Mix Presentation"
     >
-      <i class="fas fa-play text-2xl text-mp-card-t-text"> </i></button
+      <i
+        class="fas {isPlaying
+          ? 'fa-pause'
+          : 'fa-play'} text-2xl text-mp-card-t-text"
+      >
+      </i></button
     >
+    <input
+      id="volume-slider"
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      class="col-span-3 mt-2 w-full h-2 bg-mp-card-t-background
+      rounded-lg appearance-none cursor-pointer hover:bg-mp-card-t-background-dark accent-ae-card-background self-center"
+      aria-label="Volume Slider"
+    />
   </div>
   <div
     id="mp-audio-elements"
