@@ -22,7 +22,7 @@
     <div class="flex flex-wrap gap-2">
       {#each mixPresentation.audioElements as audioElement}
         <div
-          class="px-2 pr-0 py-1 text-md text-card-p-text truncate gap-2 bg-ae-card-background rounded-sm flex items-center w-full"
+          class="px-2 pr-0 py-1 text-md text-card-p-text truncate gap-2 bg-ae-card-background rounded-lg flex items-center w-full"
         >
           <span
             class="flex-grow flex-shrink min-w-0 whitespace-nowrap overflow-hidden text-ellipsis"
