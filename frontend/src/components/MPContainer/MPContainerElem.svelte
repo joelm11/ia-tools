@@ -18,8 +18,9 @@
       class="text-xl truncate text-card-p-text text-center bg-mp-card-t-background rounded-md py-2 mb-2"
     >
       {mixPresentation.name}
+      <hr class="w-4/5 mx-auto border-t border-card-p-text/50 my-2" />
       <div
-        class="text-sm text-card-p-text text-center bg-mp-card-t-background rounded-md py-1"
+        class="text-sm text-card-p-text text-center bg-mp-card-t-background rounded-md"
       >
         {mixPresentation.playbackFormat}
       </div>
