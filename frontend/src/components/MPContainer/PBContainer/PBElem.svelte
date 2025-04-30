@@ -9,9 +9,7 @@
 
   function handlePlayPause() {
     presentationMixer = PresentationMixer.getInstance();
-    if (presentationMixer.getActive() != mixPresentation.id) {
-      presentationMixer.setActive(mixPresentation);
-    }
+    presentationMixer.setActive(mixPresentation);
     presentationMixer.playpause();
     isPlaying = !isPlaying;
   }

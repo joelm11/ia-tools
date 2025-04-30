@@ -1,31 +1,21 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
+import type { MixerInterface } from "./MixerInterface";
 
-export class PresentationMixer extends EventTarget {
+export class PresentationMixer extends EventTarget implements MixerInterface {
   private static instance: PresentationMixer | null = null;
   private audioContext: AudioContext = new AudioContext();
   private elemGainNodes: Map<string, GainNode> = new Map();
+  // Maps an audio element ID to its MediaElementAudioSourceNode
   private mediaElementSources: Map<string, MediaElementAudioSourceNode> =
     new Map();
   private mixGainNode: GainNode = null as any;
   private activeMixPres: string = "";
 
-  /**
-   * @brief Singleton pattern to ensure only one instance of the mixer exists.
-   * @returns The singleton instance of the PresentationMixer.
-   */
   public static getInstance(): PresentationMixer {
     if (this.instance === null) {
       this.instance = new PresentationMixer();
     }
     return this.instance;
-  }
-
-  public getActive(): string {
-    return this.activeMixPres;
-  }
-
-  public setActive(mixPresentation: MixPresentation) {
-    this.reconfigureMixer(mixPresentation);
   }
 
   public playpause() {
@@ -45,8 +35,20 @@ export class PresentationMixer extends EventTarget {
     });
   }
 
-  public setGain(gain: number) {
+  public setActive(mixPresentation: MixPresentation) {
+    if (this.activeMixPres !== mixPresentation.id) {
+      this.activeMixPres = mixPresentation.id;
+      this.reconfigureMixer(mixPresentation);
+    }
+  }
+
+  public setGain(gain: number, elementID?: string): void {
     this.mixGainNode.gain.setValueAtTime(gain, this.audioContext.currentTime);
+    if (elementID && this.elemGainNodes.has(elementID)) {
+      this.elemGainNodes
+        .get(elementID)
+        ?.gain.setValueAtTime(gain, this.audioContext.currentTime);
+    }
   }
 
   /**
@@ -68,7 +70,6 @@ export class PresentationMixer extends EventTarget {
   private reconfigureMixer(mixPresentation: MixPresentation) {
     // Let the children know that the mixer is being reconfigured.
     this.dispatchEvent(new Event("allElementsFinished"));
-    this.activeMixPres = mixPresentation.id;
     this.resetAudioSources();
     this.clearGraph();
     this.initAudioSources(mixPresentation);
