@@ -4,7 +4,7 @@
     getChannelCountRaw,
   } from "src/@common/AudioFormatsTools";
 
-  let { audioElement, onDelete, modifyAudioElement } = $props();
+  let { audioElement, onDelete } = $props();
   let audioUrl = $state("");
   let selectedFormat = $state(audioElement.audioChFormat);
 
@@ -25,10 +25,7 @@
         aria-label="Audio Element Format"
         bind:value={selectedFormat}
         onchange={() => {
-          modifyAudioElement(audioElement.id, {
-            ...audioElement,
-            audioChFormat: selectedFormat,
-          });
+          audioElement.audioChFormat = selectedFormat;
         }}
       >
         {#each audioFormatsFromChannels(getChannelCountRaw(audioElement.audioChFormat)) as possibleLayout}

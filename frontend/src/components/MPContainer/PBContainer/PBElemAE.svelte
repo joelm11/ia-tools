@@ -1,27 +1,22 @@
 <script lang="ts">
-  import audioElementsStore from "src/@lib/stores/audioElementsStore";
-  import { get } from "svelte/store";
-  import { onMount } from "svelte";
-  import type { AudioElement } from "src/@types/AudioElement";
+  import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
 
   let { audioElement } = $props();
   let gain = $state(audioElement.gain);
 
-  $effect(() => {
-    if (audioElement) {
-      const audioElements = get(audioElementsStore);
-      const index = audioElements.findIndex(
-        (element) => element.id === audioElement.id
-      );
+  function updateAEMixGain(event: Event) {
+    const mixer = PresentationMixer.getInstance();
+    const target = event.target as HTMLInputElement;
+    const newGain = parseFloat(target.value);
+    gain = newGain;
+    audioElement.gain = gain;
+    mixer.setGain(newGain, audioElement.id);
+  }
 
-      if (index !== -1) {
-        audioElementsStore.update((elements) => {
-          elements[index] = { ...elements[index], gain: gain };
-          return elements;
-        });
-      }
-    }
-  });
+  /**
+   * Takes in the audio element and the ID of the mix presentation it is a part of.
+   * On input, sets the gain of the audio element to the value of the slider.
+   */
 </script>
 
 <div class="p-2 bg-ae-card-background rounded-md gap-2">
@@ -34,5 +29,6 @@
     min="0"
     max="100"
     bind:value={gain}
+    oninput={updateAEMixGain}
   />
 </div>

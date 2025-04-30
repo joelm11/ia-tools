@@ -1,21 +1,13 @@
 <script lang="ts">
-  import AeContainerElem from "./AEContainerElem.svelte";
   import type { AudioElement } from "src/@types/AudioElement";
-
-  let {
-    audioElements,
+  import AeContainerElem from "./AEContainerElem.svelte";
+  import {
+    getAudioElements,
     createAudioElement,
     deleteAudioElement,
-    modifyAudioElement,
-  } = $props<{
-    audioElements: AudioElement[];
-    createAudioElement: (file: File) => void;
-    deleteAudioElement: (idToDelete: string) => void;
-    modifyAudioElement: (
-      idToModify: string,
-      newAudioElement: AudioElement
-    ) => void;
-  }>();
+  } from "src/@lib/state/AudioElementState.svelte";
+
+  let audioElements: AudioElement[] = $derived(getAudioElements());
 
   function openFileDialog() {
     const fileInput = document.getElementById("file-input");
@@ -49,7 +41,6 @@
       <AeContainerElem
         {audioElement}
         onDelete={() => deleteAudioElement(audioElement.id)}
-        {modifyAudioElement}
       />
     {/each}
   </div>

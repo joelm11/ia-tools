@@ -23,7 +23,6 @@
 >
   <div id="pb-container-header" class="flex justify-between">
     <div class="text-card-p-text mb-1 text-2xl w-32">Playback</div>
-    <!-- Use fontawesome icon for download button. -->
     {#if mixPresentations.length > 0}
       <button
         bind:this={exportButton}

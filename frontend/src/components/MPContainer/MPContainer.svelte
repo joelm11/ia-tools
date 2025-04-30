@@ -4,20 +4,15 @@
   import PBContainer from "./PBContainer/PBContainer.svelte";
   import type { MixPresentation } from "src/@types/MixPresentation";
   import type { AudioElement } from "src/@types/AudioElement";
-
-  let {
-    audioElements,
-    mixPresentations,
+  import {
     createMixPresentation,
     deleteMixPresentation,
-    removeAEFromMixPresentation,
-  } = $props<{
-    audioElements: AudioElement[];
-    mixPresentations: MixPresentation[];
-    createMixPresentation: (mixPresentation: MixPresentation) => void;
-    deleteMixPresentation: (idToDelete: string) => void;
-    removeAEFromMixPresentation: (idToDelete: string) => void;
-  }>();
+    getMixPresentations,
+  } from "src/@lib/state/MixPresentationState.svelte";
+  import { getAudioElements } from "src/@lib/state/AudioElementState.svelte";
+
+  let mixPresentations: MixPresentation[] = $derived(getMixPresentations());
+  let audioElements: AudioElement[] = $derived(getAudioElements());
 
   let isModalOpen = $state(false);
 </script>
