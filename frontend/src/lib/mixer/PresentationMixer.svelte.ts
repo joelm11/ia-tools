@@ -43,11 +43,12 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
   }
 
   public setGain(gain: number, elementID?: string): void {
-    this.mixGainNode.gain.setValueAtTime(gain, this.audioContext.currentTime);
     if (elementID && this.elemGainNodes.has(elementID)) {
       this.elemGainNodes
         .get(elementID)
         ?.gain.setValueAtTime(gain, this.audioContext.currentTime);
+    } else {
+      this.mixGainNode.gain.setValueAtTime(gain, this.audioContext.currentTime);
     }
   }
 

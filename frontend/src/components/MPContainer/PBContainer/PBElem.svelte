@@ -65,7 +65,7 @@
       bind:value={mixGain}
       oninput={() => {
         mixPresentation.mixGain = mixGain / 100;
-        presentationMixer.setGain(mixGain / 100);
+        presentationMixer.setGain(mixPresentation.mixGain);
       }}
     />
   </div>
