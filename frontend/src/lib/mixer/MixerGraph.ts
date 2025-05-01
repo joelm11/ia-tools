@@ -1,81 +1,39 @@
-import type { Mixer } from "./Mixer.svelte";
 import {
-  surroundNodeList,
-  topNodeList,
-  type MixerGraphNode,
-} from "./MixerGraphNodes";
-import Queue from "./Queue";
-import { Matrix } from "mathjs";
+  AudioChFormat,
+  ChannelLabel,
+  type ChannelLayout,
+} from "src/@types/AudioFormats";
+import { channelLayouts } from "src/@types/AudioFormats";
 
-export enum SurroundType {
-  S7,
-  S5,
-  S3,
-  S2,
-  S1,
+interface Node {
+  layout: AudioChFormat;
 }
 
-export enum TopType {
-  T4,
-  T2,
-  TF2,
-}
-
-type SurroundFormat = {
-  surround: SurroundType;
-  top?: TopType;
+type Edge = {
+  [inCh in ChannelLabel]: { outCh: ChannelLabel; gain: number };
+} & {
+  src: Node;
+  dest: Node;
 };
 
-export function constructGraph(
-  inputFormat: SurroundFormat,
-  outputFormat: SurroundFormat
-) {
-  const surroundNodes = queueNodes(
-    inputFormat.surround,
-    outputFormat.surround,
-    surroundNodeList
-  );
-
-  // Add top nodes if the output format has top channels.
-  let topNodes: Queue<MixerGraphNode> | undefined;
-  if (outputFormat.top && inputFormat.top) {
-    topNodes = queueNodes(inputFormat.top, outputFormat.top, topNodeList);
-  }
+interface Graph {
+  nodes: Node[];
+  edges: Edge[];
 }
 
-function queueNodes(
-  input: SurroundType | TopType,
-  output: SurroundType | TopType,
-  nodeList: MixerGraphNode[]
-): Queue<MixerGraphNode> {
-  let nodes = new Queue<MixerGraphNode>();
+const graph: Graph = {
+  nodes: [
+    { layout: AudioChFormat.MONO },
+    { layout: AudioChFormat.STEREO },
+    { layout: AudioChFormat.K3P1P2 },
+    { layout: AudioChFormat.K5P1 },
+    { layout: AudioChFormat.K5P1P2 },
+    { layout: AudioChFormat.K5P1P4 },
+    { layout: AudioChFormat.K7P1 },
+    { layout: AudioChFormat.K7P1P2 },
+    { layout: AudioChFormat.K7P1P4 },
+  ],
+  edges: [],
+};
 
-  const inputType = input;
-  const outputType = output;
-  let currType = inputType;
-  while (currType !== outputType) {
-    const node = nodeList[currType];
-    nodes.enqueue(node);
-    currType++;
-  }
-
-  return nodes;
-}
-
-function downmixMatFromNodes(
-  numInputChannels: number,
-  surroundNodes: Queue<MixerGraphNode>,
-  topNodes?: Queue<MixerGraphNode>
-) {
-  while (!surroundNodes.isEmpty() || topNodes?.isEmpty()) {
-    // Construct gain matrix for this step.
-    const surroundNode = surroundNodes.dequeue();
-    const topNode = topNodes?.dequeue();
-    if (surroundNode && topNode) {
-    } else if (surroundNode) {
-    } else {
-    }
-  }
-}
-
-function gainMatFromNodes() {}
+export function getDownmixMatrix(input: ChannelLayout, output: ChannelLayout) {}
