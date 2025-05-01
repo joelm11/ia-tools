@@ -11,26 +11,9 @@ export enum AudioChFormat {
   K7P1P4 = "7.1.4",
 }
 
-export enum ChannelLabel {
-  L,
-  R,
-  C,
-  LFE,
-  Ls,
-  Rs,
-  Lss,
-  Rss,
-  Lrs,
-  Rrs,
-  Ltf,
-  Rtf,
-  Ltb,
-  Rtb,
-}
-
-export type ChannelLayout = {
-  [layout in AudioChFormat]: ChannelLabel[];
-};
+// export type ChannelLayout = {
+//   [layout in AudioChFormat]: ChannelLabel[];
+// };
 
 export const channelLayouts: ChannelLayout = {
   [AudioChFormat.NONE]: [],
