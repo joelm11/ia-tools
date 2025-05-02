@@ -175,8 +175,6 @@ const downMixGraph: Graph = {
   },
 };
 
-export { downMixGraph, ChannelGrouping, ChannelLabel };
-
 /**
  * We are looking to construct a (Out. x In.) size matrix.
  * We want to see if we can construct Out[i] from in[j].
@@ -207,7 +205,7 @@ export { downMixGraph, ChannelGrouping, ChannelLabel };
  * - We don't find the output node and return 0.
  */
 
-export function findGain(
+function findGain(
   inputNode: Node,
   inputCh: ChannelLabel,
   outputNode: Node,
@@ -243,3 +241,33 @@ function nodeContainsChannel(node: Node, ch: ChannelLabel): boolean {
   }
   return false;
 }
+
+function nodeFromChannelGrouping(chGroup: ChannelGrouping): Node {
+  switch (chGroup) {
+    case ChannelGrouping.S7:
+      return S7Node;
+    case ChannelGrouping.S5:
+      return S5Node;
+    case ChannelGrouping.S3:
+      return S3Node;
+    case ChannelGrouping.S2:
+      return S2Node;
+    case ChannelGrouping.S1:
+      return S1Node;
+    case ChannelGrouping.T4:
+      return T4Node;
+    case ChannelGrouping.T2:
+      return T2Node;
+    case ChannelGrouping.TF2:
+      return TF2Node;
+  }
+}
+
+export {
+  downMixGraph,
+  ChannelGrouping,
+  ChannelLabel,
+  findGain,
+  nodeFromChannelGrouping,
+  type Node,
+};
