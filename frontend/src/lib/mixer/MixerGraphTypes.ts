@@ -84,7 +84,7 @@ const T2toTF2: SrcToDestGain = {
 };
 
 interface EdgeGain {
-  destNode: ChannelGrouping;
+  destNode: Node;
   // Map every source channel for a given source label to dest label.
   srcToDestGain: SrcToDestGain;
 }
@@ -94,43 +94,84 @@ interface Node {
   channels: ChannelLabel[];
 }
 
+const S7Node: Node = {
+  id: ChannelGrouping.S7,
+  channels: [
+    ChannelLabel.L,
+    ChannelLabel.R,
+    ChannelLabel.C,
+    ChannelLabel.LFE,
+    ChannelLabel.Lss,
+    ChannelLabel.Rss,
+    ChannelLabel.Lrs,
+    ChannelLabel.Rrs,
+  ],
+};
+
+const S5Node: Node = {
+  id: ChannelGrouping.S5,
+  channels: [
+    ChannelLabel.L,
+    ChannelLabel.R,
+    ChannelLabel.C,
+    ChannelLabel.LFE,
+    ChannelLabel.Ls,
+    ChannelLabel.Rs,
+  ],
+};
+
+const S3Node: Node = {
+  id: ChannelGrouping.S3,
+  channels: [ChannelLabel.L, ChannelLabel.R, ChannelLabel.C, ChannelLabel.LFE],
+};
+
+const S2Node: Node = {
+  id: ChannelGrouping.S2,
+  channels: [ChannelLabel.L, ChannelLabel.R],
+};
+
+const S1Node: Node = {
+  id: ChannelGrouping.S1,
+  channels: [ChannelLabel.C],
+};
+
+const T4Node: Node = {
+  id: ChannelGrouping.T4,
+  channels: [
+    ChannelLabel.Ltf,
+    ChannelLabel.Rtf,
+    ChannelLabel.Ltb,
+    ChannelLabel.Rtb,
+  ],
+};
+
+const T2Node: Node = {
+  id: ChannelGrouping.T2,
+  channels: [ChannelLabel.Ltf, ChannelLabel.Rtf],
+};
+
+const TF2Node: Node = {
+  id: ChannelGrouping.TF2,
+  channels: [ChannelLabel.Ltf, ChannelLabel.Rtf],
+};
+
 interface Graph {
-  // List of all surround and top channel layouts (S7,S5... T4,T2...)
-  nodes: ChannelGrouping[];
+  nodes: Node[];
   edges: { [startNode in ChannelGrouping]?: EdgeGain[] };
 }
 
 const downMixGraph: Graph = {
-  nodes: [
-    ChannelGrouping.S7,
-    ChannelGrouping.S5,
-    ChannelGrouping.S3,
-    ChannelGrouping.S2,
-    ChannelGrouping.S2,
-    ChannelGrouping.T4,
-    ChannelGrouping.T2,
-    ChannelGrouping.TF2,
-  ],
+  nodes: [S7Node, S5Node, S3Node, S2Node, S2Node, T4Node, T2Node, TF2Node],
   edges: {
-    [ChannelGrouping.S7]: [
-      { destNode: ChannelGrouping.S5, srcToDestGain: S7toS5 },
-    ],
+    [ChannelGrouping.S7]: [{ destNode: S5Node, srcToDestGain: S7toS5 }],
     [ChannelGrouping.S5]: [
-      { destNode: ChannelGrouping.S3, srcToDestGain: S5toS3 },
-      { destNode: ChannelGrouping.TF2, srcToDestGain: S5toTF2 },
+      { destNode: S3Node, srcToDestGain: S5toS3 },
+      { destNode: TF2Node, srcToDestGain: S5toTF2 },
     ],
-    [ChannelGrouping.S3]: [
-      { destNode: ChannelGrouping.S2, srcToDestGain: S3toS2 },
-    ],
-    [ChannelGrouping.S2]: [
-      { destNode: ChannelGrouping.S1, srcToDestGain: S2toS1 },
-    ],
-    [ChannelGrouping.T4]: [
-      { destNode: ChannelGrouping.T2, srcToDestGain: T4toT2 },
-    ],
-    [ChannelGrouping.T2]: [
-      { destNode: ChannelGrouping.TF2, srcToDestGain: T2toTF2 },
-    ],
+    [ChannelGrouping.S3]: [{ destNode: S2Node, srcToDestGain: S3toS2 }],
+    [ChannelGrouping.S2]: [{ destNode: S1Node, srcToDestGain: S2toS1 }],
+    [ChannelGrouping.T4]: [{ destNode: T2Node, srcToDestGain: T4toT2 }],
+    [ChannelGrouping.T2]: [{ destNode: TF2Node, srcToDestGain: T2toTF2 }],
   },
 };
 
@@ -167,30 +208,38 @@ export { downMixGraph, ChannelGrouping, ChannelLabel };
  */
 
 export function findGain(
-  inputNode: ChannelGrouping,
+  inputNode: Node,
   inputCh: ChannelLabel,
-  outputNode: ChannelGrouping,
+  outputNode: Node,
   outputCh: ChannelLabel
 ): number {
-  // TODO: If we've hit the final node and the final node contains the channel we were searching for.
-  if (inputNode === outputNode) return 1;
+  // If we've hit the final node and the final node contains the channel we were searching for.
+  if (inputNode === outputNode && nodeContainsChannel(outputNode, outputCh))
+    return 1;
 
   // If we hit a node with no leaving edges, we know the output channel
   // cannot be constructed from the input channel.
-  const edgeGains = downMixGraph.edges[inputNode];
-  if (!edgeGains) return 0;
+  const edge = downMixGraph.edges[inputNode.id];
+  if (!edge) return 0;
 
   let maxGain = 0;
-  for (const edgeGain of edgeGains) {
-    const destGainMap = edgeGain.srcToDestGain[inputCh];
+  for (const edgeGains of edge) {
+    const destGainMap = edgeGains.srcToDestGain[inputCh];
     if (destGainMap) {
       for (const destGain of destGainMap) {
         const gain =
           destGain.gain *
-          findGain(edgeGain.destNode, destGain.dest, outputNode);
+          findGain(edgeGains.destNode, destGain.dest, outputNode, outputCh);
         maxGain = Math.max(maxGain, gain);
       }
     }
   }
   return maxGain;
+}
+
+function nodeContainsChannel(node: Node, ch: ChannelLabel): boolean {
+  for (const channel of node.channels) {
+    if (channel === ch) return true;
+  }
+  return false;
 }
