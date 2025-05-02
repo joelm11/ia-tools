@@ -1,12 +1,7 @@
 import { getChannelCountRaw } from "src/@common/AudioFormatsTools";
 import { channelGroupings, type AudioChFormat } from "src/@types/AudioFormats";
-import {
-  ChannelGrouping,
-  ChannelLabel,
-  findGain,
-  nodeFromChannelGrouping,
-  type Node,
-} from "./MixerGraphTypes";
+import { nodeFromChannelGrouping, findGain } from "./DownMixerGraphData";
+import { type Node } from "./MixerGraphTypes";
 
 function getDownmixGainMatrix(
   input: AudioChFormat,
