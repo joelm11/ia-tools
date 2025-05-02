@@ -10,7 +10,7 @@ function getDownmixGainMatrix(
   const inputChCount = getChannelCountRaw(input);
   const outputChCount = getChannelCountRaw(output);
 
-  let gainMat = createMatrix(inputChCount, outputChCount, 0);
+  let gainMat = createMatrix(outputChCount, inputChCount, 0);
 
   // Populate matrix from downmixing surround channels
   const ssStartNode = nodeFromChannelGrouping(channelGroupings[input].surr);
@@ -33,6 +33,7 @@ function createMatrix<T>(rows: number, cols: number, initialValue: T): T[][] {
   );
 }
 
+// TODO: Tops channels start at the correct spot...
 function populateMatrix(startNode: Node, finishNode: Node, matrix: number[][]) {
   const numChannels = startNode.channels.length;
   for (let outputCh = 0; outputCh < matrix.length; ++outputCh) {
