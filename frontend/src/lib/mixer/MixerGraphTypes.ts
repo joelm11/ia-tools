@@ -9,6 +9,47 @@ enum NodeLabel {
   TF2,
 }
 
+// type ChannelLayout = {
+//   [label in NodeLabel]: ChannelLabel[];
+// };
+
+// const channelLayouts: ChannelLayout = {
+//   [NodeLabel.S7]: [
+//     ChannelLabel.L,
+//     ChannelLabel.R,
+//     ChannelLabel.C,
+//     ChannelLabel.LFE,
+//     ChannelLabel.Lss,
+//     ChannelLabel.Rss,
+//     ChannelLabel.Lrs,
+//     ChannelLabel.Rrs,
+//   ],
+//   [NodeLabel.S5]: [
+//     ChannelLabel.L,
+//     ChannelLabel.R,
+//     ChannelLabel.C,
+//     ChannelLabel.LFE,
+//     ChannelLabel.Ls,
+//     ChannelLabel.Rs,
+//   ],
+//   [NodeLabel.S3]: [
+//     ChannelLabel.L,
+//     ChannelLabel.R,
+//     ChannelLabel.C,
+//     ChannelLabel.LFE,
+//   ],
+//   [NodeLabel.S2]: [ChannelLabel.L, ChannelLabel.R],
+//   [NodeLabel.S1]: [ChannelLabel.C],
+//   [NodeLabel.T4]: [
+//     ChannelLabel.Ltf,
+//     ChannelLabel.Rtf,
+//     ChannelLabel.Ltb,
+//     ChannelLabel.Rtb,
+//   ],
+//   [NodeLabel.T2]: [ChannelLabel.Ltf, ChannelLabel.Rtf],
+//   [NodeLabel.TF2]: [ChannelLabel.Ltf, ChannelLabel.Rtf],
+// };
+
 enum ChannelLabel {
   L,
   R,
@@ -26,62 +67,9 @@ enum ChannelLabel {
   Rtb,
 }
 
-type ChannelLayout = {
-  [label in NodeLabel]: ChannelLabel[];
-};
-
-const channelLayouts: ChannelLayout = {
-  [NodeLabel.S7]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Lss,
-    ChannelLabel.Rss,
-    ChannelLabel.Lrs,
-    ChannelLabel.Rrs,
-  ],
-  [NodeLabel.S5]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Ls,
-    ChannelLabel.Rs,
-  ],
-  [NodeLabel.S3]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-  ],
-  [NodeLabel.S2]: [ChannelLabel.L, ChannelLabel.R],
-  [NodeLabel.S1]: [ChannelLabel.C],
-  [NodeLabel.T4]: [
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-    ChannelLabel.Ltb,
-    ChannelLabel.Rtb,
-  ],
-  [NodeLabel.T2]: [ChannelLabel.Ltf, ChannelLabel.Rtf],
-  [NodeLabel.TF2]: [ChannelLabel.Ltf, ChannelLabel.Rtf],
-};
-
 type SrcToDestGain = {
   [src in ChannelLabel]?: { dest: ChannelLabel; gain: number }[];
 };
-
-interface EdgeGain {
-  destNode: NodeLabel;
-  // Map every source channel for a given source label to dest label.
-  srcToDestGain: SrcToDestGain;
-}
-
-interface Graph {
-  // List of all surround and top channel layouts (S7,S5... T4,T2...)
-  nodes: NodeLabel[];
-  edges: { [startNode in NodeLabel]: EdgeGain[] };
-}
 
 const alpha = 0.5;
 const beta = 0.5;
@@ -136,7 +124,19 @@ const T2toTF2: SrcToDestGain = {
   [ChannelLabel.Rtf]: [{ dest: ChannelLabel.Rtf, gain: 1 }],
 };
 
-const graph = {
+interface EdgeGain {
+  destNode: NodeLabel;
+  // Map every source channel for a given source label to dest label.
+  srcToDestGain: SrcToDestGain;
+}
+
+interface Graph {
+  // List of all surround and top channel layouts (S7,S5... T4,T2...)
+  nodes: NodeLabel[];
+  edges: { [startNode in NodeLabel]: EdgeGain[] };
+}
+
+const graph: Graph = {
   nodes: [
     NodeLabel.S7,
     NodeLabel.S5,
