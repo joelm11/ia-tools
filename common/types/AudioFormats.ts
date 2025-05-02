@@ -1,3 +1,5 @@
+import { ChannelGrouping } from "src/@lib/mixer/MixerGraphTypes";
+
 export enum AudioChFormat {
   NONE = "none",
   MONO = "Mono",
@@ -11,86 +13,35 @@ export enum AudioChFormat {
   K7P1P4 = "7.1.4",
 }
 
-// export type ChannelLayout = {
-//   [layout in AudioChFormat]: ChannelLabel[];
-// };
+// Map and AudioChFormat to ChannelGrouping
+type ChannelGroupings = {
+  [format in AudioChFormat]: { surr: ChannelGrouping; tops?: ChannelGrouping };
+};
 
-export const channelLayouts: ChannelLayout = {
-  [AudioChFormat.NONE]: [],
-  [AudioChFormat.MONO]: [ChannelLabel.C],
-  [AudioChFormat.STEREO]: [ChannelLabel.L, ChannelLabel.R],
-  [AudioChFormat.K3P1P2]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-  ],
-  [AudioChFormat.K5P1]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Ls,
-    ChannelLabel.Rs,
-  ],
-  [AudioChFormat.K5P1P2]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Ls,
-    ChannelLabel.Rs,
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-  ],
-  [AudioChFormat.K5P1P4]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Ls,
-    ChannelLabel.Rs,
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-    ChannelLabel.Ltb,
-    ChannelLabel.Rtb,
-  ],
-  [AudioChFormat.K7P1]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Lss,
-    ChannelLabel.Rss,
-    ChannelLabel.Lrs,
-    ChannelLabel.Rrs,
-  ],
-  [AudioChFormat.K7P1P2]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Lss,
-    ChannelLabel.Rss,
-    ChannelLabel.Lrs,
-    ChannelLabel.Rrs,
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-  ],
-  [AudioChFormat.K7P1P4]: [
-    ChannelLabel.L,
-    ChannelLabel.R,
-    ChannelLabel.C,
-    ChannelLabel.LFE,
-    ChannelLabel.Lss,
-    ChannelLabel.Rss,
-    ChannelLabel.Lrs,
-    ChannelLabel.Rrs,
-    ChannelLabel.Ltf,
-    ChannelLabel.Rtf,
-    ChannelLabel.Ltb,
-    ChannelLabel.Rtb,
-  ],
+export const channelGroupings: ChannelGroupings = {
+  [AudioChFormat.NONE]: { surr: ChannelGrouping.S1 },
+  [AudioChFormat.MONO]: { surr: ChannelGrouping.S1 },
+  [AudioChFormat.STEREO]: { surr: ChannelGrouping.S2 },
+  [AudioChFormat.K3P1P2]: {
+    surr: ChannelGrouping.S3,
+    tops: ChannelGrouping.TF2,
+  },
+  [AudioChFormat.K5P1]: { surr: ChannelGrouping.S5 },
+  [AudioChFormat.K5P1P2]: {
+    surr: ChannelGrouping.S5,
+    tops: ChannelGrouping.T2,
+  },
+  [AudioChFormat.K5P1P4]: {
+    surr: ChannelGrouping.S5,
+    tops: ChannelGrouping.T4,
+  },
+  [AudioChFormat.K7P1]: { surr: ChannelGrouping.S7 },
+  [AudioChFormat.K7P1P2]: {
+    surr: ChannelGrouping.S7,
+    tops: ChannelGrouping.T2,
+  },
+  [AudioChFormat.K7P1P4]: {
+    surr: ChannelGrouping.S7,
+    tops: ChannelGrouping.T4,
+  },
 };
