@@ -3,7 +3,7 @@ import { getDownmixGainMatrix } from "../DownMixer";
 import { AudioChFormat } from "src/@types/AudioFormats";
 
 test("Try to generate a downmix matrix", async () => {
-  const mat = getDownmixGainMatrix(AudioChFormat.K7P1P4, AudioChFormat.STEREO);
+  const mat = getDownmixGainMatrix(AudioChFormat.K7P1P4, AudioChFormat.K7P1P2);
   printMatrixDynamicPadding(mat);
 });
 
