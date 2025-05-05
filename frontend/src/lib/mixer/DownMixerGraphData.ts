@@ -6,10 +6,10 @@ import {
   type SrcToDestGain,
 } from "./MixerGraphTypes";
 
-const alpha = 0.5;
-const beta = 0.5;
-const delta = 0.5;
-const gamma = 0.5;
+const alpha = 0.707;
+const beta = 0.707;
+const delta = 0.707;
+const gamma = 0.707;
 
 const S7toS5: SrcToDestGain = {
   [ChannelLabel.L]: [{ dest: ChannelLabel.L, gain: 1 }],
