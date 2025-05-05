@@ -2,26 +2,27 @@ import { channelGroupings, type AudioChFormat } from "src/@types/AudioFormats";
 import { getDownmixGainMatrix } from "./DownMixer";
 
 function getMixMatrix(input: AudioChFormat, output: AudioChFormat): number[][] {
+  if (upmixRequired(input, output)) {
+    console.log("Upmixing");
+    const mat = getDownmixGainMatrix(output, input);
+    return deriveUpmixPassThroughMatrix(mat);
+  } else {
+    return getDownmixGainMatrix(input, output);
+  }
+}
+
+function upmixRequired(input: AudioChFormat, output: AudioChFormat): boolean {
   const inputSurCG = channelGroupings[input].surr;
   const OutputSurCG = channelGroupings[output].surr;
   const inputTopCG = channelGroupings[input].tops;
   const outputTopCG = channelGroupings[output].tops;
-
-  // Check surround downmixing
-  if (inputSurCG >= OutputSurCG || (inputTopCG && !outputTopCG)) {
-    return getDownmixGainMatrix(input, output);
+  if (outputTopCG) {
+    if (!inputTopCG || inputTopCG < outputTopCG) {
+      return true;
+    }
   }
-  // Check tops downmixing if present
-  else if (inputTopCG && outputTopCG && inputTopCG > outputTopCG) {
-    return getDownmixGainMatrix(input, output);
-  }
-  // Upmixing. Transpose and pass-through channels. Can reuse downmix mappings with unity gains
-  else {
-    console.log("Upmixing");
-    const gainMat = getDownmixGainMatrix(output, input);
-    // Transpose matrix.
-    return deriveUpmixPassThroughMatrix(gainMat);
-  }
+  if (inputSurCG < OutputSurCG) return true;
+  return false;
 }
 
 // Transposes matrix and makes non-zero entries unity.
