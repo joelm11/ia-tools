@@ -10,20 +10,20 @@ enum ChannelGrouping {
 }
 
 enum ChannelLabel {
-  L,
-  R,
-  C,
-  LFE,
-  Ls,
-  Rs,
-  Lss,
-  Rss,
-  Lrs,
-  Rrs,
-  Ltf,
-  Rtf,
-  Ltb,
-  Rtb,
+  L = "L",
+  R = "R",
+  C = "C",
+  LFE = "LFE",
+  Ls = "Ls",
+  Rs = "Rs",
+  Lss = "Lss",
+  Rss = "Rss",
+  Lrs = "Lrs",
+  Rrs = "Rrs",
+  Ltf = "Ltf",
+  Rtf = "Rtf",
+  Ltb = "Ltb",
+  Rtb = "Rtb",
 }
 
 type SrcToDestGain = {

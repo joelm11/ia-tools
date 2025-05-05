@@ -39,7 +39,10 @@ const S5toTF2: SrcToDestGain = {
 const S3toS2: SrcToDestGain = {
   [ChannelLabel.L]: [{ dest: ChannelLabel.L, gain: 1 }],
   [ChannelLabel.R]: [{ dest: ChannelLabel.R, gain: 1 }],
-  [ChannelLabel.C]: [{ dest: ChannelLabel.C, gain: 0.71 }],
+  [ChannelLabel.C]: [
+    { dest: ChannelLabel.L, gain: 0.71 },
+    { dest: ChannelLabel.R, gain: 0.71 },
+  ],
 };
 
 const S2toS1: SrcToDestGain = {
@@ -142,34 +145,27 @@ function findGain(
   outputCh: ChannelLabel
 ): number {
   // If we've hit the final node and the final node contains the channel we were searching for.
-  if (inputNode === outputNode && nodeContainsChannel(outputNode, outputCh))
-    return 1;
+  if (inputNode === outputNode && inputCh === outputCh) return 1;
 
   // If we hit a node with no leaving edges, we know the output channel
   // cannot be constructed from the input channel.
-  const edge = downMixGraph.edges[inputNode.id];
-  if (!edge) return 0;
+  const edges = downMixGraph.edges[inputNode.id];
+  if (!edges) return 0;
 
   let maxGain = 0;
-  for (const edgeGains of edge) {
-    const destGainMap = edgeGains.srcToDestGain[inputCh];
+  for (const edge of edges) {
+    // If the edge map has an entry for the input channel
+    const destGainMap = edge.srcToDestGain[inputCh];
     if (destGainMap) {
       for (const destGain of destGainMap) {
         const gain =
           destGain.gain *
-          findGain(edgeGains.destNode, destGain.dest, outputNode, outputCh);
+          findGain(edge.destNode, destGain.dest, outputNode, outputCh);
         maxGain = Math.max(maxGain, gain);
       }
     }
   }
   return maxGain;
-}
-
-function nodeContainsChannel(node: Node, ch: ChannelLabel): boolean {
-  for (const channel of node.channels) {
-    if (channel === ch) return true;
-  }
-  return false;
 }
 
 function nodeFromChannelGrouping(chGroup: ChannelGrouping): Node {
