@@ -1,12 +1,12 @@
 enum ChannelGrouping {
-  S7,
-  S5,
-  S3,
-  S2,
   S1,
-  T4,
-  T2,
+  S2,
+  S3,
+  S5,
+  S7,
   TF2,
+  T2,
+  T4,
 }
 
 enum ChannelLabel {

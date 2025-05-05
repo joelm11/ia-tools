@@ -1,5 +1,6 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
 import type { MixerInterface } from "./MixerInterface";
+import { getMixMatrix } from "./GetMixMatrix";
 
 export class PresentationMixer extends EventTarget implements MixerInterface {
   private static instance: PresentationMixer | null = null;
@@ -68,12 +69,26 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
    * @brief Initializes the mixer for playback of a new or modified mix presentation.
    *
    */
-  private reconfigureMixer(mixPresentation: MixPresentation) {
+  private async reconfigureMixer(mixPresentation: MixPresentation) {
     // Let the children know that the mixer is being reconfigured.
     this.dispatchEvent(new Event("allElementsFinished"));
     this.resetAudioSources();
     this.clearGraph();
     this.initAudioSources(mixPresentation);
+    // Load the worklet module.
+    const workletURL = new URL("MixerWorklet.js", import.meta.url).href;
+    try {
+      await this.audioContext.audioWorklet.addModule(workletURL);
+    } catch (error) {
+      console.error("Error loading audio worklet module:", error);
+    }
+    // Get the gain matrix for each AELayout -> MPLayout and instantiate mixers.
+    for (const elem of mixPresentation.audioElements) {
+      const gainMat = getMixMatrix(
+        elem.audioChFormat,
+        mixPresentation.playbackFormat
+      );
+    }
     // Connect audio sources and gain nodes to output mixer node.
     this.elemGainNodes.forEach((gainNode) => {
       gainNode.connect(this.mixGainNode);
@@ -105,11 +120,6 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
         track = this.audioContext.createMediaElementSource(audioDOMElem);
         this.mediaElementSources.set(audioElement.id, track);
       }
-
-      // Connect gain nodes to each source node.
-      const elemGainNode = this.audioContext.createGain();
-      this.elemGainNodes.set(audioElement.id, elemGainNode);
-      track.connect(elemGainNode);
     }
   }
 

@@ -57,4 +57,4 @@ function populateMatrix(
   }
 }
 
-export { getDownmixGainMatrix };
+export { getDownmixGainMatrix, createMatrix };
