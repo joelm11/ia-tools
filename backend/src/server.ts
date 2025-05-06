@@ -98,6 +98,7 @@ export class AppServer extends EventEmitter {
 
   private payloadMetadata(req: any) {
     let mixPresentationsObjects;
+    console.log("Parsing payload");
     if (Array.isArray(req.body.mixPresentations)) {
       mixPresentationsObjects = [];
       for (const presentationString of req.body.mixPresentations) {
@@ -108,6 +109,7 @@ export class AppServer extends EventEmitter {
           mixPresentationsObjects.push(parsedPresentation);
           parsedPresentation.audioElements.map((audioElement) => {
             this.addAudioElementToMap(audioElement.name, audioElement.id);
+            console.log("Adding", audioElement.name, "w/ID", audioElement.id);
           });
         } catch (error) {
           console.error("Error parsing a mixPresentation JSON string:", error);
@@ -125,7 +127,6 @@ export class AppServer extends EventEmitter {
   }
 
   close() {
-    // Added method to stop the server
     if (this.httpServer) {
       this.httpServer.close();
     }

@@ -8,7 +8,9 @@ import path from "path";
 
 export class IAMFWorker extends Worker<MixPresentationBase[]> {
   audioSourceStore: StorageService;
-  constructor(storageService: StorageService) {
+  iamfProdsStore: StorageService;
+
+  constructor(audioSS: StorageService, iamfOutSS: StorageService) {
     // Call the Worker constructor with the job processor
     super(
       BULLMQ_IAMF_JOB_QUEUE,
@@ -23,12 +25,13 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         return await buildIAMFFile(
           path.join(process.cwd(), protoFilePath),
           this.audioSourceStore.storageDir,
-          process.cwd()
+          iamfOutSS.storageDir
         );
       },
 
       BULLMQ_REDIS_CONNECTION
     );
-    this.audioSourceStore = storageService;
+    this.audioSourceStore = audioSS;
+    this.iamfProdsStore = iamfOutSS;
   }
 }

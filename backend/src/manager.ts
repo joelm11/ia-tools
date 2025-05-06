@@ -52,7 +52,7 @@ export class Manager {
   }
 
   private registerWorkers() {
-    this.workers.push(new IAMFWorker(this.audioStorage));
+    this.workers.push(new IAMFWorker(this.audioStorage, this.iamfStorage));
   }
 
   stop() {

@@ -1,10 +1,10 @@
 import {
-  ChannelGrouping,
   ChannelLabel,
   type Node,
   type Graph,
   type SrcToDestGain,
 } from "./MixerGraphTypes";
+import { ChannelGrouping } from "src/@types/AudioFormats";
 
 const alpha = 0.707;
 const beta = 0.707;
