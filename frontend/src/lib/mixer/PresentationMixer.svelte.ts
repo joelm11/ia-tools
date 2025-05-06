@@ -1,11 +1,12 @@
 import type { MixPresentation } from "src/@types/MixPresentation";
 import type { MixerInterface } from "./MixerInterface";
 import { getMixMatrix } from "./GetMixMatrix";
+import { getChannelCountRaw } from "src/@common/AudioFormatsTools";
 
 export class PresentationMixer extends EventTarget implements MixerInterface {
   private static instance: PresentationMixer | null = null;
   private audioContext: AudioContext = new AudioContext();
-  private elemGainNodes: Map<string, GainNode> = new Map();
+  private elemGainNodes: Map<string, AudioWorkletNode> = new Map();
   // Maps an audio element ID to its MediaElementAudioSourceNode
   private mediaElementSources: Map<string, MediaElementAudioSourceNode> =
     new Map();
@@ -45,9 +46,10 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
 
   public setGain(gain: number, elementID?: string): void {
     if (elementID && this.elemGainNodes.has(elementID)) {
-      this.elemGainNodes
-        .get(elementID)
-        ?.gain.setValueAtTime(gain, this.audioContext.currentTime);
+      // this.elemGainNodes
+      //   .get(elementID)
+      //   ?.parameters.get("gain")
+      //   .setValueAtTime(gain, this.audioContext.currentTime);
     } else {
       this.mixGainNode.gain.setValueAtTime(gain, this.audioContext.currentTime);
     }
@@ -88,11 +90,45 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
         elem.audioChFormat,
         mixPresentation.playbackFormat
       );
+      try {
+        const workletNode = new AudioWorkletNode(
+          this.audioContext,
+          "matrix-gain-processor", // This name must match the registerProcessor call
+          {
+            processorOptions: {
+              matrix: gainMat, // Passing the matrix to the processor's constructor
+            },
+            // I/O for node.
+            numberOfInputs: 1,
+            numberOfOutputs: 1,
+            channelCountMode: "max",
+            outputChannelCount: [gainMat.length],
+          }
+        );
+
+        const audioElementSource = this.mediaElementSources.get(elem.id);
+        if (audioElementSource) {
+          // Connect the source to the worklet node
+          audioElementSource.connect(workletNode);
+          // Connect the worklet node's outputs to the next node (e.g., a main gain node)
+          workletNode.connect(this.mixGainNode);
+          // Store the worklet node if needed
+          this.elemGainNodes.set(elem.id, workletNode);
+        } else {
+          console.warn(`Audio element source not found for element ${elem.id}`);
+        }
+      } catch (e) {
+        console.error(
+          `Error instantiating or connecting worklet for element ${elem.id}:`,
+          e
+        );
+      }
     }
-    // Connect audio sources and gain nodes to output mixer node.
-    this.elemGainNodes.forEach((gainNode) => {
-      gainNode.connect(this.mixGainNode);
-    });
+    // Configure the final mixer correctly.
+    this.mixGainNode.channelCountMode = "max";
+    this.mixGainNode.channelCount = getChannelCountRaw(
+      mixPresentation.playbackFormat
+    );
   }
 
   /**
@@ -127,8 +163,8 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
    * @brief Clears old audio sources and gain nodes before reconstructing graph.
    */
   private clearGraph() {
-    this.elemGainNodes.forEach((gainNode) => {
-      gainNode.disconnect();
+    this.elemGainNodes.forEach((workletNode) => {
+      workletNode.disconnect();
     });
     this.elemGainNodes.clear();
   }

@@ -17,4 +17,5 @@ export default defineConfig({
     environment: "node",
     include: ["**/*.test.{js,ts}", "**/*.spec.{js,ts}"],
   },
+  sourcemap: true,
 });

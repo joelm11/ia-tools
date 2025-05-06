@@ -1,4 +1,7 @@
 // @ts-nocheck
+
+import { printMatrixDynamicPadding } from "./GetMixMatrix";
+
 /**
  * An AudioWorkletProcessor that applies a mixing matrix and a final gain value.
  */
@@ -29,7 +32,8 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
         console.log("Matrix updated in worklet:", this._matrix);
       }
     };
-    console.log("MatrixGainProcessor initialized with matrix:", this._matrix);
+    console.log("MatrixGainProcessor initialized with matrix:");
+    printMatrixDynamicPadding(this._matrix);
   }
 
   /**
@@ -39,11 +43,10 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
    * @param {AudioParamMap} parameters - Map of AudioParam values.
    */
   process(inputs, outputs, parameters) {
-    // An AudioWorklet can have multiple inputs and outputs, but typically
-    // we'll work with the first input and first output for a simple processor.
     const input = inputs[0];
     const output = outputs[0];
-    const gain = parameters.get("gain")[0]; // Get the gain value (it's an array per sample, but often constant)
+    // const elementGain = parameters.get("gain")[0];
+    const elementGain = 1;
 
     const inputChannels = input.length;
     const outputChannels = output.length;
@@ -51,52 +54,31 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
     const matrixOutputRows = matrix.length;
     const matrixInputCols = matrix.length > 0 ? matrix[0].length : 0;
 
-    // Ensure we have a valid matrix and at least one input/output channel
-    if (
-      !matrix ||
-      matrixOutputRows === 0 ||
-      inputChannels === 0 ||
-      outputChannels === 0
-    ) {
-      // If no matrix or channels, just output silence or pass through if needed
-      // For this example, we'll output silence.
-      for (let ch = 0; ch < outputChannels; ++ch) {
-        output[ch].fill(0);
-      }
-      return true; // Keep the processor alive
+    // Ensure we have a valid matrix and that matrix dimensions match I/O.
+    if (!matrix || matrixInputCols.length === 0) {
+      throw "MixerWorklet: No valid matrix";
+    }
+    if (matrix.length != output.length || matrix[0].length != input.length) {
+      throw `MixerWorklet: Mismatched matrix and I/O dimensions ${matrix.length} ${output.length}`;
     }
 
-    // Ensure matrix dimensions are compatible (basic check)
-    // The matrix should have outputChannels rows and inputChannels columns for a full mix.
-    // We'll process based on the matrix dimensions and available channels.
-    const actualOutputRows = Math.min(outputChannels, matrixOutputRows);
-    const actualInputCols = Math.min(inputChannels, matrixInputCols);
-
-    // Process audio frame by frame (128 samples per frame)
-    for (let sample = 0; sample < 128; ++sample) {
-      // Initialize output samples for this frame
-      const outputSamples = new Array(actualOutputRows).fill(0);
-
-      // Apply the matrix multiplication
-      for (let outCh = 0; outCh < actualOutputRows; ++outCh) {
-        for (let inCh = 0; inCh < actualInputCols; ++inCh) {
-          // Check if the input channel exists before accessing
-          if (input[inCh]) {
-            outputSamples[outCh] += input[inCh][sample] * matrix[outCh][inCh];
-          }
-        }
-      }
-
-      // Apply the gain and write to the output buffer
-      for (let outCh = 0; outCh < actualOutputRows; ++outCh) {
-        // Check if the output channel exists before writing
-        if (output[outCh]) {
-          output[outCh][sample] = outputSamples[outCh] * gain;
+    // Perform matrix multiplication into the output buffer.
+    for (let outputCh = 0; outputCh < output.length; ++outputCh) {
+      for (let inputCh = 0; inputCh < input.length; ++inputCh) {
+        const gain = matrix[outputCh][inputCh];
+        for (let sample = 0; sample < input[inputCh].length; ++sample) {
+          output[outputCh][sample] += input[inputCh][sample] * gain;
         }
       }
     }
 
-    // Return true to indicate that the processor should remain active.
+    // Apply a final gain to all channels in the output buffer.
+    for (let outputCh = 0; outputCh < output.length; ++outputCh) {
+      for (let sample = 0; sample < output[outputCh].length; ++sample) {
+        output[outputCh][sample] *= elementGain;
+      }
+    }
+
     return true;
   }
 }
