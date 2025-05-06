@@ -14,9 +14,11 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
       BULLMQ_IAMF_JOB_QUEUE,
       async (job: Job<MixPresentationBase[]>) => {
         console.log("Processing job:", job.id);
+
         // Format metadata as IAMF textproto
         const protoFilePath = await payloadToIAMF(job.data);
         console.log("IAMF proto file path:", protoFilePath);
+
         // Use the proto file to encode the IAMF file
         return await buildIAMFFile(
           path.join(process.cwd(), protoFilePath),
@@ -24,6 +26,7 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
           process.cwd()
         );
       },
+
       BULLMQ_REDIS_CONNECTION
     );
     this.audioSourceStore = storageService;
