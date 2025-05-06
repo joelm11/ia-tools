@@ -33,6 +33,7 @@ import {
 import fs from "fs";
 import { exec } from "child_process";
 import { promisify } from "util";
+import { AudioChFormat } from "src/@types/AudioFormats";
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;

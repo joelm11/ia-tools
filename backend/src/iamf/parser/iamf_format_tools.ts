@@ -90,7 +90,7 @@ export function getChannelLabels(chFormat: AudioChFormat) {
         ChannelLabel.CHANNEL_LABEL_RTB_4,
       ];
     default:
-      throw new Error(`getChSet(): Unknown channel format: ${chFormat}`);
+      throw new Error(`getChLabels(): Unknown channel format: ${chFormat}`);
   }
 }
 

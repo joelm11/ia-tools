@@ -5,6 +5,7 @@ import path from "path";
 import { buildIAMFFile } from "../parser/iamf_file";
 import { AudioChFormat } from "src/@types/AudioFormats";
 import { StorageService } from "src/storage/storage_fs";
+import { getCoupledChannelCount } from "../parser/iamf_format_tools";
 
 describe("Test create IAMF files from given payloads", async () => {
   const cwd = process.cwd();
@@ -33,8 +34,9 @@ describe("Test create IAMF files from given payloads", async () => {
       "src/iamf/test/resources",
       "1ae1mp.json"
     );
-    const payload = fs.readFileSync(payloadPath, "utf-8");
-    const protofile = await payloadToIAMF(JSON.parse(payload));
+    const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
+    console.log(payload);
+    const protofile = await payloadToIAMF(payload);
     // Await the IAMF file creation.
     await buildIAMFFile(
       path.join(process.cwd(), protofile),
@@ -46,7 +48,7 @@ describe("Test create IAMF files from given payloads", async () => {
     expect(fs.existsSync(iamfFilePath)).toBe(true);
   });
 
-  it("All audio element formats", async () => {
+  it("1AE1MP: All audio element formats", async () => {
     for (const layout of Object.keys(AudioChFormat)) {
       const payloadPath = path.join(
         process.cwd(),

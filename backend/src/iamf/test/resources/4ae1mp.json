@@ -7,25 +7,25 @@
     {
       "name": "BassNote.wav",
       "id": "BassNote.wav",
-      "audioChFormat": "stereo",
+      "audioChFormat": "Stereo",
       "gain": 20
     },
     {
       "name": "shots.wav",
       "id": "shots.wav",
-      "audioChFormat": "stereo",
+      "audioChFormat": "Stereo",
       "gain": 20
     },
     {
       "name": "BassNote.wav",
       "id": "BassNote.wav",
-      "audioChFormat": "stereo",
+      "audioChFormat": "Stereo",
       "gain": 20
     },
     {
       "name": "shots.wav",
       "id": "shots.wav",
-      "audioChFormat": "stereo",
+      "audioChFormat": "Stereo",
       "gain": 20
     }
   ]
