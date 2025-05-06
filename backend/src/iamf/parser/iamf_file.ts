@@ -17,13 +17,15 @@ export async function buildIAMFFile(
   return new Promise((resolve, reject) => {
     const iamfProcess = spawn(IAMF_EXE, args);
 
-    iamfProcess.stdout.on("data", (data) => {
-      console.log(`Stdout from command: ${data.toString()}`);
-    });
+    // Commenting these streams out for now.
+    // TODO: Capture / log this information
+    // iamfProcess.stdout.on("data", (data) => {
+    //   console.log(`Stdout from command: ${data.toString()}`);
+    // });
 
-    iamfProcess.stderr.on("data", (data) => {
-      console.error(`Stderr from command: ${data.toString()}`);
-    });
+    // iamfProcess.stderr.on("data", (data) => {
+    //   console.error(`Stderr from command: ${data.toString()}`);
+    // });
 
     iamfProcess.on("close", (code) => {
       fs.unlinkSync(iamfMetaDataURL);

@@ -21,7 +21,6 @@ describe("StorageFS", () => {
     }
     // Cleanup the storage directory
     if (fs.existsSync(storage.storageDir)) {
-      console.log(storage.storageDir);
       fs.rmdirSync(storage.storageDir, { recursive: true });
     }
   });

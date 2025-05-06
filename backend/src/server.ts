@@ -98,7 +98,6 @@ export class AppServer extends EventEmitter {
 
   private payloadMetadata(req: any) {
     let mixPresentationsObjects;
-    console.log("Parsing payload");
     if (Array.isArray(req.body.mixPresentations)) {
       mixPresentationsObjects = [];
       for (const presentationString of req.body.mixPresentations) {
