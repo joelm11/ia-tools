@@ -18,15 +18,19 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         console.log("Processing job:", job.id);
 
         // Format metadata as IAMF textproto
-        const protoFilePath = await payloadToIAMF(job.data);
-        console.log("IAMF proto file path:", protoFilePath);
+        const protoFilePath = await payloadToIAMF(
+          job.data,
+          this.iamfProdsStore
+        );
 
         // Use the proto file to encode the IAMF file
-        return await buildIAMFFile(
-          path.join(process.cwd(), protoFilePath),
+        const res = await buildIAMFFile(
+          protoFilePath,
           this.audioSourceStore.storageDir,
           iamfOutSS.storageDir
         );
+        console.log("Completed job", job.id);
+        console.log("IAMF File at", iamfOutSS.storageDir);
       },
 
       BULLMQ_REDIS_CONNECTION
