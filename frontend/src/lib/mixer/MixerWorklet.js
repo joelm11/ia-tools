@@ -29,11 +29,9 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
     this.port.onmessage = (event) => {
       if (event.data.type === "updateMatrix") {
         this._matrix = event.data.matrix;
-        console.log("Matrix updated in worklet:", this._matrix);
+        console.log("Matrix updated in worklet:");
       }
     };
-    console.log("MatrixGainProcessor initialized with matrix:");
-    printMatrixDynamicPadding(this._matrix);
   }
 
   /**

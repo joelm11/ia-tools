@@ -1,13 +1,4 @@
-enum ChannelGrouping {
-  S1,
-  S2,
-  S3,
-  S5,
-  S7,
-  TF2,
-  T2,
-  T4,
-}
+import { ChannelGrouping } from "src/@types/AudioFormats";
 
 enum ChannelLabel {
   L = "L",
@@ -46,10 +37,4 @@ interface Graph {
   edges: { [startNode in ChannelGrouping]?: EdgeGain[] };
 }
 
-export {
-  ChannelGrouping,
-  ChannelLabel,
-  type Node,
-  type Graph,
-  type SrcToDestGain,
-};
+export { ChannelLabel, type Node, type Graph, type SrcToDestGain };

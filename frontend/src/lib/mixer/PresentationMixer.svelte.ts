@@ -84,6 +84,16 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
     } catch (error) {
       console.error("Error loading audio worklet module:", error);
     }
+    // Connect the mixer worklets.
+    this.connectWorklets(mixPresentation);
+    // Configure the final mixer correctly.
+    this.mixGainNode.channelCountMode = "max";
+    this.mixGainNode.channelCount = getChannelCountRaw(
+      mixPresentation.playbackFormat
+    );
+  }
+
+  private connectWorklets(mixPresentation: MixPresentation) {
     // Get the gain matrix for each AELayout -> MPLayout and instantiate mixers.
     for (const elem of mixPresentation.audioElements) {
       const gainMat = getMixMatrix(
@@ -124,11 +134,6 @@ export class PresentationMixer extends EventTarget implements MixerInterface {
         );
       }
     }
-    // Configure the final mixer correctly.
-    this.mixGainNode.channelCountMode = "max";
-    this.mixGainNode.channelCount = getChannelCountRaw(
-      mixPresentation.playbackFormat
-    );
   }
 
   /**

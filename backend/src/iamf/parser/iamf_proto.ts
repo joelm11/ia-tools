@@ -24,12 +24,12 @@ import { TemporalDelimiterObuMetadata } from "./protoc/temporal_delimiter";
 import { UserMetadata } from "./protoc/user_metadata";
 import type { MixPresentationBase } from "src/@types/MixPresentation";
 import type { AudioElementBase } from "src/@types/AudioElement";
+import { getChannelCountRaw } from "src/@common/AudioFormatsTools";
 import {
-  getChannelCountRaw,
   getCoupledChannelCount,
   getChannelLabels,
   getIAMFLayout,
-} from "./AudioFormat_tools";
+} from "./iamf_format_tools";
 import fs from "fs";
 import { exec } from "child_process";
 import { promisify } from "util";

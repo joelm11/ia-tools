@@ -11,7 +11,8 @@
     "typeRoots": ["./node_modules/@types"],
     "baseUrl": ".",
     "paths": {
-      "src/@types/*": ["../common/types/*"]
+      "src/@types/*": ["../common/types/*"],
+      "src/@common/*": ["../common/lib/*"]
     }
   },
   "include": ["./src/**/*", "./index.ts"],

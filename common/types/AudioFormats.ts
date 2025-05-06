@@ -1,5 +1,3 @@
-import { ChannelGrouping } from "src/@lib/mixer/MixerGraphTypes";
-
 export enum AudioChFormat {
   NONE = "none",
   MONO = "Mono",
@@ -11,6 +9,17 @@ export enum AudioChFormat {
   K7P1 = "7.1",
   K7P1P2 = "7.1.2",
   K7P1P4 = "7.1.4",
+}
+
+export enum ChannelGrouping {
+  S1,
+  S2,
+  S3,
+  S5,
+  S7,
+  TF2,
+  T2,
+  T4,
 }
 
 // Map and AudioChFormat to ChannelGrouping
