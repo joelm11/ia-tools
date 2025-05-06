@@ -26,13 +26,13 @@ export async function buildIAMFFile(
     });
 
     iamfProcess.on("close", (code) => {
-      fs.unlinkSync("iamf_md.textproto");
+      fs.unlinkSync(iamfMetaDataURL);
       resolve(null);
     });
 
     iamfProcess.on("error", (err) => {
       console.error(`Error spawning command: ${err}`);
-      fs.unlinkSync("iamf_md.textproto");
+      fs.unlinkSync(iamfMetaDataURL);
       reject(err);
     });
   });

@@ -34,6 +34,8 @@ import fs from "fs";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { AudioChFormat } from "src/@types/AudioFormats";
+import { StorageService } from "src/storage/storage_fs";
+import path from "path";
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;
@@ -48,7 +50,8 @@ const CODEC_CONFIG_ID = 200;
 const CODEC_BIT_DEPTH = 24;
 
 export async function payloadToIAMF(
-  mixPresentations: MixPresentationBase[]
+  mixPresentations: MixPresentationBase[],
+  iamfFilesService: StorageService
 ): Promise<string> {
   // Safety check in case of single mix presentation.
   if (!Array.isArray(mixPresentations)) {
@@ -69,7 +72,7 @@ export async function payloadToIAMF(
   addAudioFileData(audioElementsMetadata, metadata);
   addAudioElementData(audioElementsMetadata, metadata);
   addMixPresentationData(mixPresentationsMetadata, metadata);
-  return metadataToTextProto(metadata);
+  return metadataToTextProto(metadata, iamfFilesService);
 }
 
 function augmentAudioElementMetadata(
@@ -294,15 +297,29 @@ function mixpresentationAudioElements(
   return mixpresentationAudioElements;
 }
 
-async function metadataToTextProto(metadata: UserMetadata) {
+async function metadataToTextProto(
+  metadata: UserMetadata,
+  iamfFileService: StorageService
+) {
   const bin = UserMetadata.encode(metadata).finish();
   // Write binary to a temporary file.
-  fs.writeFileSync("configured_iamf_md.bin", bin);
+  const binDataLabel = "configured_iamf_md.bin";
+  const binDataURL = (await iamfFileService.create(bin, binDataLabel)).url;
   // Convert the binary file to a .textproto file using the protoc command.
   const cwd = process.cwd();
   // We need to indicate where the source proto files are located.
-  const filePath = `${cwd}/src/iamf/parser/proto`;
-  const command = `cat configured_iamf_md.bin | protoc --decode=iamf_tools_cli_proto.UserMetadata -I=${filePath} ${filePath}/user_metadata.proto > iamf_md.textproto`;
+  const protoSourcesURL = `${cwd}/src/iamf/parser/proto`;
+  const protoOutputURL = path.join(
+    iamfFileService.storageDir,
+    "iamf_md.textproto"
+  );
+  const command = [
+    `cat ${binDataURL} |`,
+    `protoc --decode=iamf_tools_cli_proto.UserMetadata`,
+    `-I=${protoSourcesURL}`,
+    `${protoSourcesURL}/user_metadata.proto`,
+    `> ${protoOutputURL}`,
+  ].join(" ");
   const promisedExec = promisify(exec);
   try {
     const { stdout, stderr } = await promisedExec(command);
@@ -317,7 +334,7 @@ async function metadataToTextProto(metadata: UserMetadata) {
   }
 
   // Delete the binary file.
-  fs.unlinkSync("configured_iamf_md.bin");
+  iamfFileService.delete(binDataLabel);
 
-  return `iamf_md.textproto`;
+  return protoOutputURL;
 }

@@ -16,7 +16,10 @@ export class StorageService implements Storage {
     }
   }
 
-  async create(file: Buffer, fileID: string): Promise<StorageReturn> {
+  async create(
+    file: Buffer | ArrayBufferLike,
+    fileID: string
+  ): Promise<StorageReturn> {
     // Before storing the file, check if the file exists in the filesystem
     const fileExists = await this.exists(fileID);
     if (fileExists.success) {
@@ -25,8 +28,9 @@ export class StorageService implements Storage {
 
     // Attempt to write the file to the filesystem
     const filePath = path.join(this.storageDir, fileID);
+    const fileData = file instanceof Buffer ? file : Buffer.from(file);
     return new Promise((resolve, reject) => {
-      fs.writeFile(filePath, file, (err) => {
+      fs.writeFile(filePath, fileData, (err) => {
         if (err) {
           reject({ success: false, error: err.message });
         } else {

@@ -12,9 +12,11 @@ export type StorageReturn = {
 export interface Storage {
   // Can create from a File or a Buffer.
   create(
-    file: Express.Multer.File | Buffer<ArrayBufferLike>,
+    file: Buffer | ArrayBufferLike,
     fileID: string
   ): Promise<StorageReturn>;
   exists(fileID: string): Promise<StorageReturn>;
   delete(fileID: string): Promise<StorageReturn>;
+  // Destroys this instance and all data related to it.
+  // destroy(): Promise<StorageReturn>;
 }
