@@ -305,10 +305,9 @@ async function metadataToTextProto(
   // Write binary to a temporary file.
   const binDataLabel = "configured_iamf_md.bin";
   const binDataURL = (await iamfFileService.create(bin, binDataLabel)).url;
+
   // Convert the binary file to a .textproto file using the protoc command.
-  const cwd = process.cwd();
-  // We need to indicate where the source proto files are located.
-  const protoSourcesURL = `${cwd}/src/iamf/parser/proto`;
+  const protoSourcesURL = `${process.cwd()}/src/iamf/parser/proto`;
   const protoOutputURL = path.join(
     iamfFileService.storageDir,
     "iamf_md.textproto"
@@ -320,6 +319,7 @@ async function metadataToTextProto(
     `${protoSourcesURL}/user_metadata.proto`,
     `> ${protoOutputURL}`,
   ].join(" ");
+
   const promisedExec = promisify(exec);
   try {
     const { stdout, stderr } = await promisedExec(command);
