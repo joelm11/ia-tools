@@ -73,26 +73,25 @@ export class AppServer extends EventEmitter {
 
   private parsePayloadMixPresentations(req: any) {
     let payloadMixPresentations: MixPresentationBase[] = [];
-    if (Array.isArray(req.body.mixPresentations)) {
-      for (const presentationString of req.body.mixPresentations) {
-        const parsedPresentation = JSON.parse(
-          presentationString
-        ) as MixPresentationBase;
-        payloadMixPresentations.push(parsedPresentation);
-        parsedPresentation.audioElements.map((audioElement) => {
+    if (req.body.mixPresentations) {
+      const presentations = JSON.parse(req.body.mixPresentations) as
+        | MixPresentationBase
+        | MixPresentationBase[];
+      if (Array.isArray(presentations)) {
+        for (const presentation of presentations) {
+          payloadMixPresentations.push(presentation);
+          presentation.audioElements.map((audioElement) => {
+            this.addAudioElementToMap(audioElement.name, audioElement.id);
+          });
+        }
+      } else {
+        payloadMixPresentations.push(presentations);
+        presentations.audioElements.map((audioElement) => {
           this.addAudioElementToMap(audioElement.name, audioElement.id);
         });
       }
     } else {
-      if (req.body.mixPresentations) {
-        // Handle both single object and array cases
-        payloadMixPresentations = [JSON.parse(req.body.mixPresentations)];
-        payloadMixPresentations[0].audioElements.map((audioElement) => {
-          this.addAudioElementToMap(audioElement.name, audioElement.id);
-        });
-      } else {
-        payloadMixPresentations = [];
-      }
+      payloadMixPresentations = [];
     }
     return payloadMixPresentations;
   }

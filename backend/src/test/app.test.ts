@@ -85,8 +85,6 @@ describe("Payload Upload", () => {
       "BassNote.wav"
     );
 
-    console.log(JSON.stringify(mixPresentation));
-
     const response = await request(manager.server.app)
       .post("/upload")
       .field("mixPresentations", JSON.stringify(mixPresentation))
