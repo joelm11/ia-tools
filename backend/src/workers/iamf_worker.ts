@@ -29,8 +29,15 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
           this.audioSourceStore.storageDir,
           iamfOutSS.storageDir
         );
+
+        // Notify job completion with the resulting file path
+        const resultFilePath = iamfOutSS.exists("boo.iamf");
+        job.updateProgress(100);
+        await job.moveToCompleted("done", "", true);
+        job.returnvalue = { filePath: resultFilePath };
+
         console.log("Completed job", job.id);
-        console.log("IAMF File at", iamfOutSS.storageDir);
+        console.log("IAMF File at", resultFilePath);
       },
 
       BULLMQ_REDIS_CONNECTION

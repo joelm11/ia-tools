@@ -33,9 +33,8 @@ export class Manager {
     // Initialize the server, job parser, job queue, and job executor.
     this.audioStorage = new StorageService("/tmp", "SSAudioElements");
     this.iamfStorage = new StorageService("/tmp", "SSIAMF");
-    this.server = new AppServer(this.audioStorage);
-    // Catch if IAMF job queue is not initialized
     this.iamfJobQueue = new Queue(BULLMQ_IAMF_JOB_QUEUE);
+    this.server = new AppServer(this.audioStorage, this.iamfJobQueue); // Pass the job queue to the server
     this.registerEvents();
     this.registerWorkers();
   }
@@ -45,8 +44,8 @@ export class Manager {
     this.server.on(
       UserEvents.PAYLOADUPLOAD,
       (payload: MixPresentationBase[]) => {
-        console.log("Received payload upload event:", payload);
-        this.iamfJobQueue.add(BULLMQ_IAMF_JOB_QUEUE, payload);
+        // console.log("Received payload upload event:", payload);
+        // this.iamfJobQueue.add(BULLMQ_IAMF_JOB_QUEUE, payload);
       }
     );
   }

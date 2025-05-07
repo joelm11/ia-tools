@@ -6,27 +6,35 @@ import EventEmitter from "events";
 import { UserEvents } from "../events/events";
 import { StorageService } from "./storage/storage_fs";
 import { MixPresentationBase } from "src/@types/MixPresentation";
+import { Queue } from "bullmq";
+import { BULLMQ_IAMF_JOB_QUEUE } from "./manager";
 
 export class AppServer extends EventEmitter {
   app: express.Application;
   port: number;
   upload: any;
   storageService: StorageService;
+  iamfJobQueue: Queue<MixPresentationBase[]>;
   fileNameMap: Map<string, string>;
   httpServer: ReturnType<typeof this.app.listen>;
 
-  constructor(storageService: StorageService) {
+  constructor(
+    storageService: StorageService,
+    iamfJobQueue: Queue<MixPresentationBase[]>
+  ) {
     super();
     this.app = express();
     this.port = 3000;
     this.fileNameMap = new Map<string, string>();
     this.storageService = storageService;
+    this.iamfJobQueue = iamfJobQueue;
     this.upload = multer({ storage: multer.memoryStorage() }).array(
       "audioFiles"
     );
 
     this.configureMiddleware();
     this.configureIAMFPayloadUpload("/upload");
+    this.configureIAMFJobStatusEndpoint();
     // Changed: store the server reference.
     this.httpServer = this.app.listen(this.port, () => {
       console.log(`Server: Listening on port ${this.port}`);
@@ -61,7 +69,16 @@ export class AppServer extends EventEmitter {
           if (!isValid) {
             res.status(400).send(reasonInvalid);
           } else {
-            this.processReqAudioFiles(payloadMixPresentations, req, res);
+            await this.processReqAudioFiles(payloadMixPresentations, req, res);
+            // If we successfully process audio files in the request, create the job.
+            const job = await this.iamfJobQueue.add(
+              BULLMQ_IAMF_JOB_QUEUE,
+              payloadMixPresentations
+            );
+            res.status(200).json({
+              urls: "Successful IAMF Payload Upload - Job Created",
+              jobID: job.id,
+            });
           }
         } catch (e) {
           console.log(e);
@@ -69,6 +86,25 @@ export class AppServer extends EventEmitter {
         }
       }
     );
+  }
+
+  private configureIAMFJobStatusEndpoint() {
+    this.app.get("/job-status/:jobId", async (req: Request, res: Response) => {
+      const jobId = req.params.jobId;
+      try {
+        const job = await this.iamfJobQueue.getJob(jobId);
+        if (!job) {
+          res.status(404).send("Job not found");
+          return;
+        }
+        const state = await job.getState();
+        const result = job.returnvalue;
+        res.status(200).json({ state, result });
+      } catch (error) {
+        console.error("Error fetching job status:", error);
+        res.status(500).send("Error fetching job status");
+      }
+    });
   }
 
   private parsePayloadMixPresentations(req: any) {
@@ -146,8 +182,6 @@ export class AppServer extends EventEmitter {
         }
         await this.storageService.create(fileData, fileID);
       }
-
-      res.status(200).json({ urls: "Successful IAMF Payload Upload" });
       this.emit(UserEvents.PAYLOADUPLOAD, payloadMixPresentations);
     } catch (error) {
       console.error("Error uploading audio files:", error);
