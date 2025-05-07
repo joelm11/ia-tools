@@ -13,7 +13,7 @@ export class AppServer extends EventEmitter {
   upload: any;
   storageService: StorageService;
   fileNameMap: Map<string, string>;
-  httpServer: ReturnType<typeof this.app.listen>; // added property
+  httpServer: ReturnType<typeof this.app.listen>;
 
   constructor(storageService: StorageService) {
     super();
