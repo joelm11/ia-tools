@@ -51,52 +51,48 @@ export class AppServer extends EventEmitter {
       this.upload,
       // Parse response, validate, and create job.
       async (req: Request, res: Response) => {
-        const payloadMixPresentations = this.getPayloadMixPresentations(req);
         try {
+          const payloadMixPresentations =
+            this.parsePayloadMixPresentations(req);
           const { isValid, reasonInvalid } = this.validateIAMFPayload(
             payloadMixPresentations,
             req
           );
           if (!isValid) {
-            console.log("Failed validate IAMF Payload");
             res.status(400).send(reasonInvalid);
           } else {
-            console.log("Validating audio files");
             this.processReqAudioFiles(payloadMixPresentations, req, res);
           }
         } catch (e) {
-          console.error("Error in IAMF Payload Upload:", e);
-          console.log(
-            "Error state of req.files:",
-            req.files,
-            req.files?.length
-          );
-          res.status(500).send("Internal Server Error");
+          console.log(e);
+          res.status(500).send("Server: Error processing payload");
         }
       }
     );
   }
 
-  private getPayloadMixPresentations(req: any) {
+  private parsePayloadMixPresentations(req: any) {
     let payloadMixPresentations: MixPresentationBase[] = [];
     if (Array.isArray(req.body.mixPresentations)) {
       for (const presentationString of req.body.mixPresentations) {
-        try {
-          const parsedPresentation = JSON.parse(
-            presentationString
-          ) as MixPresentationBase;
-          payloadMixPresentations.push(parsedPresentation);
-          parsedPresentation.audioElements.map((audioElement) => {
-            this.addAudioElementToMap(audioElement.name, audioElement.id);
-            console.log("Adding", audioElement.name, "w/ID", audioElement.id);
-          });
-        } catch (error) {
-          console.error("Error parsing a mixPresentation JSON string:", error);
-        }
+        const parsedPresentation = JSON.parse(
+          presentationString
+        ) as MixPresentationBase;
+        payloadMixPresentations.push(parsedPresentation);
+        parsedPresentation.audioElements.map((audioElement) => {
+          this.addAudioElementToMap(audioElement.name, audioElement.id);
+        });
       }
     } else {
-      // Handle both single object and array cases
-      payloadMixPresentations = [req.body.mixPresentations];
+      if (req.body.mixPresentations) {
+        // Handle both single object and array cases
+        payloadMixPresentations = [JSON.parse(req.body.mixPresentations)];
+        payloadMixPresentations[0].audioElements.map((audioElement) => {
+          this.addAudioElementToMap(audioElement.name, audioElement.id);
+        });
+      } else {
+        payloadMixPresentations = [];
+      }
     }
     return payloadMixPresentations;
   }
@@ -112,10 +108,7 @@ export class AppServer extends EventEmitter {
     if (presentations.length === 0 || !presentations[0]) {
       isValid = false;
       reasonInvalid = "No Mix Presentations";
-    } else if (
-      presentations[0].audioElements
-      // || presentations[0].audioElements.length === 0
-    ) {
+    } else if (presentations[0].audioElements.length === 0) {
       isValid = false;
       reasonInvalid = "No Audio Elements in Mix Presentation";
     }

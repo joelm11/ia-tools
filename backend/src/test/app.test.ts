@@ -58,11 +58,42 @@ describe("Payload Upload", () => {
   });
 
   it("Valid upload with single MP two audio source file", async () => {
-    // Implementation for two audio source files
+    const mixPresentation = JSON.parse(loadTestData("1ae1mp.json").toString());
+    const audioFilePath = path.join(
+      process.cwd(),
+      "src/iamf/test/resources",
+      "audio_sources",
+      "BassNote.wav"
+    );
+
+    const response = await request(manager.server.app)
+      .post("/upload")
+      .field("mixPresentations", JSON.stringify(mixPresentation))
+      .attach("audioFiles", audioFilePath)
+      .attach("audioFiles", audioFilePath)
+      .expect(200);
+
+    expect(response.text).toContain("Successful IAMF Payload Upload");
   });
 
   it("Valid upload with 2 MP single audio source file", async () => {
-    // Implementation for two mix presentations
+    const mixPresentation = JSON.parse(loadTestData("1ae2mp.json").toString());
+    const audioFilePath = path.join(
+      process.cwd(),
+      "src/iamf/test/resources",
+      "audio_sources",
+      "BassNote.wav"
+    );
+
+    console.log(JSON.stringify(mixPresentation));
+
+    const response = await request(manager.server.app)
+      .post("/upload")
+      .field("mixPresentations", JSON.stringify(mixPresentation))
+      .attach("audioFiles", audioFilePath)
+      .expect(200);
+
+    expect(response.text).toContain("Successful IAMF Payload Upload");
   });
 
   it("Invalid upload with single MP and no audio source file", async () => {
