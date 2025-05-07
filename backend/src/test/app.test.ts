@@ -36,7 +36,7 @@ describe("Payload Upload", () => {
       .post("/upload")
       .send(formData)
       .expect(400);
-    expect(response.text).toContain("No audio files were uploaded");
+    expect(response.text).toContain("No Audio Files uploaded");
   });
 
   it("Valid upload with single MP single audio source file", async () => {
@@ -53,6 +53,8 @@ describe("Payload Upload", () => {
       .field("mixPresentations", JSON.stringify(mixPresentation))
       .attach("audioFiles", audioFilePath)
       .expect(200);
+
+    expect(response.text).toContain("Successful IAMF Payload Upload");
   });
 
   it("Valid upload with single MP two audio source file", async () => {
@@ -74,6 +76,6 @@ describe("Payload Upload", () => {
       .send(formData)
       .expect(400);
 
-    expect(response.text).toContain("No audio files were uploaded");
+    expect(response.text).toContain("No Audio Files uploaded");
   });
 });

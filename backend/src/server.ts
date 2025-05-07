@@ -26,7 +26,7 @@ export class AppServer extends EventEmitter {
     );
 
     this.configureMiddleware();
-    this.configurePayloadUpload("/upload");
+    this.configureIAMFPayloadUpload("/upload");
     // Changed: store the server reference.
     this.httpServer = this.app.listen(this.port, () => {
       console.log(`Server: Listening on port ${this.port}`);
@@ -45,48 +45,33 @@ export class AppServer extends EventEmitter {
     );
   }
 
-  private configurePayloadUpload(uploadURL: string) {
+  private configureIAMFPayloadUpload(uploadURL: string) {
     this.app.post(
       uploadURL,
       this.upload,
+      // Parse response, validate, and create job.
       async (req: Request, res: Response) => {
-        // Parse payload and check validity.
         const payloadMixPresentations = this.getPayloadMixPresentations(req);
-        const { isValid, reasonInvalid } = this.validIAMFPayload(
-          payloadMixPresentations,
-          req
-        );
-        if (!isValid) {
-          res.status(400).send(reasonInvalid);
-        }
-        // Handle the uploaded audio files.
         try {
-          const files = req.files as Express.Multer.File[]; // Type assertion for req.files
-          for (const file of files) {
-            let fileData: Buffer;
-            if (file.buffer) {
-              // Using memory storage
-              fileData = file.buffer;
-            } else {
-              console.error("Error: File data not found.");
-              continue; // Skip to the next file
-            }
-
-            const fileID = this.fileNameMap.get(file.originalname);
-            if (!fileID) {
-              console.error(
-                `Error: File ID not found for file name ${file.originalname}.`
-              );
-              continue; // Skip to the next file
-            }
-            await this.storageService.create(fileData, fileID);
+          const { isValid, reasonInvalid } = this.validateIAMFPayload(
+            payloadMixPresentations,
+            req
+          );
+          if (!isValid) {
+            console.log("Failed validate IAMF Payload");
+            res.status(400).send(reasonInvalid);
+          } else {
+            console.log("Validating audio files");
+            this.processReqAudioFiles(payloadMixPresentations, req, res);
           }
-
-          res.status(200).json({ urls: "Successful IAMF Payload Upload" });
-          this.emit(UserEvents.PAYLOADUPLOAD, payloadMixPresentations);
-        } catch (error) {
-          console.error("Error uploading audio files:", error);
-          res.status(500).send("Failed to upload audio files.");
+        } catch (e) {
+          console.error("Error in IAMF Payload Upload:", e);
+          console.log(
+            "Error state of req.files:",
+            req.files,
+            req.files?.length
+          );
+          res.status(500).send("Internal Server Error");
         }
       }
     );
@@ -95,7 +80,6 @@ export class AppServer extends EventEmitter {
   private getPayloadMixPresentations(req: any) {
     let payloadMixPresentations: MixPresentationBase[] = [];
     if (Array.isArray(req.body.mixPresentations)) {
-      payloadMixPresentations = [];
       for (const presentationString of req.body.mixPresentations) {
         try {
           const parsedPresentation = JSON.parse(
@@ -111,33 +95,72 @@ export class AppServer extends EventEmitter {
         }
       }
     } else {
-      payloadMixPresentations = req.body
-        .mixPresentations as MixPresentationBase[];
+      // Handle both single object and array cases
+      payloadMixPresentations = [req.body.mixPresentations];
     }
     return payloadMixPresentations;
   }
 
   // Basic validation of a request payload. A valid payload will have:
   // GTE 1MP. GTE 1AE. GTE 1 Audio file.
-  private validIAMFPayload(
+  private validateIAMFPayload(
     presentations: MixPresentationBase[],
     req: Request
   ): { isValid: boolean; reasonInvalid?: string } {
     let isValid = true;
     let reasonInvalid;
-
-    if (presentations.length === 0) {
+    if (presentations.length === 0 || !presentations[0]) {
       isValid = false;
       reasonInvalid = "No Mix Presentations";
-    } else if (presentations[0].audioElements.length <= 0) {
+    } else if (
+      presentations[0].audioElements
+      // || presentations[0].audioElements.length === 0
+    ) {
       isValid = false;
       reasonInvalid = "No Audio Elements in Mix Presentation";
-    } else if (!req.files || req.files.length === 0) {
+    }
+
+    if (!req.files || req.files.length === 0) {
       isValid = false;
       reasonInvalid = "No Audio Files uploaded";
     }
 
     return { isValid, reasonInvalid };
+  }
+
+  private async processReqAudioFiles(
+    payloadMixPresentations: MixPresentationBase[],
+    req: Request,
+    res: Response
+  ) {
+    try {
+      const files = req.files as Express.Multer.File[]; // Type assertion for req.files
+      for (const file of files) {
+        let fileData: Buffer;
+        if (file.buffer) {
+          // Using memory storage
+          fileData = file.buffer;
+        } else {
+          console.error("Error: File data not found.");
+          continue; // Skip to the next file
+        }
+
+        const fileID = this.fileNameMap.get(file.originalname);
+        if (!fileID) {
+          console.error(
+            `Error: File ID not found for file name ${file.originalname}.`
+          );
+          continue; // Skip to the next file
+        }
+        await this.storageService.create(fileData, fileID);
+      }
+
+      res.status(200).json({ urls: "Successful IAMF Payload Upload" });
+      this.emit(UserEvents.PAYLOADUPLOAD, payloadMixPresentations);
+    } catch (error) {
+      console.error("Error uploading audio files:", error);
+      res.status(500).send("Failed to upload audio files.");
+    }
   }
 
   private addAudioElementToMap(fileName: string, audioElementID: string) {
