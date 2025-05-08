@@ -8,6 +8,8 @@
 
   // Internal state for the form
   let filename = $state("My_Awesome_Mix");
+  let downloading = $state(true);
+  let downloadURL = $state("");
 
   // svelte-ignore non_reactive_update
   let modalElement: HTMLDivElement;
@@ -27,13 +29,10 @@
         }
       );
       jobState = JSON.parse(await response.text());
-      console.log(jobState.state);
       if (jobState.state !== "completed") {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     } while (jobState.state !== "completed");
-
-    console.log("Job completed!");
 
     // Download file
     const dlResponse = await fetch(
@@ -42,7 +41,22 @@
         method: "GET",
       }
     );
-    closeModal(); // Close modal after "export"
+    if (dlResponse.ok) {
+      const blob = await dlResponse.blob();
+      downloadURL = window.URL.createObjectURL(blob);
+      downloading = false;
+    }
+  }
+
+  function downloadFile() {
+    const a = document.createElement("a");
+    a.href = downloadURL;
+    a.download = "frontend.iamf";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(downloadURL);
+    closeModal();
   }
 
   // Effect to handle Escape key press for closing the modal
@@ -135,12 +149,22 @@
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800"
-          >
-            Export
-          </button>
+          {#if downloading}
+            <button
+              type="submit"
+              class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+            >
+              Export
+            </button>
+          {:else}
+            <button
+              type="button"
+              onclick={downloadFile}
+              class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+            >
+              Download
+            </button>
+          {/if}
         </div>
       </form>
     </div>
