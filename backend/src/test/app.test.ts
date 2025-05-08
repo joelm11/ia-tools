@@ -153,8 +153,8 @@ describe("Payload Upload", () => {
       .get(`/job-status/${jobID}`)
       .expect(200);
     const jobState = JSON.parse(pollStatus.text) as {
-      result: any;
       state: JobState;
+      result: any;
     };
     expect(jobState.state).toEqual("waiting");
   });
@@ -164,13 +164,11 @@ describe("Payload Upload", () => {
 
     // Poll job status.
     const jobID = JSON.parse(response.text).jobID;
-    let jobState: {
-      result: any;
-      state: JobState;
-    };
+    let pollStatus: request.Response;
+    let jobState: { state: JobState; result: any };
 
     do {
-      const pollStatus = await request(manager.server.app)
+      pollStatus = await request(manager.server.app)
         .get(`/job-status/${jobID}`)
         .expect(200);
       jobState = JSON.parse(pollStatus.text);
@@ -178,8 +176,17 @@ describe("Payload Upload", () => {
     } while (jobState.state === "waiting");
 
     expect(jobState.state === "completed");
-    expect(jobState.result);
-    expect(fs.existsSync(jobState.result));
-    fs.rmSync(jobState.result);
-  }, 5000);
+
+    // Response should have a file.
+    const downloadResponse = await request(manager.server.app)
+      .get(`/job-download/${jobID}`)
+      .expect(200);
+
+    // Save the file to the current working directory
+    const fname = "app_test.iamf";
+    fs.writeFileSync(fname, downloadResponse.body);
+
+    expect(fs.existsSync(fname)).toBe(true);
+    fs.rmSync(fname);
+  }, 2000);
 });

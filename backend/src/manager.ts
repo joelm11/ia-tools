@@ -1,5 +1,4 @@
 import type { MixPresentationBase } from "../../common/types/MixPresentation";
-import { UserEvents } from "../events/events";
 import { AppServer } from "./server";
 import { Queue, Worker, WorkerOptions } from "bullmq";
 import { StorageService } from "./storage/storage_fs";
@@ -39,19 +38,10 @@ export class Manager {
     this.registerWorkers();
   }
 
-  private registerEvents() {
-    // Listen for payload upload to the server.
-    this.server.on(
-      UserEvents.PAYLOADUPLOAD,
-      (payload: MixPresentationBase[]) => {
-        // console.log("Received payload upload event:", payload);
-        // this.iamfJobQueue.add(BULLMQ_IAMF_JOB_QUEUE, payload);
-      }
-    );
-  }
+  private registerEvents() {}
 
   private registerWorkers() {
-    this.workers.push(new IAMFWorker(this.audioStorage, this.iamfStorage));
+    this.workers.push(new IAMFWorker(this.audioStorage));
   }
 
   stop() {

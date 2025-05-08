@@ -2,14 +2,12 @@ import express, { type Request, type Response } from "express";
 import multer from "multer";
 import bodyParser from "body-parser";
 import cors from "cors";
-import EventEmitter from "events";
-import { UserEvents } from "../events/events";
 import { StorageService } from "./storage/storage_fs";
 import { MixPresentationBase } from "src/@types/MixPresentation";
 import { Queue } from "bullmq";
 import { BULLMQ_IAMF_JOB_QUEUE } from "./manager";
 
-export class AppServer extends EventEmitter {
+export class AppServer {
   app: express.Application;
   port: number;
   upload: any;
@@ -22,7 +20,6 @@ export class AppServer extends EventEmitter {
     storageService: StorageService,
     iamfJobQueue: Queue<MixPresentationBase[]>
   ) {
-    super();
     this.app = express();
     this.port = 3000;
     this.fileNameMap = new Map<string, string>();
@@ -35,6 +32,7 @@ export class AppServer extends EventEmitter {
     this.configureMiddleware();
     this.configureIAMFPayloadUpload("/upload");
     this.configureIAMFJobStatusEndpoint();
+    this.configureIAMFDownloadEndpoint();
     // Changed: store the server reference.
     this.httpServer = this.app.listen(this.port, () => {
       console.log(`Server: Listening on port ${this.port}`);
@@ -99,12 +97,46 @@ export class AppServer extends EventEmitter {
         }
         const state = await job.getState();
         const result = job.returnvalue;
-        res.status(200).json({ state, result });
+        res.status(200).json({ state, iamfFileUrl: result });
       } catch (error) {
         console.error("Error fetching job status:", error);
         res.status(500).send("Error fetching job status");
       }
     });
+  }
+
+  private configureIAMFDownloadEndpoint() {
+    this.app.get(
+      "/job-download/:jobId",
+      async (req: Request, res: Response) => {
+        const jobId = req.params.jobId;
+        try {
+          const job = await this.iamfJobQueue.getJob(jobId);
+          if (!job) {
+            res.status(404).send("Job not found");
+            return;
+          }
+          const state = await job.getState();
+          if (state === "completed") {
+            const iamfFileUrl = job.returnvalue;
+            res.download(iamfFileUrl, "IamfEncoding.iamf", (error) => {
+              if (error) {
+                // Handle errors, e.g., file not found
+                console.error("Error downloading file:", error);
+                if (error.message === "ENOENT") {
+                  res.status(404).send(`File ${iamfFileUrl} not found.`);
+                } else {
+                  res.status(500).send("Error downloading file.");
+                }
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching job status:", error);
+          res.status(500).send("Error fetching job status");
+        }
+      }
+    );
   }
 
   private parsePayloadMixPresentations(req: any) {
@@ -182,7 +214,6 @@ export class AppServer extends EventEmitter {
         }
         await this.storageService.create(fileData, fileID);
       }
-      this.emit(UserEvents.PAYLOADUPLOAD, payloadMixPresentations);
     } catch (error) {
       console.error("Error uploading audio files:", error);
       res.status(500).send("Failed to upload audio files.");
