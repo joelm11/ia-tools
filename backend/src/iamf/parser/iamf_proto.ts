@@ -47,9 +47,9 @@ interface MixPresentationMetadata extends MixPresentationBase {
   audioElements: AudioElementMetadata[];
 }
 
-type IAMFProtoResult =
-  | { success: true; protoURL: string }
-  | { success: false; error: string };
+interface IAMFProtoResult {
+  protoUrl: string;
+}
 
 export async function payloadToIAMF(
   mixPresentations: MixPresentationBase[],
@@ -334,9 +334,9 @@ async function metadataToTextProto(
     }
   } catch (error: any) {
     console.error(`Error: ${error.message}`);
-    return { success: false, error: error.message };
+    throw error;
   } finally {
     iamfFileService.delete(binDataLabel);
   }
-  return { success: true, protoURL: protoOutputURL };
+  return { protoUrl: protoOutputURL };
 }

@@ -5,9 +5,9 @@ import path from "path";
 const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
 const IAMF_FILENAME = "boo.iamf";
 
-type IAMFFileResult =
-  | { success: true; iamfURL: string }
-  | { success: false; error: string };
+interface IAMFFileResult {
+  iamfUrl: string;
+}
 
 export async function buildIAMFFile(
   iamfMetaDataURL: string,
@@ -36,14 +36,13 @@ export async function buildIAMFFile(
     iamfProcess.on("close", (code) => {
       fs.unlinkSync(iamfMetaDataURL);
       resolve({
-        success: true,
-        iamfURL: path.join(iamfOutputDirURL, IAMF_FILENAME),
+        iamfUrl: path.join(iamfOutputDirURL, IAMF_FILENAME),
       });
     });
 
     iamfProcess.on("error", (err) => {
       fs.unlinkSync(iamfMetaDataURL);
-      resolve({ success: false, error: err.message });
+      reject(err);
     });
   });
 }

@@ -42,10 +42,9 @@ describe("Test create IAMF files from given payloads", async () => {
     );
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
     const protoOpResult = await payloadToIAMF(payload, iamfStorage);
-    expect(protoOpResult.success);
     // Await the IAMF file creation.
     await buildIAMFFile(
-      protoOpResult.protoURL,
+      protoOpResult.protoUrl,
       audioSourceStorage.storageDir,
       iamfStorage.storageDir
     );
@@ -66,9 +65,12 @@ describe("Test create IAMF files from given payloads", async () => {
         /"audioElementFormat": ".*?"/,
         `"audioElementFormat": "${layout}"`
       );
-      const protofile = await payloadToIAMF(JSON.parse(payload), iamfStorage);
+      const iamfProtoRes = await payloadToIAMF(
+        JSON.parse(payload),
+        iamfStorage
+      );
       await buildIAMFFile(
-        protofile,
+        iamfProtoRes.protoUrl,
         audioSourceStorage.storageDir,
         iamfStorage.storageDir
       );
@@ -85,9 +87,9 @@ describe("Test create IAMF files from given payloads", async () => {
       "1ae2mp.json"
     );
     let payload = fs.readFileSync(payloadPath, "utf-8");
-    const protofile = await payloadToIAMF(JSON.parse(payload), iamfStorage);
+    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
     await buildIAMFFile(
-      protofile,
+      iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
       iamfStorage.storageDir
     );
@@ -102,9 +104,9 @@ describe("Test create IAMF files from given payloads", async () => {
       "2ae2mp.json"
     );
     let payload = fs.readFileSync(payloadPath, "utf-8");
-    const protofile = await payloadToIAMF(JSON.parse(payload), iamfStorage);
+    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
     await buildIAMFFile(
-      protofile,
+      iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
       iamfStorage.storageDir
     );
@@ -119,9 +121,9 @@ describe("Test create IAMF files from given payloads", async () => {
       "4ae1mp.json"
     );
     let payload = fs.readFileSync(payloadPath, "utf-8");
-    const protofile = await payloadToIAMF(JSON.parse(payload), iamfStorage);
+    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
     await buildIAMFFile(
-      protofile,
+      iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
       iamfStorage.storageDir
     );

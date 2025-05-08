@@ -51,8 +51,9 @@ describe("Payload Upload", () => {
     manager = new Manager();
   });
 
-  afterEach(() => {
-    manager.iamfJobQueue.drain();
+  afterEach(async () => {
+    // Clean slate between each test run.
+    await manager.iamfJobQueue.drain();
   });
 
   afterAll(() => {
@@ -173,11 +174,12 @@ describe("Payload Upload", () => {
         .get(`/job-status/${jobID}`)
         .expect(200);
       jobState = JSON.parse(pollStatus.text);
-      console.log(jobState);
       if (jobState.state !== "completed") await setTimeout(1000);
     } while (jobState.state === "waiting");
 
     expect(jobState.state === "completed");
-    console.log("Job finished.");
+    expect(jobState.result);
+    expect(fs.existsSync(jobState.result));
+    fs.rmSync(jobState.result);
   }, 5000);
 });
