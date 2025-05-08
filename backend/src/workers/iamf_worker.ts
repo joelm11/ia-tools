@@ -33,6 +33,7 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
             throw error;
           });
 
+        console.log("Completed job:", job.id);
         return iamfEncoderRes.iamfUrl;
       },
 

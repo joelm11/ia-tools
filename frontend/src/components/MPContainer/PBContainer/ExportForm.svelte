@@ -1,6 +1,7 @@
 <script lang="ts">
   import { sendMixPresentations } from "src/@lib/state/MixPresentationState.svelte";
   import { fade } from "svelte/transition";
+  import type { JobState } from "bullmq";
 
   // Props - control visibility from parent
   let { show, closeModal } = $props();
@@ -13,8 +14,34 @@
 
   async function handleExport(event: { preventDefault: () => void }) {
     event.preventDefault(); // Prevent default form submission
-    console.log("Exporting:", { filename });
-    await sendMixPresentations();
+
+    const jobId = await sendMixPresentations();
+    console.log("Job created with ID:", jobId);
+
+    let jobState: { state: JobState; result: any };
+    do {
+      const response = await fetch(
+        `http://localhost:3000/job-status/${jobId}`,
+        {
+          method: "GET",
+        }
+      );
+      jobState = JSON.parse(await response.text());
+      console.log(jobState.state);
+      if (jobState.state !== "completed") {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    } while (jobState.state !== "completed");
+
+    console.log("Job completed!");
+
+    // Download file
+    const dlResponse = await fetch(
+      `http://localhost:3000/job-download/${jobId}`,
+      {
+        method: "GET",
+      }
+    );
     closeModal(); // Close modal after "export"
   }
 

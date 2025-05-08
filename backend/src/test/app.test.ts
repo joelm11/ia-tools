@@ -3,7 +3,6 @@ import { Manager } from "../manager";
 import request from "supertest";
 import fs from "fs";
 import path from "path";
-import { MixPresentationBase } from "src/@types/MixPresentation";
 import { JobState } from "bullmq";
 import { setTimeout } from "timers/promises";
 

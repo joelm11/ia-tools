@@ -61,16 +61,22 @@ async function sendMixPresentations() {
     .forEach((element) => {
       formData.append("audioFiles", element.audioFile);
     });
+  let jobId = -1;
   try {
     const response = await fetch("http://localhost:3000/upload", {
       method: "POST",
       body: formData,
     });
-    const data = await response.json();
-    // TODO: Optional response status check.
+    const responseData = JSON.parse(await response.text()) as {
+      urls: any;
+      jobID: any;
+    };
+    console.log(responseData);
+    return responseData.jobID;
   } catch (error) {
     console.error("Error sending mix presentations:", error);
   }
+  return jobId;
 }
 
 export {
