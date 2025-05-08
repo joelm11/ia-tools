@@ -1,10 +1,11 @@
-import { describe, beforeAll, afterAll, it, expect } from "vitest";
+import { describe, beforeAll, afterAll, it, expect, afterEach } from "vitest";
 import { Manager } from "../manager";
 import request from "supertest";
 import fs from "fs";
 import path from "path";
 import { MixPresentationBase } from "src/@types/MixPresentation";
 import { JobState } from "bullmq";
+import { setTimeout } from "timers/promises";
 
 // Helper function to load test data
 function loadTestData(fileName: string) {
@@ -16,6 +17,29 @@ function loadTestData(fileName: string) {
   return fs.readFileSync(filePath);
 }
 
+// Helper function that sends a simple valid IAMF job.
+async function startValidIAMFJob(appUT: any): Promise<request.Response> {
+  const mixPresentation = JSON.parse(loadTestData("1ae1mp.json").toString());
+  const audioFilePath = path.join(
+    process.cwd(),
+    "src/iamf/test/resources",
+    "audio_sources",
+    "BassNote.wav"
+  );
+
+  const response = await request(appUT)
+    .post("/upload")
+    .field("mixPresentations", JSON.stringify(mixPresentation))
+    .attach("audioFiles", audioFilePath)
+    .expect(200);
+
+  expect(response.text).toContain(
+    "Successful IAMF Payload Upload - Job Created"
+  );
+
+  return response;
+}
+
 describe("Payload Upload", () => {
   let manager: Manager;
   const resourcePath = path.join(
@@ -25,6 +49,10 @@ describe("Payload Upload", () => {
 
   beforeAll(() => {
     manager = new Manager();
+  });
+
+  afterEach(() => {
+    manager.iamfJobQueue.drain();
   });
 
   afterAll(() => {
@@ -116,23 +144,7 @@ describe("Payload Upload", () => {
   });
 
   it("Valid Job Poll", async () => {
-    const mixPresentation = JSON.parse(loadTestData("1ae1mp.json").toString());
-    const audioFilePath = path.join(
-      process.cwd(),
-      "src/iamf/test/resources",
-      "audio_sources",
-      "BassNote.wav"
-    );
-
-    const response = await request(manager.server.app)
-      .post("/upload")
-      .field("mixPresentations", JSON.stringify(mixPresentation))
-      .attach("audioFiles", audioFilePath)
-      .expect(200);
-
-    expect(response.text).toContain(
-      "Successful IAMF Payload Upload - Job Created"
-    );
+    const response = await startValidIAMFJob(manager.server.app);
 
     // Poll job status.
     const jobID = JSON.parse(response.text).jobID;
@@ -145,4 +157,27 @@ describe("Payload Upload", () => {
     };
     expect(jobState.state).toEqual("waiting");
   });
+
+  it("Valid Job Poll for Completed", async () => {
+    const response = await startValidIAMFJob(manager.server.app);
+
+    // Poll job status.
+    const jobID = JSON.parse(response.text).jobID;
+    let jobState: {
+      result: any;
+      state: JobState;
+    };
+
+    do {
+      const pollStatus = await request(manager.server.app)
+        .get(`/job-status/${jobID}`)
+        .expect(200);
+      jobState = JSON.parse(pollStatus.text);
+      console.log(jobState);
+      if (jobState.state !== "completed") await setTimeout(1000);
+    } while (jobState.state === "waiting");
+
+    expect(jobState.state === "completed");
+    console.log("Job finished.");
+  }, 5000);
 });

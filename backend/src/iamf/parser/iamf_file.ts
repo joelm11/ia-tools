@@ -1,13 +1,19 @@
 import { spawn } from "child_process";
 import fs from "fs";
+import path from "path";
 
 const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
+const IAMF_FILENAME = "boo.iamf";
+
+type IAMFFileResult =
+  | { success: true; iamfURL: string }
+  | { success: false; error: string };
 
 export async function buildIAMFFile(
   iamfMetaDataURL: string,
   inputWavDirURL: string,
   iamfOutputDirURL: string
-) {
+): Promise<IAMFFileResult> {
   const args = [
     "--user_metadata_filename=" + iamfMetaDataURL,
     "--input_wav_directory=" + inputWavDirURL,
@@ -29,13 +35,15 @@ export async function buildIAMFFile(
 
     iamfProcess.on("close", (code) => {
       fs.unlinkSync(iamfMetaDataURL);
-      resolve(null);
+      resolve({
+        success: true,
+        iamfURL: path.join(iamfOutputDirURL, IAMF_FILENAME),
+      });
     });
 
     iamfProcess.on("error", (err) => {
-      console.error(`Error spawning command: ${err}`);
       fs.unlinkSync(iamfMetaDataURL);
-      reject(err);
+      resolve({ success: false, error: err.message });
     });
   });
 }

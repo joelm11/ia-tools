@@ -30,12 +30,13 @@ import {
   getChannelLabels,
   getIAMFLayout,
 } from "./iamf_format_tools";
-import fs from "fs";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { AudioChFormat } from "src/@types/AudioFormats";
 import { StorageService } from "src/storage/storage_fs";
 import path from "path";
+
+const CODEC_CONFIG_ID = 200;
+const CODEC_BIT_DEPTH = 24;
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;
@@ -46,13 +47,14 @@ interface MixPresentationMetadata extends MixPresentationBase {
   audioElements: AudioElementMetadata[];
 }
 
-const CODEC_CONFIG_ID = 200;
-const CODEC_BIT_DEPTH = 24;
+type IAMFProtoResult =
+  | { success: true; protoURL: string }
+  | { success: false; error: string };
 
 export async function payloadToIAMF(
   mixPresentations: MixPresentationBase[],
   iamfFilesService: StorageService
-): Promise<string> {
+): Promise<IAMFProtoResult> {
   // Safety check in case of single mix presentation.
   if (!Array.isArray(mixPresentations)) {
     mixPresentations = [mixPresentations];
@@ -300,7 +302,8 @@ function mixpresentationAudioElements(
 async function metadataToTextProto(
   metadata: UserMetadata,
   iamfFileService: StorageService
-) {
+): Promise<IAMFProtoResult> {
+  let res: IAMFProtoResult;
   const bin = UserMetadata.encode(metadata).finish();
   // Write binary to a temporary file.
   const binDataLabel = "configured_iamf_md.bin";
@@ -331,10 +334,9 @@ async function metadataToTextProto(
     }
   } catch (error: any) {
     console.error(`Error: ${error.message}`);
+    return { success: false, error: error.message };
+  } finally {
+    iamfFileService.delete(binDataLabel);
   }
-
-  // Delete the binary file.
-  iamfFileService.delete(binDataLabel);
-
-  return protoOutputURL;
+  return { success: true, protoURL: protoOutputURL };
 }

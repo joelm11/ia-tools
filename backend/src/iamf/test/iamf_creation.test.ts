@@ -29,6 +29,10 @@ describe("Test create IAMF files from given payloads", async () => {
     expect(ret.success).toBe(true);
   });
 
+  afterAll(async () => {
+    fs.rmdirSync(iamfStorage.storageDir);
+  });
+
   it("1AE1MP", async () => {
     // Read the payload for this test.
     const payloadPath = path.join(
@@ -37,10 +41,11 @@ describe("Test create IAMF files from given payloads", async () => {
       "1ae1mp.json"
     );
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
-    const protofile = await payloadToIAMF(payload, iamfStorage);
+    const protoOpResult = await payloadToIAMF(payload, iamfStorage);
+    expect(protoOpResult.success);
     // Await the IAMF file creation.
     await buildIAMFFile(
-      protofile,
+      protoOpResult.protoURL,
       audioSourceStorage.storageDir,
       iamfStorage.storageDir
     );
