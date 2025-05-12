@@ -28,24 +28,29 @@ export async function buildIAMFFile(
     const iamfProcess = spawn(IAMF_EXE, args);
     let logData = "";
 
-    iamfProcess.stdout.on("data", (data) => {
-      logData += `Stdout: ${data.toString()}\n`;
-    });
-
-    iamfProcess.stderr.on("data", (data) => {
-      logData += `Stderr: ${data.toString()}\n`;
-    });
+    // iamfProcess.stdout.on("data", (data) => {
+    //   logData += `Stdout: ${data.toString()}\n`;
+    // });
+    // iamfProcess.stderr.on("data", (data) => {
+    //   logData += `Stderr: ${data.toString()}\n`;
+    // });
 
     iamfProcess.on("close", async (code) => {
       fs.unlinkSync(iamfMetaDataURL);
-      resolve({
-        iamfUrl: path.join(iamfOutputDirURL, IAMF_FILENAME),
-      });
+      // Unfortunately this can where the process closes but it isn't handled as an error
+      if (code !== 0) {
+        // await iamfJobStorage.create(Buffer.from(logData), logFileID);
+        reject(`IAMF Encoder completed with code ${code}`);
+      } else {
+        resolve({
+          iamfUrl: path.join(iamfOutputDirURL, IAMF_FILENAME),
+        });
+      }
     });
 
     iamfProcess.on("error", async (err) => {
       try {
-        await iamfJobStorage.create(Buffer.from(logData), logFileID);
+        // await iamfJobStorage.create(Buffer.from(logData), logFileID);
         console.error(`Process error. Log file: ${logFileID}`);
       } catch (storageErr) {
         console.error(`Failed to store log file: ${storageErr}`);
