@@ -26,7 +26,8 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
             buildIAMFFile(
               iamfProtoRes.protoUrl,
               this.audioSourceStore.storageDir,
-              iamfSS.storageDir
+              iamfSS.storageDir,
+              iamfSS
             )
           )
           .catch((error) => {

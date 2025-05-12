@@ -46,7 +46,8 @@ describe("Test create IAMF files from given payloads", async () => {
     await buildIAMFFile(
       protoOpResult.protoUrl,
       audioSourceStorage.storageDir,
-      iamfStorage.storageDir
+      iamfStorage.storageDir,
+      iamfStorage
     );
     // Check if the IAMF file is created.
     const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
@@ -72,7 +73,8 @@ describe("Test create IAMF files from given payloads", async () => {
       await buildIAMFFile(
         iamfProtoRes.protoUrl,
         audioSourceStorage.storageDir,
-        iamfStorage.storageDir
+        iamfStorage.storageDir,
+        iamfStorage
       );
       // Check if the IAMF file is created.
       const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
@@ -91,7 +93,8 @@ describe("Test create IAMF files from given payloads", async () => {
     await buildIAMFFile(
       iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
-      iamfStorage.storageDir
+      iamfStorage.storageDir,
+      iamfStorage
     );
     const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
     expect(fs.existsSync(iamfFilePath)).toBe(true);
@@ -108,7 +111,8 @@ describe("Test create IAMF files from given payloads", async () => {
     await buildIAMFFile(
       iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
-      iamfStorage.storageDir
+      iamfStorage.storageDir,
+      iamfStorage
     );
     const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
     expect(fs.existsSync(iamfFilePath)).toBe(true);
@@ -125,7 +129,8 @@ describe("Test create IAMF files from given payloads", async () => {
     await buildIAMFFile(
       iamfProtoRes.protoUrl,
       audioSourceStorage.storageDir,
-      iamfStorage.storageDir
+      iamfStorage.storageDir,
+      iamfStorage
     );
     const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
     expect(fs.existsSync(iamfFilePath)).toBe(true);

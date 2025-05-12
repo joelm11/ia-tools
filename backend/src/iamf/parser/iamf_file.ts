@@ -1,6 +1,7 @@
 import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
+import { StorageService } from "src/storage/storage_fs";
 
 const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
 const IAMF_FILENAME = "boo.iamf";
@@ -12,7 +13,8 @@ interface IAMFFileResult {
 export async function buildIAMFFile(
   iamfMetaDataURL: string,
   inputWavDirURL: string,
-  iamfOutputDirURL: string
+  iamfOutputDirURL: string,
+  iamfJobStorage: StorageService
 ): Promise<IAMFFileResult> {
   const args = [
     "--user_metadata_filename=" + iamfMetaDataURL,
@@ -20,27 +22,34 @@ export async function buildIAMFFile(
     "--output_iamf_directory=" + iamfOutputDirURL,
   ];
 
+  const logFileID = `iamf_process_${Date.now()}.log`;
+
   return new Promise((resolve, reject) => {
     const iamfProcess = spawn(IAMF_EXE, args);
+    let logData = "";
 
-    // // Commenting these streams out for now.
-    // // TODO: Capture / log this information
-    // iamfProcess.stdout.on("data", (data) => {
-    //   console.log(`Stdout from command: ${data.toString()}`);
-    // });
+    iamfProcess.stdout.on("data", (data) => {
+      logData += `Stdout: ${data.toString()}\n`;
+    });
 
-    // iamfProcess.stderr.on("data", (data) => {
-    //   console.error(`Stderr from command: ${data.toString()}`);
-    // });
+    iamfProcess.stderr.on("data", (data) => {
+      logData += `Stderr: ${data.toString()}\n`;
+    });
 
-    iamfProcess.on("close", (code) => {
+    iamfProcess.on("close", async (code) => {
       fs.unlinkSync(iamfMetaDataURL);
       resolve({
         iamfUrl: path.join(iamfOutputDirURL, IAMF_FILENAME),
       });
     });
 
-    iamfProcess.on("error", (err) => {
+    iamfProcess.on("error", async (err) => {
+      try {
+        await iamfJobStorage.create(Buffer.from(logData), logFileID);
+        console.error(`Process error. Log file: ${logFileID}`);
+      } catch (storageErr) {
+        console.error(`Failed to store log file: ${storageErr}`);
+      }
       fs.unlinkSync(iamfMetaDataURL);
       reject(err);
     });
