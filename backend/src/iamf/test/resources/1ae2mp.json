@@ -20,8 +20,8 @@
     "playbackFormat": "none",
     "audioElements": [
       {
-        "name": "BassNote.wav",
-        "id": "BassNote.wav",
+        "name": "dialog_clip_stereo.wav",
+        "id": "dialog_clip_stereo.wav",
         "audioChFormat": "Stereo",
         "gain": 20
       }

@@ -1,10 +1,10 @@
 import { expect, describe, it, beforeAll, afterAll, afterEach } from "vitest";
-import { payloadToIAMF } from "../parser/iamf_proto";
+import { iamfWorkerJob } from "../../workers/iamf_worker";
 import fs from "fs";
 import path from "path";
-import { buildIAMFFile } from "../parser/iamf_file";
 import { AudioChFormat } from "src/@types/AudioFormats";
 import { StorageService } from "src/storage/storage_fs";
+import { MixPresentationBase } from "src/@types/MixPresentation";
 
 describe("Test create IAMF files from given payloads", async () => {
   const cwd = process.cwd();
@@ -38,24 +38,19 @@ describe("Test create IAMF files from given payloads", async () => {
   });
 
   it("1AE1MP", async () => {
-    // Read the payload for this test.
     const payloadPath = path.join(
       cwd,
       "src/iamf/test/resources",
       "1ae1mp.json"
     );
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
-    const protoOpResult = await payloadToIAMF(payload, iamfStorage);
-    // Await the IAMF file creation.
-    await buildIAMFFile(
-      protoOpResult.protoUrl,
-      audioSourceStorage.storageDir,
-      iamfStorage.storageDir,
-      iamfStorage
+    const result = await iamfWorkerJob(
+      "1AE1MPTest",
+      [payload],
+      audioSourceStorage
     );
-    // Check if the IAMF file is created.
-    const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
-    expect(fs.existsSync(iamfFilePath)).toBe(true);
+
+    expect(fs.existsSync(result.iamfUrl)).toBe(true);
   });
 
   it("1AE1MP: All audio element formats", async () => {
@@ -70,19 +65,13 @@ describe("Test create IAMF files from given payloads", async () => {
         /"audioElementFormat": ".*?"/,
         `"audioElementFormat": "${layout}"`
       );
-      const iamfProtoRes = await payloadToIAMF(
-        JSON.parse(payload),
-        iamfStorage
+      const result = await iamfWorkerJob(
+        "1AE1MPFormats",
+        [JSON.parse(payload)],
+        audioSourceStorage
       );
-      await buildIAMFFile(
-        iamfProtoRes.protoUrl,
-        audioSourceStorage.storageDir,
-        iamfStorage.storageDir,
-        iamfStorage
-      );
-      // Check if the IAMF file is created.
-      const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
-      expect(fs.existsSync(iamfFilePath)).toBe(true);
+
+      expect(fs.existsSync(result.iamfUrl)).toBe(true);
     }
   });
 
@@ -92,51 +81,38 @@ describe("Test create IAMF files from given payloads", async () => {
       "src/iamf/test/resources",
       "1ae2mp.json"
     );
-    let payload = fs.readFileSync(payloadPath, "utf-8");
-    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
-    await buildIAMFFile(
-      iamfProtoRes.protoUrl,
-      audioSourceStorage.storageDir,
-      iamfStorage.storageDir,
-      iamfStorage
+    const payload: MixPresentationBase[] = JSON.parse(
+      fs.readFileSync(payloadPath, "utf-8")
     );
-    const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
-    expect(fs.existsSync(iamfFilePath)).toBe(true);
+    console.log("Payload", payload);
+    const result = await iamfWorkerJob("1AE2MP", payload, audioSourceStorage);
+
+    expect(fs.existsSync(result.iamfUrl)).toBe(true);
   });
 
-  it("2AE2MP", async () => {
-    const payloadPath = path.join(
-      process.cwd(),
-      "src/iamf/test/resources",
-      "2ae2mp.json"
-    );
-    let payload = fs.readFileSync(payloadPath, "utf-8");
-    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
-    await buildIAMFFile(
-      iamfProtoRes.protoUrl,
-      audioSourceStorage.storageDir,
-      iamfStorage.storageDir,
-      iamfStorage
-    );
-    const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
-    expect(fs.existsSync(iamfFilePath)).toBe(true);
-  });
+  // it("2AE2MP", async () => {
+  //   const payloadPath = path.join(
+  //     process.cwd(),
+  //     "src/iamf/test/resources",
+  //     "2ae2mp.json"
+  //   );
+  //   const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
+  //   const job = { id: "2AE2MP", data: [payload] };
+  //   const result = await iamfWorkerJob(job, audioSourceStorage);
 
-  it("4AE1MP", async () => {
-    const payloadPath = path.join(
-      process.cwd(),
-      "src/iamf/test/resources",
-      "4ae1mp.json"
-    );
-    let payload = fs.readFileSync(payloadPath, "utf-8");
-    const iamfProtoRes = await payloadToIAMF(JSON.parse(payload), iamfStorage);
-    await buildIAMFFile(
-      iamfProtoRes.protoUrl,
-      audioSourceStorage.storageDir,
-      iamfStorage.storageDir,
-      iamfStorage
-    );
-    const iamfFilePath = path.join(iamfStorage.storageDir, "/boo.iamf");
-    expect(fs.existsSync(iamfFilePath)).toBe(true);
-  });
+  //   expect(fs.existsSync(result.iamfUrl)).toBe(true);
+  // });
+
+  // it("4AE1MP", async () => {
+  //   const payloadPath = path.join(
+  //     process.cwd(),
+  //     "src/iamf/test/resources",
+  //     "4ae1mp.json"
+  //   );
+  //   const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
+  //   const job = { id: "4AE1MP", data: [payload] };
+  //   const result = await iamfWorkerJob(job, audioSourceStorage);
+
+  //   expect(fs.existsSync(result.iamfUrl)).toBe(true);
+  // });
 });

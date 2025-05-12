@@ -6,7 +6,7 @@ import { StorageService } from "src/storage/storage_fs";
 const IAMF_EXE = `${process.cwd()}/src/iamf/iamf-tools/bazel-bin/iamf/cli/encoder_main`;
 const IAMF_FILENAME = "boo.iamf";
 
-interface IAMFFileResult {
+export interface IAMFFileResult {
   iamfUrl: string;
 }
 
@@ -28,18 +28,18 @@ export async function buildIAMFFile(
     const iamfProcess = spawn(IAMF_EXE, args);
     let logData = "";
 
-    // iamfProcess.stdout.on("data", (data) => {
-    //   logData += `Stdout: ${data.toString()}\n`;
-    // });
-    // iamfProcess.stderr.on("data", (data) => {
-    //   logData += `Stderr: ${data.toString()}\n`;
-    // });
+    iamfProcess.stdout.on("data", (data) => {
+      logData += `Stdout: ${data.toString()}\n`;
+    });
+    iamfProcess.stderr.on("data", (data) => {
+      logData += `Stderr: ${data.toString()}\n`;
+    });
 
     iamfProcess.on("close", async (code) => {
       fs.unlinkSync(iamfMetaDataURL);
       // Unfortunately this can where the process closes but it isn't handled as an error
       if (code !== 0) {
-        // await iamfJobStorage.create(Buffer.from(logData), logFileID);
+        await iamfJobStorage.create(Buffer.from(logData), logFileID);
         reject(`IAMF Encoder completed with code ${code}`);
       } else {
         resolve({

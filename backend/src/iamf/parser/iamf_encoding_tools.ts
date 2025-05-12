@@ -8,25 +8,25 @@ interface WavFileDescriptor {
   sampleRate?: number;
 }
 
-/** @brief As the IAMF Encoder requires input audio files to be formatted exactly the same ( sample rate)
- * we provide this utility function to set these features.
- */
-export async function formatWav(
-  inputId: string,
-  audioStorageService: StorageService,
+// Take list of source IDs, the storage service, and the desired wav params.
+export async function formatSourceAudio(
+  sourceIds: string[],
+  sourceStore: StorageService,
   desc: WavFileDescriptor
 ) {
-  const { success, url } = await audioStorageService.exists(inputId);
-  if (!success || !url) {
-    throw `formatWav: Input file '${inputId}' not found.`;
-  }
+  for (const id of sourceIds) {
+    const { success, url } = await sourceStore.exists(id);
+    if (!success || !url) {
+      throw `formatSourceAudio: Input file '${id}' not found.`;
+    }
 
-  // Only resample for now
-  let newWav = new WaveFile(fs.readFileSync(url));
-  if (desc.sampleRate && (newWav.fmt as any).sampleRate) {
-    console.log("Resampling:", inputId);
+    // Only resample for now
     let newWav = new WaveFile(fs.readFileSync(url));
-    newWav.toSampleRate(desc.sampleRate, { method: "sinc" });
-    audioStorageService.replace(inputId, newWav.toBuffer());
+    if (desc.sampleRate && (newWav.fmt as any).sampleRate) {
+      // console.log("Resampling:", id);
+      let newWav = new WaveFile(fs.readFileSync(url));
+      newWav.toSampleRate(desc.sampleRate, { method: "sinc" });
+      sourceStore.replace(id, newWav.toBuffer());
+    }
   }
 }
