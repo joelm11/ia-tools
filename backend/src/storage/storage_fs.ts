@@ -40,6 +40,24 @@ export class StorageService implements Storage {
     });
   }
 
+  async replace(fileID: string, file: Buffer | ArrayBufferLike) {
+    const fileExists = await this.exists(fileID);
+    if (!fileExists.success) {
+      return { success: false, error: "storage_fs.ts: File does not exist" };
+    }
+    return new Promise((resolve, reject) => {
+      const filePath = path.join(this.storageDir, fileID);
+      const fileData = file instanceof Buffer ? file : Buffer.from(file);
+      fs.writeFile(filePath, fileData, (err) => {
+        if (err) {
+          reject({ success: false, error: err.message });
+        } else {
+          resolve({ success: true, url: filePath });
+        }
+      });
+    });
+  }
+
   async exists(fileID: string): Promise<StorageReturn> {
     // Check if the file exists in the filesystem
     return new Promise((resolve) => {
