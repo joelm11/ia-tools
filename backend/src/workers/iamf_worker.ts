@@ -35,7 +35,7 @@ export async function iamfWorkerJob(
   jobData: MixPresentationBase[],
   audioSS: StorageService
 ): Promise<IAMFFileResult> {
-  const iamfSS = new StorageService("/tmp", jobId as string);
+  const iamfSS = new StorageService("/tmp/ia-tools", jobId as string);
 
   // Encoding will fail unless audio sources are at the same sample rate
   let sourceSet = new Map<string, string>();

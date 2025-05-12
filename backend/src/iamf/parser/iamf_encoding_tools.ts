@@ -22,9 +22,8 @@ export async function formatSourceAudio(
 
     // Only resample for now
     let newWav = new WaveFile(fs.readFileSync(url));
-    if (desc.sampleRate && (newWav.fmt as any).sampleRate) {
-      // console.log("Resampling:", id);
-      let newWav = new WaveFile(fs.readFileSync(url));
+    if (desc.sampleRate && (newWav.fmt as any).sampleRate !== desc.sampleRate) {
+      console.log("Resampling:", id);
       newWav.toSampleRate(desc.sampleRate, { method: "sinc" });
       sourceStore.replace(id, newWav.toBuffer());
     }

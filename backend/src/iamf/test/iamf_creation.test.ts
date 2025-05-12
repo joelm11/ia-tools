@@ -33,7 +33,7 @@ describe("Test create IAMF files from given payloads", async () => {
     // Only remove the folder if it's empty (no failed test logs to look at)
     if (fs.readdirSync(iamfStorage.storageDir).length === 0) {
       console.log("IAMF Creation Test: Removing encoder logs");
-      fs.rmdirSync(iamfStorage.storageDir);
+      // fs.rmdirSync(iamfStorage.storageDir);
     }
   });
 
