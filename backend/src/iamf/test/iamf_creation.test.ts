@@ -59,7 +59,7 @@ describe("Test create IAMF files from given payloads", async () => {
   afterEach(async () => {});
 
   afterAll(async () => {
-    // await fs.rm(tempAudioDirectory, { recursive: true, force: true });
+    await fs.rm(tempAudioDirectory, { recursive: true, force: true });
   });
 
   it("1AE1MP", async () => {

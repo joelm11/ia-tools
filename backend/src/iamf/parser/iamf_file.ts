@@ -22,7 +22,7 @@ export async function buildIAMFFile(
     "--output_iamf_directory=" + iamfOutputDirURL,
   ];
 
-  const logFileID = `iamf_process_${Date.now()}.log`;
+  const logFileID = `iamf_encoder.log`;
 
   return new Promise((resolve, reject) => {
     const iamfProcess = spawn(IAMF_EXE, args);
