@@ -29,13 +29,7 @@ describe("Test create IAMF files from given payloads", async () => {
     expect(ret.success).toBe(true);
   });
 
-  afterAll(async () => {
-    // Only remove the folder if it's empty (no failed test logs to look at)
-    if (fs.readdirSync(iamfStorage.storageDir).length === 0) {
-      console.log("IAMF Creation Test: Removing encoder logs");
-      // fs.rmdirSync(iamfStorage.storageDir);
-    }
-  });
+  afterAll(async () => {});
 
   it("1AE1MP", async () => {
     const payloadPath = path.join(
@@ -84,7 +78,7 @@ describe("Test create IAMF files from given payloads", async () => {
     const payload: MixPresentationBase[] = JSON.parse(
       fs.readFileSync(payloadPath, "utf-8")
     );
-    console.log("Payload", payload);
+    // console.log("Payload", payload);
     const result = await iamfWorkerJob("1AE2MP", payload, audioSourceStorage);
 
     expect(fs.existsSync(result.iamfUrl)).toBe(true);

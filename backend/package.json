@@ -7,7 +7,7 @@
     "worker": "ts-node -r tsconfig-paths/register src/workers/iamf_worker.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "vitest"
+    "test": "vitest iamf"
   },
   "keywords": [],
   "author": "",

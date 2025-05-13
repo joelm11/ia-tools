@@ -19,12 +19,15 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         const jobId = job.id ? job.id : "InvalidJobId";
         console.log("Processing job:", job.id);
 
-        const jobRes = await iamfWorkerJob(jobId, job.data, audioSS);
-
-        console.log("Completed job:", job.id);
-        return jobRes.iamfUrl;
+        await iamfWorkerJob(jobId, job.data, audioSS)
+          .then((iamfJobRes) => {
+            console.log("Completed job:", job.id);
+            return iamfJobRes.iamfUrl;
+          })
+          .catch((err) => {
+            console.log("Failed job:", job.id, "with", err);
+          });
       },
-
       BULLMQ_REDIS_CONNECTION
     );
   }
@@ -52,20 +55,24 @@ export async function iamfWorkerJob(
     }
   }
   const sourceIds = [...sourceSet.keys()];
-  console.log("Elements of set:", sourceIds);
-  formatSourceAudio(sourceIds, audioSS, { sampleRate: 44100 });
+  // console.log("Elements of set:", sourceIds);
+  formatSourceAudio(sourceIds, audioSS, {
+    sampleRate: 44100,
+    bitDepth: 24,
+  });
 
   // Attempt IAMF encoding from job payload.
   const iamfEncoderRes = await payloadToIAMF(jobData, iamfSS)
-    .then((iamfProtoRes) =>
-      buildIAMFFile(
+    .then((iamfProtoRes) => {
+      return buildIAMFFile(
         iamfProtoRes.protoUrl,
         audioSS.storageDir,
         iamfSS.storageDir,
         iamfSS
-      )
-    )
+      );
+    })
     .catch((error) => {
+      console.log("Failed building IAMF file with error:", error, jobId);
       throw error;
     });
   return iamfEncoderRes;
