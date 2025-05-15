@@ -40,7 +40,7 @@ export async function buildIAMFFile(
       // Unfortunately this can happen where the process closes but it isn't handled as an error
       if (code !== 0) {
         await iamfJobStorage.create(Buffer.from(logData), logFileID);
-        // console.log(logData);
+        console.log(logData);
         reject(`IAMF Encoder completed with code ${code}`);
       } else {
         resolve({

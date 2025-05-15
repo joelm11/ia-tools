@@ -172,7 +172,7 @@ describe("Payload Upload", () => {
         .expect(200);
       jobState = JSON.parse(pollStatus.text);
       if (jobState.state !== "completed") await setTimeout(1000);
-    } while (jobState.state === "waiting");
+    } while (jobState.state !== "completed");
 
     expect(jobState.state === "completed");
 

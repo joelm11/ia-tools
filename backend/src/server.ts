@@ -119,6 +119,7 @@ export class AppServer {
           const state = await job.getState();
           if (state === "completed") {
             const iamfFileUrl = job.returnvalue;
+            console.log(iamfFileUrl);
             res.download(iamfFileUrl, "IamfEncoding.iamf", (error) => {
               if (error) {
                 // Handle errors, e.g., file not found
@@ -132,8 +133,8 @@ export class AppServer {
             });
           }
         } catch (error) {
-          console.error("Error fetching job status:", error);
-          res.status(500).send("Error fetching job status");
+          console.error("Error downloading job result:", error);
+          res.status(500).send("Error downloading job result");
         }
       }
     );

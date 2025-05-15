@@ -35,8 +35,9 @@ import { promisify } from "util";
 import { StorageService } from "src/storage/storage_fs";
 import path from "path";
 
-const CODEC_CONFIG_ID = 200;
-const CODEC_BIT_DEPTH = 24;
+export const CODEC_CONFIG_ID = 200;
+export const CODEC_BIT_DEPTH = 32;
+export const CODEC_SR = 48000;
 
 interface AudioElementMetadata extends AudioElementBase {
   idInt: number;
@@ -151,7 +152,7 @@ function addDefaultMetadata(
         decoderConfigLpcm: {
           sampleFormatFlags: LpcmFormatFlags.LPCM_LITTLE_ENDIAN,
           sampleSize: CODEC_BIT_DEPTH,
-          sampleRate: 44100,
+          sampleRate: CODEC_SR,
         },
       },
     })

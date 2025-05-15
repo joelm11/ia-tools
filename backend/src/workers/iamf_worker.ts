@@ -1,6 +1,10 @@
 import { Job, Worker } from "bullmq";
 import { BULLMQ_IAMF_JOB_QUEUE, BULLMQ_REDIS_CONNECTION } from "../manager";
-import { payloadToIAMF } from "../iamf/parser/iamf_proto";
+import {
+  CODEC_BIT_DEPTH,
+  CODEC_SR,
+  payloadToIAMF,
+} from "../iamf/parser/iamf_proto";
 import { buildIAMFFile, IAMFFileResult } from "../iamf/parser/iamf_file";
 import type { MixPresentationBase } from "src/@types/MixPresentation";
 import { StorageService } from "src/storage/storage_fs";
@@ -22,6 +26,7 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         await iamfWorkerJob(jobId, job.data, audioSS)
           .then((iamfJobRes) => {
             console.log("Completed job:", job.id);
+            console.log(iamfJobRes.iamfUrl);
             return iamfJobRes.iamfUrl;
           })
           .catch((err) => {
@@ -55,10 +60,9 @@ export async function iamfWorkerJob(
     }
   }
   const sourceIds = [...sourceSet.keys()];
-  // console.log("Elements of set:", sourceIds);
-  formatSourceAudio(sourceIds, audioSS, {
-    sampleRate: 44100,
-    bitDepth: 24,
+  await formatSourceAudio(sourceIds, audioSS, {
+    sampleRate: CODEC_SR,
+    bitDepth: CODEC_BIT_DEPTH,
   });
 
   // Attempt IAMF encoding from job payload.
