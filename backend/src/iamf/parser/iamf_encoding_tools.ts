@@ -24,32 +24,22 @@ export async function formatSourceAudio(
   sourceStore: StorageService,
   desc: FormatAudioParams
 ) {
-  // wav.encode([[]], {
-  //   sampleRate: 44100,
-  //   bitDepth: 24,
-  // });
-  // const wf = await fs.readFile(
-  //   "/Users/joelm/Desktop/ia-tools/backend/src/iamf/test/resources/audio_sources/BassNote.wav"
-  // );
-  // wav.decode(wf);
-  // console.log("Nope");
-  return processInputs(sourceIds, sourceStore)
-    .then((inFiles) => resampleSources(inFiles, desc.sampleRate))
-    .then((inFiles) => padSources(inFiles))
-    .then((inputFiles) => {
-      for (let i = 0; i < sourceIds.length; ++i) {
-        const buffer = wav.encode(inputFiles[i].file.channelData, {
-          sampleRate: desc.sampleRate,
-          float: true,
-          bitDepth: desc.bitDepth,
-        });
-        sourceStore.replace(sourceIds[i], buffer);
-        // Just write a function for this.
-      }
-    })
-    .catch((error) => {
-      throw error;
-    });
+  try {
+    const inFiles = await processInputs(sourceIds, sourceStore);
+    const resampledFiles = await resampleSources(inFiles, desc.sampleRate);
+    const paddedFiles = await padSources(resampledFiles);
+
+    for (let i = 0; i < sourceIds.length; ++i) {
+      const buffer = wav.encode(paddedFiles[i].file.channelData, {
+        sampleRate: desc.sampleRate,
+        float: true,
+        bitDepth: desc.bitDepth,
+      });
+      await sourceStore.replace(sourceIds[i], buffer);
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function processInputs(

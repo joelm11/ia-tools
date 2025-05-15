@@ -59,12 +59,9 @@ describe("formatSourceAudio", () => {
 
     const existsPostMod = await storage.exists(fileId);
 
-    console.log(existsPostMod);
-
     const wavFile = await fs.readFile(existsPostMod.url!);
     const { sampleRate } = wav.decode(wavFile);
 
     expect(sampleRate).toEqual(48000);
-    await storage.delete(fileId);
   });
 });
