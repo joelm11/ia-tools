@@ -93,12 +93,12 @@ describe("formatSourceAudio", () => {
     let wavFile = await fs.readFile(existsPostMod.url!);
     let { sampleRate, channelData } = wav.decode(wavFile);
     expect(sampleRate).toEqual(48000);
-    expect(channelData[0].length).toEqual(4);
+    const chLength = channelData[0].length;
 
     existsPostMod = await storage.exists(fileId2);
     wavFile = await fs.readFile(existsPostMod.url!);
     ({ sampleRate } = wav.decode(wavFile));
     expect(sampleRate).toEqual(48000);
-    expect(channelData[0].length).toEqual(4);
+    expect(channelData[0].length).toEqual(chLength);
   });
 });

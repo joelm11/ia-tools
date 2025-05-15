@@ -30,6 +30,8 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
           return iamfJobRes.iamfUrl;
         } catch (err) {
           console.log("Failed IAMF job:", job.id, "with", err);
+          // Log information about the failure like mix presentation MD and audio source information.
+          console.log("Job data:", job.data);
           throw err;
         }
       },

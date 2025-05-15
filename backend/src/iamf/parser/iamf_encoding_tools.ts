@@ -84,6 +84,7 @@ async function resampleSources(
       );
       channelData[ch] = new Float32Array(newSampleCh);
     }
+    file.desc.numSamples = channelData[0].length;
   }
   return inputFiles;
 }
