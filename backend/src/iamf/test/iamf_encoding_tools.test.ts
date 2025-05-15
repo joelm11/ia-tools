@@ -46,7 +46,7 @@ describe("formatSourceAudio", () => {
     const fileId = "file2.wav";
     const ichannelData = [new Float32Array([0, 1, 0, 0.6])];
     const buffer = wav.encode(ichannelData, {
-      sampleRate: 44100,
+      sampleRate: 24000,
       bitDepth: 16,
     });
     const ret = await storage.create(buffer, fileId);
@@ -60,8 +60,45 @@ describe("formatSourceAudio", () => {
     const existsPostMod = await storage.exists(fileId);
 
     const wavFile = await fs.readFile(existsPostMod.url!);
-    const { sampleRate } = wav.decode(wavFile);
+    const { sampleRate, channelData } = wav.decode(wavFile);
 
     expect(sampleRate).toEqual(48000);
+    expect(channelData[0].length).toEqual(8);
+  });
+
+  it("pad", async () => {
+    const fileId = "file3.wav";
+    const fileId2 = "file4.wav";
+    const ichannelData = [new Float32Array([0, 1, 0, 0.6])];
+    const ichannelData2 = [new Float32Array([0, 1])];
+    const buffer = wav.encode(ichannelData, {
+      sampleRate: 44100,
+      bitDepth: 16,
+    });
+    const buffer2 = wav.encode(ichannelData2, {
+      sampleRate: 16000,
+      bitDepth: 24,
+    });
+    let ret = await storage.create(buffer, fileId);
+    expect(ret.success === true);
+    ret = await storage.create(buffer2, fileId2);
+    expect(ret.success === true);
+
+    await formatSourceAudio([fileId, fileId2], storage, {
+      bitDepth: 24,
+      sampleRate: 48000,
+    });
+
+    let existsPostMod = await storage.exists(fileId);
+    let wavFile = await fs.readFile(existsPostMod.url!);
+    let { sampleRate, channelData } = wav.decode(wavFile);
+    expect(sampleRate).toEqual(48000);
+    expect(channelData[0].length).toEqual(4);
+
+    existsPostMod = await storage.exists(fileId2);
+    wavFile = await fs.readFile(existsPostMod.url!);
+    ({ sampleRate } = wav.decode(wavFile));
+    expect(sampleRate).toEqual(48000);
+    expect(channelData[0].length).toEqual(4);
   });
 });
