@@ -6,7 +6,6 @@ import { StorageService } from "src/storage/storage_fs";
 import { formatSourceAudio } from "../parser/iamf_encoding_tools";
 
 describe("formatSourceAudio", () => {
-  const fileId = "file1.wav";
   let storage: StorageService;
 
   beforeAll(async () => {
@@ -16,16 +15,12 @@ describe("formatSourceAudio", () => {
     );
   });
 
-  afterEach(async () => {
-    const deleted = await storage.delete(fileId);
-    expect(deleted.success);
-  });
-
   afterAll(async () => {
     await fs.rm(storage.storageDir, { recursive: true, force: true });
   });
 
   it("Wav API test", async () => {
+    const fileId = "file1.wav";
     const ichannelData = [new Float32Array([0, 1, 0, 0.6])];
     const buffer = wav.encode(ichannelData, {
       sampleRate: 16000,
@@ -48,6 +43,7 @@ describe("formatSourceAudio", () => {
   });
 
   it("samplerate", async () => {
+    const fileId = "file2.wav";
     const ichannelData = [new Float32Array([0, 1, 0, 0.6])];
     const buffer = wav.encode(ichannelData, {
       sampleRate: 44100,
