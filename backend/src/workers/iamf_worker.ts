@@ -16,22 +16,22 @@ import { formatSourceAudio } from "src/iamf/parser/iamf_encoding_tools";
  */
 export class IAMFWorker extends Worker<MixPresentationBase[]> {
   constructor(audioSS: StorageService) {
-    // Call the Worker constructor with the job processor
     super(
       BULLMQ_IAMF_JOB_QUEUE,
+      // The job processor function:
       async (job: Job<MixPresentationBase[]>) => {
         const jobId = job.id ? job.id : "InvalidJobId";
         console.log("Processing job:", job.id);
 
-        await iamfWorkerJob(jobId, job.data, audioSS)
-          .then((iamfJobRes) => {
-            console.log("Completed job:", job.id);
-            console.log(iamfJobRes.iamfUrl);
-            return iamfJobRes.iamfUrl;
-          })
-          .catch((err) => {
-            console.log("Failed job:", job.id, "with", err);
-          });
+        try {
+          const iamfJobRes = await iamfWorkerJob(jobId, job.data, audioSS);
+          console.log("Completed job:", job.id);
+          console.log(iamfJobRes.iamfUrl);
+          return iamfJobRes.iamfUrl;
+        } catch (err) {
+          console.log("Failed IAMF job:", job.id, "with", err);
+          throw err;
+        }
       },
       BULLMQ_REDIS_CONNECTION
     );
