@@ -1,36 +1,20 @@
 <script lang="ts">
   import PbElemAe from "./PBElemAE.svelte";
-  import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
+  import { AudioMixer } from "src/@lib/iamf_renderer/audio-mixer";
 
   let { mixPresentation } = $props();
   let isPlaying = $state(false);
   let mixGain = $state(50);
-  let presentationMixer: PresentationMixer;
+  let mixer: AudioMixer;
 
   function handlePlayPause() {
-    presentationMixer = PresentationMixer.getInstance();
-    presentationMixer.setActive(mixPresentation);
-    presentationMixer.playpause();
+    mixer = AudioMixer.getInstance();
+    mixer.setMixPresentation(mixPresentation);
+    console.log(mixer);
+    if (isPlaying) mixer.pause();
+    else mixer.play();
     isPlaying = !isPlaying;
   }
-
-  function handleAllElementsFinished() {
-    isPlaying = false;
-  }
-
-  $effect(() => {
-    presentationMixer = PresentationMixer.getInstance();
-    presentationMixer.addEventListener(
-      "allElementsFinished",
-      handleAllElementsFinished
-    );
-    return () => {
-      presentationMixer.removeEventListener(
-        "allElementsFinished",
-        handleAllElementsFinished
-      );
-    };
-  });
 </script>
 
 <div
@@ -65,7 +49,7 @@
       bind:value={mixGain}
       oninput={() => {
         mixPresentation.mixGain = mixGain / 100;
-        presentationMixer.setGain(mixPresentation.mixGain);
+        mixer.getMasterGainController().setMasterGain(mixPresentation.mixGain);
       }}
     />
   </div>

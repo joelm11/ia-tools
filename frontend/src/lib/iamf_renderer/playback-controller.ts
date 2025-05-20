@@ -8,20 +8,17 @@ export class PlaybackController {
   }
 
   playAll(): void {
-    const allElements = this.audioElementManager.getAllElements?.() || [];
-    for (const element of allElements.values?.() || []) {
-      element.play();
+    const allElements = this.audioElementManager.getAllSourceNodes();
+    console.log(allElements);
+    for (const element of allElements) {
+      element.mediaElement.play();
     }
   }
 
   pauseAll(): void {
-    const allElements = this.audioElementManager.getAllElements?.() || [];
-    for (const element of allElements.values?.() || []) {
-      if (element instanceof HTMLMediaElement) {
-        element.pause();
-      } else if (element?.mediaElement instanceof HTMLMediaElement) {
-        element.mediaElement.pause();
-      }
+    const allElements = this.audioElementManager.getAllSourceNodes();
+    for (const element of allElements) {
+      element.mediaElement.pause();
     }
   }
 }

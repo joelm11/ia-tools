@@ -10,6 +10,7 @@ export class AudioMixer {
   private masterGainController: MasterGainController;
   private playbackController: PlaybackController;
   private playbackLayout: AudioChFormat = AudioChFormat.NONE;
+  private activePresentation: MixPresentation | null = null;
   private audioContext: AudioContext;
 
   public static getInstance(): AudioMixer {
@@ -35,8 +36,17 @@ export class AudioMixer {
    * Set a new MixPresentation, resetting the audio graph and storing playback layout.
    */
   setMixPresentation(presentation: MixPresentation): void {
-    // Store playback layout
+    if (
+      this.activePresentation &&
+      this.activePresentation.id === presentation.id
+    ) {
+      return;
+    }
+
+    // Record the new active presentation
+    this.activePresentation = presentation;
     this.playbackLayout = presentation.playbackFormat;
+
     // Reset audio graph: disconnect master gain from destination, reconnect
     this.masterGainController.getMasterGainNode().disconnect();
     this.masterGainController
@@ -48,7 +58,13 @@ export class AudioMixer {
 
     // Re-register all audio elements from the new presentation
     for (const elem of presentation.audioElements) {
-      this.registerElement((elem as any).id, (elem as any).mediaElement);
+      const mediaElem = document.getElementById(elem.id) as HTMLMediaElement;
+      if (!mediaElem) {
+        console.log("Audio Element:", elem.id, "source not found.");
+      } else {
+        this.registerElement(elem.id, mediaElem);
+        this.connectInputToMaster(elem.id);
+      }
     }
 
     // Set the output channels for the final gain node.

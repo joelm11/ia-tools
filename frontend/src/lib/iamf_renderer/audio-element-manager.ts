@@ -1,11 +1,14 @@
 import { InputGainController } from "./input-gain-controller";
 
 export class AudioElementManager {
-  private audioElements: Map<string, InputGainController>;
+  private audioElementNodes: Map<
+    string,
+    { source: MediaElementAudioSourceNode; sourceGain: InputGainController }
+  >;
   private context: AudioContext;
 
   constructor(context: AudioContext) {
-    this.audioElements = new Map();
+    this.audioElementNodes = new Map();
     this.context = context;
   }
 
@@ -13,18 +16,26 @@ export class AudioElementManager {
     const gainController = new InputGainController(this.context);
     const source = this.context.createMediaElementSource(element);
     source.connect(gainController.getGainNode());
-    this.audioElements.set(uuid, gainController);
+    this.audioElementNodes.set(uuid, {
+      source: source,
+      sourceGain: gainController,
+    });
   }
 
   public getInputGainController(uuid: string): InputGainController | undefined {
-    const val = this.audioElements.get(uuid);
-    return val instanceof InputGainController ? val : undefined;
+    return this.audioElementNodes.get(uuid)?.sourceGain;
+  }
+
+  public getAllSourceNodes(): MediaElementAudioSourceNode[] {
+    return Array.from(this.audioElementNodes.values()).map(
+      (elem) => elem.source
+    );
   }
 
   public clear(): void {
     // Disconnect all gain nodes from the audio graph
-    for (const gainController of this.audioElements.values()) {
-      const gainNode = gainController.getGainNode();
+    for (const elemNode of this.audioElementNodes.values()) {
+      const gainNode = elemNode.sourceGain.getGainNode();
       try {
         gainNode.disconnect();
       } catch (e) {
@@ -32,6 +43,6 @@ export class AudioElementManager {
       }
     }
     // Clear the map
-    this.audioElements.clear();
+    this.audioElementNodes.clear();
   }
 }
