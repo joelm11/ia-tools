@@ -41,6 +41,11 @@ export class AudioMixer {
     for (const elem of presentation.audioElements) {
       this.registerElement((elem as any).id, (elem as any).mediaElement);
     }
+
+    // Set the output channels for the final gain node.
+    // This is the output from the mixer before it hits the browser/user-provided
+    // destination node.
+    this.masterGainController.setOutputChannels(this.playbackLayout);
   }
 
   /**
