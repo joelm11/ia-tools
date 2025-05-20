@@ -1,4 +1,4 @@
-import InputGainController from "../input-gain-controller";
+import { InputGainController } from "../input-gain-controller";
 import { describe, it, beforeEach, afterEach, expect, vi } from "vitest";
 
 describe("InputGainController", () => {

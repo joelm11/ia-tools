@@ -1,5 +1,5 @@
-import AudioElementManager from "../audio-element-manager";
-import InputGainController from "../input-gain-controller";
+import { AudioElementManager } from "../audio-element-manager";
+import { InputGainController } from "../input-gain-controller";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Mock AudioContext, GainNode, and MediaElementSourceNode

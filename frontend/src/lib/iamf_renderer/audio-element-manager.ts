@@ -1,6 +1,6 @@
-import InputGainController from "./input-gain-controller";
+import { InputGainController } from "./input-gain-controller";
 
-class AudioElementManager {
+export class AudioElementManager {
   private audioElements: Map<string, InputGainController | AudioBuffer>;
   private context: AudioContext;
 
@@ -21,5 +21,3 @@ class AudioElementManager {
     return val instanceof InputGainController ? val : undefined;
   }
 }
-
-export default AudioElementManager;

@@ -1,4 +1,4 @@
-class InputGainController {
+export class InputGainController {
   private gainNode: GainNode;
 
   constructor(context: AudioContext) {
@@ -13,5 +13,3 @@ class InputGainController {
     this.gainNode.gain.value = value;
   }
 }
-
-export default InputGainController;

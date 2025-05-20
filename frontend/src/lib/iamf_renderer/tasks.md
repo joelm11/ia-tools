@@ -74,7 +74,7 @@
   - **Focus:** Accessing gain controller.
   - **Test:** Register an audio element and then use `getInputGainController` to retrieve its controller. Verify the returned object is an instance of `InputGainController`.
 
-- [ ] **Task:** In `audio-element-manager.ts`, when registering an `HTMLMediaElement`, create a `MediaElementAudioSourceNode` using the `AudioContext` and connect its output to the input of the newly created `InputGainController`'s `GainNode`.
+- [x] **Task:** In `audio-element-manager.ts`, when registering an `HTMLMediaElement`, create a `MediaElementAudioSourceNode` using the `AudioContext` and connect its output to the input of the newly created `InputGainController`'s `GainNode`.
   - **Start:** Modify `registerAudioElement` to create and connect the source node.
   - **End:** Audio element connected to its gain node.
   - **Focus:** Connecting audio source to gain.
@@ -82,21 +82,21 @@
 
 ## Phase 4: Master Gain
 
-- [ ] **Task:** Create a new file `master-gain-controller.ts`. Define a class `MasterGainController` that takes an `AudioContext` in its constructor and creates a private `GainNode` for the master volume.
+- [x] **Task:** Create a new file `master-gain-controller.ts`. Define a class `MasterGainController` that takes an `AudioContext` in its constructor and creates a private `GainNode` for the master volume.
 
   - **Start:** Create the file and class with constructor and property.
   - **End:** `MasterGainController` class with `GainNode` created.
   - **Focus:** Master gain node creation.
   - **Test:** Instantiate `MasterGainController` and check if the `GainNode` property exists.
 
-- [ ] **Task:** In `master-gain-controller.ts`, implement a public method `getMasterGainNode(): GainNode` to get the master `GainNode`.
+- [x] **Task:** In `master-gain-controller.ts`, implement a public method `getMasterGainNode(): GainNode` to get the master `GainNode`.
 
   - **Start:** Implement the getter method.
   - **End:** `getMasterGainNode` method implemented.
   - **Focus:** Accessing master gain node.
   - **Test:** Instantiate `MasterGainController` and call `getMasterGainNode`. Verify it returns a `GainNode`.
 
-- [ ] **Task:** In `master-gain-controller.ts`, implement a public method `setMasterGain(value: number): void` to set the `gain.value` of the master `GainNode`.
+- [x] **Task:** In `master-gain-controller.ts`, implement a public method `setMasterGain(value: number): void` to set the `gain.value` of the master `GainNode`.
   - **Start:** Implement the method to set master gain.
   - **End:** `setMasterGain` method implemented.
   - **Focus:** Controlling master gain.
@@ -104,28 +104,28 @@
 
 ## Phase 5: Basic Mixer Class and Connection
 
-- [ ] **Task:** Create a new file `audio-mixer.ts`. Define a class `AudioMixer` that takes an `AudioContext` in its constructor and instantiates `AudioElementManager` and `MasterGainController`.
+- [x] **Task:** Create a new file `audio-mixer.ts`. Define a class `AudioMixer` that takes an `AudioContext` in its constructor and instantiates `AudioElementManager` and `MasterGainController`.
 
   - **Start:** Create the file and class with constructor and member instances.
   - **End:** `AudioMixer` class with `AudioElementManager` and `MasterGainController`.
   - **Focus:** Mixer orchestration.
   - **Test:** Instantiate `AudioMixer` and check if `AudioElementManager` and `MasterGainController` instances are created.
 
-- [ ] **Task:** In `audio-mixer.ts`, implement a method `registerElement(uuid: string, element: HTMLMediaElement | AudioBuffer): void` that calls the `registerAudioElement` method of the `AudioElementManager`.
+- [x] **Task:** In `audio-mixer.ts`, implement a method `registerElement(uuid: string, element: HTMLMediaElement | AudioBuffer): void` that calls the `registerAudioElement` method of the `AudioElementManager`.
 
   - **Start:** Implement the element registration proxy method.
   - **End:** `registerElement` method in `AudioMixer`.
   - **Focus:** Proxying element registration.
   - **Test:** Instantiate `AudioMixer`, call `registerElement`, and verify the element is registered in the `AudioElementManager` (you might need a getter in `AudioElementManager` for this).
 
-- [ ] **Task:** In `audio-mixer.ts`, implement a method `connectInputToMaster(uuid: string): void`. This method should get the `GainNode` for the given UUID from the `AudioElementManager` and connect its output to the input of the `MasterGainController`'s `GainNode`.
+- [x] **Task:** In `audio-mixer.ts`, implement a method `connectInputToMaster(uuid: string): void`. This method should get the `GainNode` for the given UUID from the `AudioElementManager` and connect its output to the input of the `MasterGainController`'s `GainNode`.
 
   - **Start:** Implement the method to connect individual gain to master gain.
   - **End:** Input connected to master output.
   - **Focus:** Connecting audio paths.
   - **Test:** Register an audio element, call `connectInputToMaster` for its UUID, and verify the audio node connections in the Web Audio API context (this might require more advanced testing or manual inspection using browser developer tools). For now, ensure no errors are thrown.
 
-- [ ] **Task:** In `audio-mixer.ts`, connect the output of the `MasterGainController`'s `GainNode` to the `AudioContext`'s `destination`.
+- [x] **Task:** In `audio-mixer.ts`, connect the output of the `MasterGainController`'s `GainNode` to the `AudioContext`'s `destination`.
   - **Start:** Connect master output to audio destination.
   - **End:** Master gain connected to final output.
   - **Focus:** Final output connection.
@@ -133,21 +133,21 @@
 
 ## Phase 6: Basic Playback Control (HTMLMediaElement Sources)
 
-- [ ] **Task:** Create a new file `playback-controller.ts`. Define a class `PlaybackController` that takes an `AudioElementManager` as a dependency in its constructor.
+- [x] **Task:** Create a new file `playback-controller.ts`. Define a class `PlaybackController` that takes an `AudioElementManager` as a dependency in its constructor.
 
   - **Start:** Create the file and class with dependency injection.
   - **End:** `PlaybackController` with `AudioElementManager` dependency.
   - **Focus:** Playback management setup.
   - **Test:** Instantiate `PlaybackController` and check if the `AudioElementManager` instance is stored.
 
-- [ ] **Task:** In `playback-controller.ts`, implement a method `playAll(): void`. This method should iterate through the `HTMLMediaElement` sources managed by the `AudioElementManager` and call the `play()` method on each element.
+- [x] **Task:** In `playback-controller.ts`, implement a method `playAll(): void`. This method should iterate through the `HTMLMediaElement` sources managed by the `AudioElementManager` and call the `play()` method on each element.
 
   - **Start:** Implement the play all method.
   - **End:** `playAll` method implemented.
   - **Focus:** Starting playback.
   - **Test:** Register a mock `HTMLMediaElement` with the `AudioElementManager`, instantiate `PlaybackController`, call `playAll`, and verify that the `play()` method was called on the mock element.
 
-- [ ] **Task:** In `playback-controller.ts`, implement a method `pauseAll(): void`. This method should iterate through the `HTMLMediaElement` sources managed by the `AudioElementManager` and call the `pause()` method on each element.
+- [x] **Task:** In `playback-controller.ts`, implement a method `pauseAll(): void`. This method should iterate through the `HTMLMediaElement` sources managed by the `AudioElementManager` and call the `pause()` method on each element.
 
   - **Start:** Implement the pause all method.
   - **End:** `pauseAll` method implemented.
