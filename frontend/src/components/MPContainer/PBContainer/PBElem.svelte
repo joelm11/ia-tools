@@ -2,15 +2,13 @@
   import PbElemAe from "./PBElemAE.svelte";
   import { AudioMixer } from "src/@lib/iamf_renderer/audio-mixer";
 
-  let { mixPresentation } = $props();
-  let isPlaying = $state(false);
+  let { mixPresentation, isPlaying = $bindable() } = $props();
   let mixGain = $state(50);
   let mixer: AudioMixer;
 
   function handlePlayPause() {
     mixer = AudioMixer.getInstance();
     mixer.setMixPresentation(mixPresentation);
-    console.log(mixer);
     if (isPlaying) mixer.pause();
     else mixer.play();
     isPlaying = !isPlaying;

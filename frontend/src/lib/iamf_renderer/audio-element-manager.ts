@@ -17,7 +17,6 @@ export class AudioElementManager {
   public registerAudioElement(uuid: string, element: HTMLMediaElement): void {
     const gainController = new InputGainController(this.context);
     if (!this.audioElementNodes.get(uuid)) {
-      console.log("Creating source media element");
       const source = this.context.createMediaElementSource(element);
       source.connect(gainController.getGainNode());
       this.audioElementNodes.set(uuid, {
@@ -25,7 +24,6 @@ export class AudioElementManager {
         sourceGain: gainController,
       });
     }
-    console.log("Element already registered");
   }
 
   public getInputGainController(uuid: string): InputGainController | undefined {

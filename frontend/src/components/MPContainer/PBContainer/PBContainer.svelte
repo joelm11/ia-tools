@@ -9,6 +9,7 @@
 
   let showExportForm = $state(false);
   let exportButton: HTMLButtonElement | null = $state(null);
+  let isPlaying = $state(false);
 
   function closeExportForm() {
     showExportForm = false;
@@ -38,7 +39,7 @@
   <div class="border-b border-ae-card-background mb-2"></div>
   <div class="flex flex-col gap-2">
     {#each mixPresentations as mixPresentation}
-      <PbElem {mixPresentation}></PbElem>
+      <PbElem {mixPresentation} bind:isPlaying></PbElem>
     {/each}
   </div>
   <ExportForm show={showExportForm} closeModal={closeExportForm}></ExportForm>
