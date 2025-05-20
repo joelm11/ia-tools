@@ -6,21 +6,6 @@ import { printMatrixDynamicPadding } from "./GetMixMatrix";
  * An AudioWorkletProcessor that applies a mixing matrix and a final gain value.
  */
 class MatrixGainProcessor extends AudioWorkletProcessor {
-  // Define the parameters the processor accepts.
-  // 'gain' is a standard AudioParam.
-  // The 'matrix' is not a standard AudioParam and will be passed via processorOptions
-  // and potentially updated via the message port.
-  static get parameterDescriptors() {
-    return [
-      {
-        name: "gain",
-        defaultValue: 1.0,
-        minValue: 0.0,
-        maxValue: 10.0, // Example max value, adjust as needed
-      },
-    ];
-  }
-
   constructor(options) {
     super(options);
     this._matrix = options.processorOptions.matrix || [];
@@ -43,8 +28,6 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
   process(inputs, outputs, parameters) {
     const input = inputs[0];
     const output = outputs[0];
-    // const elementGain = parameters.get("gain")[0];
-    const elementGain = 1;
 
     const inputChannels = input.length;
     const outputChannels = output.length;
@@ -67,13 +50,6 @@ class MatrixGainProcessor extends AudioWorkletProcessor {
         for (let sample = 0; sample < input[inputCh].length; ++sample) {
           output[outputCh][sample] += input[inputCh][sample] * gain;
         }
-      }
-    }
-
-    // Apply a final gain to all channels in the output buffer.
-    for (let outputCh = 0; outputCh < output.length; ++outputCh) {
-      for (let sample = 0; sample < output[outputCh].length; ++sample) {
-        output[outputCh][sample] *= elementGain;
       }
     }
 
