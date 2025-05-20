@@ -53,8 +53,10 @@ export class AudioMixer {
       .getMasterGainNode()
       .connect(this.audioContext.destination);
 
-    // Clear all registered audio elements
-    this.audioElementManager.clear();
+    // Disconnect element gain nodes from master as part of graph cleanup
+    for (const elem of presentation.audioElements) {
+      this.disconnectInputToMaster(elem.id);
+    }
 
     // Re-register all audio elements from the new presentation
     for (const elem of presentation.audioElements) {
@@ -93,6 +95,19 @@ export class AudioMixer {
     inputGainController
       .getGainNode()
       .connect(this.masterGainController.getMasterGainNode());
+  }
+
+  /**
+   * Disconnect all inputs from the master gain node.
+   */
+  disconnectInputToMaster(uuid: string): void {
+    const inputGainController =
+      this.audioElementManager.getInputGainController(uuid);
+    if (inputGainController) {
+      inputGainController
+        .getGainNode()
+        .disconnect(this.masterGainController.getMasterGainNode());
+    }
   }
 
   /**
