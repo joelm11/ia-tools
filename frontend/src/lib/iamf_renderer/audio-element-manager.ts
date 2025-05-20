@@ -1,7 +1,7 @@
 import { InputGainController } from "./input-gain-controller";
 
 export class AudioElementManager {
-  private audioElements: Map<string, InputGainController | AudioBuffer>;
+  private audioElements: Map<string, InputGainController>;
   private context: AudioContext;
 
   constructor(context: AudioContext) {
@@ -19,5 +19,19 @@ export class AudioElementManager {
   public getInputGainController(uuid: string): InputGainController | undefined {
     const val = this.audioElements.get(uuid);
     return val instanceof InputGainController ? val : undefined;
+  }
+
+  public clear(): void {
+    // Disconnect all gain nodes from the audio graph
+    for (const gainController of this.audioElements.values()) {
+      const gainNode = gainController.getGainNode();
+      try {
+        gainNode.disconnect();
+      } catch (e) {
+        // Ignore errors if already disconnected
+      }
+    }
+    // Clear the map
+    this.audioElements.clear();
   }
 }

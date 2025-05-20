@@ -1,11 +1,14 @@
+import { AudioChFormat } from "src/@types/AudioFormats";
 import { AudioElementManager } from "./audio-element-manager";
 import { MasterGainController } from "./master-gain-controller";
 import { PlaybackController } from "./playback-controller";
+import type { MixPresentation } from "src/@types/MixPresentation";
 
 export class AudioMixer {
   private audioElementManager: AudioElementManager;
   private masterGainController: MasterGainController;
   private playbackController: PlaybackController;
+  private playbackLayout: AudioChFormat = AudioChFormat.NONE;
   private audioContext: AudioContext;
 
   constructor(audioContext: AudioContext) {
@@ -17,6 +20,27 @@ export class AudioMixer {
     this.masterGainController
       .getMasterGainNode()
       .connect(this.audioContext.destination);
+  }
+
+  /**
+   * Set a new MixPresentation, resetting the audio graph and storing playback layout.
+   */
+  setMixPresentation(presentation: MixPresentation): void {
+    // Store playback layout
+    this.playbackLayout = presentation.playbackFormat;
+    // Reset audio graph: disconnect master gain from destination, reconnect
+    this.masterGainController.getMasterGainNode().disconnect();
+    this.masterGainController
+      .getMasterGainNode()
+      .connect(this.audioContext.destination);
+
+    // Clear all registered audio elements
+    this.audioElementManager.clear();
+
+    // Re-register all audio elements from the new presentation
+    for (const elem of presentation.audioElements) {
+      this.registerElement((elem as any).id, (elem as any).mediaElement);
+    }
   }
 
   /**
@@ -62,6 +86,4 @@ export class AudioMixer {
   getMasterGainController(): MasterGainController {
     return this.masterGainController;
   }
-
-  // ...future methods...
 }

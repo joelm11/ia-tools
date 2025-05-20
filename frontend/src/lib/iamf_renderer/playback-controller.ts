@@ -8,7 +8,6 @@ export class PlaybackController {
   }
 
   playAll(): void {
-    // Assuming AudioElementManager has a getAllElements() method that returns a Map of all registered elements/controllers
     const allElements = this.audioElementManager.getAllElements?.() || [];
     for (const element of allElements.values?.() || []) {
       element.play();
