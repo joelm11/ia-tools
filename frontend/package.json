@@ -15,6 +15,7 @@
     "@types/cors": "^2.8.17",
     "bullmq": "^5.52.2",
     "cors": "^2.8.5",
+    "standardized-audio-context": "^25.3.77",
     "svelte": "^5.20.2",
     "typescript": "^5.8.3",
     "vite": "^6.2.0",

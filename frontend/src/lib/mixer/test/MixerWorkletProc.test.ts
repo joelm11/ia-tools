@@ -56,13 +56,13 @@ test("Test worklet process function", () => {
 
   // Make an input matrix for input samples.
   const input = createMatrix(getChannelCountRaw(inputFormat), numSamples, 1);
-  console.log("Input");
-  printMatrixDynamicPadding(input);
+  // console.log("Input");
+  // printMatrixDynamicPadding(input);
   // Make an output matrix for output samples.
   const output = createMatrix(getChannelCountRaw(outputFormat), numSamples, 0);
   const mixMatrix = getMixMatrix(inputFormat, outputFormat);
-  console.log("Mix Matrix:");
-  printMatrixDynamicPadding(mixMatrix);
+  // console.log("Mix Matrix:");
+  // printMatrixDynamicPadding(mixMatrix);
 
   // Run process and examine output.
   const res = process(input, output, {}, mixMatrix);
