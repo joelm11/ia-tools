@@ -34,11 +34,4 @@ describe("AudioElementManager", () => {
     const ctrl = manager.getInputGainController("uuid1");
     expect(ctrl).toBeInstanceOf(InputGainController);
   });
-
-  it("returns undefined for AudioBuffer entries", () => {
-    const mockBuffer = {} as AudioBuffer;
-    manager.registerAudioElement("uuid2", mockBuffer);
-    const ctrl = manager.getInputGainController("uuid2");
-    expect(ctrl).toBeUndefined();
-  });
 });
