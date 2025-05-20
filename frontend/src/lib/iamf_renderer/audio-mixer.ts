@@ -5,11 +5,20 @@ import { PlaybackController } from "./playback-controller";
 import type { MixPresentation } from "src/@types/MixPresentation";
 
 export class AudioMixer {
+  private static instance: AudioMixer | null = null;
   private audioElementManager: AudioElementManager;
   private masterGainController: MasterGainController;
   private playbackController: PlaybackController;
   private playbackLayout: AudioChFormat = AudioChFormat.NONE;
   private audioContext: AudioContext;
+
+  public static getInstance(): AudioMixer {
+    if (this.instance === null) {
+      const ctx = new AudioContext();
+      this.instance = new AudioMixer(ctx);
+    }
+    return this.instance;
+  }
 
   constructor(audioContext: AudioContext) {
     this.audioContext = audioContext;
