@@ -13,8 +13,9 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true, // Use Vitest's expect and other APIs globally without importing them
-    environment: "node",
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./vitest.setup.ts"],
     include: ["**/*.test.{js,ts}", "**/*.spec.{js,ts}"],
   },
   sourcemap: true,
