@@ -6,8 +6,8 @@
   let mixGain = $state(50);
   let mixer: AudioMixer;
 
-  function handlePlayPause() {
-    mixer = AudioMixer.getInstance();
+  async function handlePlayPause() {
+    mixer = await AudioMixer.getInstance();
     mixer.setMixPresentation(mixPresentation);
     if (isPlaying) mixer.pause();
     else mixer.play();

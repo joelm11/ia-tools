@@ -3,19 +3,25 @@ import { AudioElementManager } from "./audio-element-manager";
 import { MasterGainController } from "./master-gain-controller";
 import { PlaybackController } from "./playback-controller";
 import type { MixPresentation } from "src/@types/MixPresentation";
+import { LoudnessRenderer } from "./mix-loudness-node";
 
 export class AudioMixer {
   private static instance: AudioMixer | null = null;
   private audioElementManager: AudioElementManager;
   private masterGainController: MasterGainController;
+  private loudnessRenderer: LoudnessRenderer;
   private playbackController: PlaybackController;
   private playbackLayout: AudioChFormat = AudioChFormat.NONE;
   private activePresentation: MixPresentation | null = null;
   private audioContext: AudioContext;
 
-  public static getInstance(): AudioMixer {
+  public static async getInstance(): Promise<AudioMixer> {
     if (this.instance === null) {
       const ctx = new AudioContext();
+      await ctx.audioWorklet.addModule("src/lib/mixer/MixerWorklet.js");
+      await ctx.audioWorklet.addModule(
+        "src/lib/iamf_renderer/loudness-renderer.js"
+      );
       this.instance = new AudioMixer(ctx);
     }
     return this.instance;
@@ -25,8 +31,13 @@ export class AudioMixer {
     this.audioContext = audioContext;
     this.audioElementManager = new AudioElementManager(audioContext);
     this.masterGainController = new MasterGainController(audioContext);
+    this.loudnessRenderer = new LoudnessRenderer(
+      audioContext,
+      AudioChFormat.MONO
+    );
     this.playbackController = new PlaybackController(this.audioElementManager);
     // Connect master gain node to audio context destination
+    // Connect loudness monitor node from master gain to audio context dest
     this.masterGainController
       .getMasterGainNode()
       .connect(this.audioContext.destination);
@@ -46,12 +57,20 @@ export class AudioMixer {
     // Record the new active presentation
     this.activePresentation = presentation;
     this.playbackLayout = presentation.playbackFormat;
+    this.audioElementManager.setPlaybackLayout(presentation.playbackFormat);
 
-    // Reset audio graph: disconnect master gain from destination, reconnect
+    // Reset audio graph: disconnect master gain master gain and loudness renderer
+    // and reconnect
     this.masterGainController.getMasterGainNode().disconnect();
+    this.loudnessRenderer.disconnect();
+    this.loudnessRenderer = new LoudnessRenderer(
+      this.audioContext,
+      presentation.playbackFormat
+    );
     this.masterGainController
       .getMasterGainNode()
-      .connect(this.audioContext.destination);
+      .connect(this.loudnessRenderer);
+    this.loudnessRenderer.connect(this.audioContext.destination);
 
     // Disconnect element gain nodes from master as part of graph cleanup
     for (const elem of presentation.audioElements) {
