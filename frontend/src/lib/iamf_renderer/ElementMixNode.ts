@@ -17,6 +17,7 @@ export class ElementMixNode extends AudioWorkletNode {
   ) {
     // Get the conversion matrix
     const matrix = getMixMatrix(inputLayout, outputLayout);
+    console.log("Mix matrix for", inputLayout, "to", outputLayout, matrix);
     // Call super with appropriate options
     super(context, "matrix-gain-processor", {
       processorOptions: { matrix },

@@ -5,6 +5,7 @@
   import { AudioMixer } from "src/@lib/iamf_renderer/audio-mixer";
   import VolumeSlider from "./VolumeSlider.svelte";
   import MixControls from "./MixControls.svelte";
+  import WaveViz from "./WaveViz.svelte";
 
   let { mixPresentation, isPlaying = $bindable() } = $props();
   let currentLoudnessValues = $state();
@@ -31,6 +32,12 @@
     else mixer.play();
     isPlaying = !isPlaying;
   }
+
+  async function setMasterGain(val: number) {
+    mixer = await AudioMixer.getInstance();
+    // mixer.setMixPresentation(mixPresentation);
+    mixer.getMasterGainController().setMasterGain(val);
+  }
 </script>
 
 <div
@@ -38,10 +45,12 @@
 >
   <div
     class="cols-span-1 rounded-md bg-ae-card-background border
-     border-card-s-text h-full"
+     border-card-s-text h-full px-1"
     id="wave-vis-mix-controls"
   >
-    <MixControls></MixControls>
+    <WaveViz {currentLoudnessValues} />
+    <hr class="w-11/12 mx-auto border-t border-card-p-text/50 my-2" />
+    <MixControls {handlePlayPause} {setMasterGain} />
   </div>
 </div>
 

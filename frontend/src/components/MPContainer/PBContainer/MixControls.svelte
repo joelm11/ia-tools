@@ -1,7 +1,6 @@
 <script lang="ts">
   import VolumeSlider from "./VolumeSlider.svelte";
-
-  function handlePlayPause() {}
+  let { handlePlayPause, setMasterGain } = $props();
 </script>
 
 <div id="play-and-volume" class="grid grid-cols-5 p-2 gap-1">
@@ -13,5 +12,7 @@
   >
     <i class="fas fa-play"></i>
   </button>
-  <div class="col-span-3 flex align-middle"><VolumeSlider></VolumeSlider></div>
+  <div class="col-span-3 flex align-middle">
+    <VolumeSlider {setMasterGain} />
+  </div>
 </div>
