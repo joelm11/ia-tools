@@ -13,6 +13,6 @@
     <i class="fas fa-play"></i>
   </button>
   <div class="col-span-3 flex align-middle">
-    <VolumeSlider {setMasterGain} />
+    <VolumeSlider setGain={setMasterGain} />
   </div>
 </div>
