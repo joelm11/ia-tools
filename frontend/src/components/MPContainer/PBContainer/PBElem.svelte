@@ -1,10 +1,28 @@
 <script lang="ts">
+  import { onDestroy, onMount } from "svelte";
+  import LoudnessMeters from "./loudness/LoudnessBars.svelte";
   import PbElemAe from "./PBElemAE.svelte";
   import { AudioMixer } from "src/@lib/iamf_renderer/audio-mixer";
 
   let { mixPresentation, isPlaying = $bindable() } = $props();
   let mixGain = $state(50);
   let mixer: AudioMixer;
+
+  let currentLoudnessValues = $state([0.2, 0.5, 0.8, 0.3, 0.6]);
+  let intervalId: number;
+
+  // Simulate loudness calculation
+  function updateLoudness() {
+    currentLoudnessValues = Array.from({ length: 5 }, () => Math.random()); // Example: 5 bars, random RMS
+  }
+
+  onMount(() => {
+    intervalId = window.setInterval(updateLoudness, 1000);
+  });
+
+  onDestroy(() => {
+    window.clearInterval(intervalId);
+  });
 
   async function handlePlayPause() {
     mixer = await AudioMixer.getInstance();
@@ -22,7 +40,9 @@
     <div
       id="wave-viz col-span-5"
       class="col-span-5 h-20 mb-2 rounded-md bg-ae-card-background border border-card-s-text"
-    ></div>
+    >
+      <LoudnessMeters {currentLoudnessValues} />
+    </div>
     <button
       id="play-pause"
       class="col-span-2 mt-2 flex items-center justify-center bg-mp-card-t-background rounded-full w-14 h-14 hover:bg-mp-card-t-background-dark"

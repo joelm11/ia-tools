@@ -16,7 +16,7 @@ export class LoudnessRenderer extends AudioWorkletNode {
     // Listen for messages from the worklet
     this.port.onmessage = (event) => {
       if (event.data.loudness) {
-        console.log("Loudness per channel:", event.data.loudness);
+        // console.log("Loudness per channel:", event.data.loudness);
       }
     };
   }
