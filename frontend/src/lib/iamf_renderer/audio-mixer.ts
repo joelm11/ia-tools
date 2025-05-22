@@ -87,7 +87,7 @@ export class AudioMixer {
       if (!mediaElem) {
         console.log("Audio Element:", elem.id, "source not found.");
       } else {
-        this.registerElement(elem.id, mediaElem);
+        this.registerElement(elem.id, mediaElem, elem.audioChFormat);
         this.connectInputToMaster(elem.id);
       }
     }
@@ -102,8 +102,12 @@ export class AudioMixer {
    * Register an audio element (HTMLMediaElement or AudioBuffer) by UUID.
    * Proxies to AudioElementManager.
    */
-  registerElement(uuid: string, element: HTMLMediaElement): void {
-    this.audioElementManager.registerAudioElement(uuid, element);
+  registerElement(
+    uuid: string,
+    element: HTMLMediaElement,
+    format: AudioChFormat
+  ): void {
+    this.audioElementManager.registerAudioElement(uuid, element, format);
   }
 
   /**
