@@ -45,18 +45,20 @@
 </script>
 
 <div
-  class="grid grid-cols-2 bg-app border border-ae-card-background rounded-md gap-2 p-2"
+  class="grid grid-cols-2 bg-app border border-ae-card-background rounded-md gap-2 p-2 h-full"
 >
+  <!-- Fixed size container for MixControls and WaveViz -->
   <div
-    class="col-span-1 rounded-md bg-ae-card-background border
-     border-card-s-text h-full px-1"
+    class="col-span-1 rounded-md bg-ae-card-background border border-card-s-text px-1 h-36 flex flex-col"
     id="wave-vis-mix-controls"
   >
     <WaveViz {currentLoudnessValues} />
     <hr class="w-11/12 mx-auto border-t border-card-p-text/50 my-2" />
     <MixControls {handlePlayPause} {setMasterGain} />
   </div>
-  <div class="col-span-1">
+
+  <!-- Growing container for PBAEContainer -->
+  <div class="col-span-1 flex-grow">
     <PBAEContainer {mixPresentation} {setAEGain} />
   </div>
 </div>

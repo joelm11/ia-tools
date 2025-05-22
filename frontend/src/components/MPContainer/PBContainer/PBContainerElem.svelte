@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { PresentationMixer } from "src/@lib/mixer/PresentationMixer.svelte";
   import VolumeSlider from "./VolumeSlider.svelte";
 
   let { audioElement, setAEGain } = $props();

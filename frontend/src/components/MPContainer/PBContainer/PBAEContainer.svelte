@@ -2,20 +2,20 @@
   import PBContainerElem from "./PBContainerElem.svelte";
 
   let { mixPresentation, setAEGain } = $props();
+  let shrink = $state(false);
 </script>
 
-<div id="mp-audio-elements" class="col-span-1 h-24 items-center m-2 gap-2">
-  {#if mixPresentation.audioElements.length < 4}
-    <div class="grid grid-cols-1 gap-2">
-      {#each mixPresentation.audioElements as audioElement}
+<div
+  id="mp-audio-elements"
+  class="col-span-1 h-full flex items-center justify-center"
+>
+  <div
+    class="grid grid-cols-2 gap-2 auto-rows-[minmax(50px,_1fr)] sm:auto-rows-[minmax(40px,_1fr)]"
+  >
+    {#each mixPresentation.audioElements as audioElement, i}
+      <div class="h-full">
         <PBContainerElem {audioElement} {setAEGain} />
-      {/each}
-    </div>
-  {:else}
-    <div class="grid grid-cols-2 gap-2">
-      {#each mixPresentation.audioElements as audioElement}
-        <PBContainerElem {audioElement} {setAEGain} />
-      {/each}
-    </div>
-  {/if}
+      </div>
+    {/each}
+  </div>
 </div>
