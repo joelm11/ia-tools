@@ -43,6 +43,10 @@ export class AudioMixer {
       .connect(this.audioContext.destination);
   }
 
+  getLoudnessValues(): number[] {
+    return this.loudnessRenderer.currentLoudnessValues;
+  }
+
   /**
    * Set a new MixPresentation, resetting the audio graph and storing playback layout.
    */

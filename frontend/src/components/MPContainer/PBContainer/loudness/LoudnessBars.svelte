@@ -1,11 +1,11 @@
 <script lang="ts">
   export let currentLoudnessValues: number[];
-  export let maxLoudness: number = 1.0; // Example default for RMS
-  export let minLoudness: number = 0.0; // Example default for RMS
+  export let maxLoudness: number = 1.0;
+  export let minLoudness: number = 0.0;
   export let barColorClass: string = "bg-lime-500";
-  export let barWidthClass: string = "w-2"; // Tailwind class for width
-  export let barSpacingClass: string = "mr-1"; // Tailwind class for margin-right
-  export let containerHeightClass: string = "h-full"; // Tailwind class for container height
+  export let barWidthClass: string = "w-2";
+  export let barSpacingClass: string = "mr-1";
+  export let containerHeightClass: string = "h-full";
 
   // Function to calculate bar height as a percentage (0-100)
   function calculateBarHeight(value: number): number {

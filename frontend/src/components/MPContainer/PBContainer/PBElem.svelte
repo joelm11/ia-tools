@@ -12,12 +12,14 @@
   let intervalId: number;
 
   // Simulate loudness calculation
-  function updateLoudness() {
+  async function updateLoudness() {
     currentLoudnessValues = Array.from({ length: 5 }, () => Math.random()); // Example: 5 bars, random RMS
+    mixer = await AudioMixer.getInstance();
+    currentLoudnessValues = mixer.getLoudnessValues();
   }
 
   onMount(() => {
-    intervalId = window.setInterval(updateLoudness, 1000);
+    intervalId = window.setInterval(updateLoudness, 1000 / 60);
   });
 
   onDestroy(() => {
