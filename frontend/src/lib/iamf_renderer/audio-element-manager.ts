@@ -53,6 +53,10 @@ export class AudioElementManager {
     return this.audioElementNodes.get(uuid)?.mixNode;
   }
 
+  public getSourceNode(uuid: string): MediaElementAudioSourceNode | undefined {
+    return this.audioElementNodes.get(uuid)?.source;
+  }
+
   public getAllSourceNodes(): MediaElementAudioSourceNode[] {
     return Array.from(this.audioElementNodes.values()).map(
       (elem) => elem.source

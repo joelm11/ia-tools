@@ -58,6 +58,15 @@ export class AudioMixer {
       return;
     }
 
+    // Pause the current mix presentation if playing and reset source timestamps.
+    if (this.activePresentation && this.activePresentation.audioElements) {
+      this.pause();
+      for (const elem of this.activePresentation.audioElements) {
+        const sourceNode = this.audioElementManager.getSourceNode(elem.id);
+        if (sourceNode) sourceNode.mediaElement.currentTime = 0;
+      }
+    }
+
     // Record the new active presentation
     this.activePresentation = presentation;
     this.playbackLayout = presentation.playbackFormat;
@@ -138,17 +147,17 @@ export class AudioMixer {
   }
 
   /**
-   * Play all HTMLMediaElement sources via PlaybackController
+   * Play HTMLMediaElement sources that are part of the active mix presentation.
    */
   play(): void {
-    this.playbackController.playAll();
+    this.playbackController.playMix(this.activePresentation!);
   }
 
   /**
-   * Pause all HTMLMediaElement sources via PlaybackController
+   * Pause HTMLMediaElement sources that are part of the active mix presentation.
    */
   pause(): void {
-    this.playbackController.pauseAll();
+    this.playbackController.pauseMix(this.activePresentation!);
   }
 
   // Optionally, expose the managers for testing/inspection
