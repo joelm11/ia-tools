@@ -13,6 +13,7 @@ export class AudioMixer {
   private playbackController: PlaybackController;
   private playbackLayout: AudioChFormat = AudioChFormat.NONE;
   private activePresentation: MixPresentation | null = null;
+  private isPlaying: boolean = false;
   private audioContext: AudioContext;
 
   public static async getInstance(): Promise<AudioMixer> {
@@ -72,7 +73,7 @@ export class AudioMixer {
     this.playbackLayout = presentation.playbackFormat;
     this.audioElementManager.setPlaybackLayout(presentation.playbackFormat);
 
-    // Reset audio graph: disconnect master gain master gain and loudness renderer
+    // Reset audio graph: disconnect master gain and loudness renderer
     // and reconnect
     this.masterGainController.getMasterGainNode().disconnect();
     this.loudnessRenderer.disconnect();
@@ -84,6 +85,10 @@ export class AudioMixer {
       .getMasterGainNode()
       .connect(this.loudnessRenderer);
     this.loudnessRenderer.connect(this.audioContext.destination);
+
+    // Set master gain to that of the new active mix.
+    console.log("Gain when switched", presentation.mixGain);
+    this.masterGainController.setMasterGain(this.activePresentation.mixGain);
 
     // Disconnect element gain nodes from master as part of graph cleanup
     for (const elem of presentation.audioElements) {
@@ -151,6 +156,7 @@ export class AudioMixer {
    */
   play(): void {
     this.playbackController.playMix(this.activePresentation!);
+    this.isPlaying = true;
   }
 
   /**
@@ -158,6 +164,17 @@ export class AudioMixer {
    */
   pause(): void {
     this.playbackController.pauseMix(this.activePresentation!);
+    this.isPlaying = false;
+  }
+
+  playbackActive(): boolean {
+    return this.isPlaying;
+  }
+
+  setMixGain(val: number, id: string) {
+    if (this.activePresentation && this.activePresentation.id === id) {
+      this.masterGainController.setMasterGain(val);
+    }
   }
 
   // Optionally, expose the managers for testing/inspection
