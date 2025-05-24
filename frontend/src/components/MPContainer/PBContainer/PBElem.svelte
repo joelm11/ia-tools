@@ -5,7 +5,7 @@
   import WaveViz from "./WaveViz.svelte";
   import PBAEContainer from "./PBAEContainer.svelte";
 
-  let { mixPresentation } = $props();
+  let { mixPresentation, isActive, activeMix = $bindable() } = $props();
   let currentLoudnessValues = $state();
   let isPlaying = $state(false);
   let mixer: AudioMixer;
@@ -27,16 +27,15 @@
   async function handlePlayPause() {
     mixer = await AudioMixer.getInstance();
     mixer.setMixPresentation(mixPresentation);
-    // setMasterGain(mixPresentation.gain);
     if (mixer.playbackActive()) mixer.pause();
     else mixer.play();
     isPlaying = mixer.playbackActive();
+    activeMix = mixPresentation.id;
   }
 
   async function setMasterGain(val: number) {
     mixPresentation.mixGain = val;
     mixer = await AudioMixer.getInstance();
-    console.log("SMG:", mixPresentation.mixGain);
     mixer.setMixGain(mixPresentation.mixGain, mixPresentation.id);
   }
 
@@ -55,7 +54,7 @@
   >
     <WaveViz {currentLoudnessValues} />
     <hr class="w-11/12 mx-auto border-t border-card-p-text/50 my-2" />
-    <MixControls {handlePlayPause} {setMasterGain} {isPlaying} />
+    <MixControls {handlePlayPause} {setMasterGain} {isPlaying} {isActive} />
   </div>
   <div class="col-span-1 flex-grow">
     <PBAEContainer {mixPresentation} {setAEGain} />

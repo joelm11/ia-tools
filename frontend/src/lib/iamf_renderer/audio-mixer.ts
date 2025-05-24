@@ -87,7 +87,6 @@ export class AudioMixer {
     this.loudnessRenderer.connect(this.audioContext.destination);
 
     // Set master gain to that of the new active mix.
-    console.log("Gain when switched", presentation.mixGain);
     this.masterGainController.setMasterGain(this.activePresentation.mixGain);
 
     // Disconnect element gain nodes from master as part of graph cleanup
@@ -110,6 +109,10 @@ export class AudioMixer {
     // This is the output from the mixer before it hits the browser/user-provided
     // destination node.
     this.masterGainController.setOutputChannels(this.playbackLayout);
+  }
+
+  getActiveMixPresentation(): string | undefined {
+    return this.activePresentation?.id;
   }
 
   /**

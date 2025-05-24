@@ -1,6 +1,6 @@
 <script lang="ts">
   import VolumeSlider from "./VolumeSlider.svelte";
-  let { handlePlayPause, setMasterGain, isPlaying } = $props();
+  let { handlePlayPause, setMasterGain, isPlaying, isActive } = $props();
 </script>
 
 <div id="play-and-volume" class="grid grid-cols-5 p-2 gap-1">
@@ -10,7 +10,7 @@
     onclick={handlePlayPause}
     aria-label="Play/Pause Mix Presentation"
   >
-    {#if isPlaying}
+    {#if isPlaying && isActive}
       <i class="fas fa-pause"></i>
     {:else}
       <i class="fas fa-play"></i>
