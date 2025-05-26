@@ -16,3 +16,55 @@
   --color-mp-card-t-background: #0a91b1;
   --color-mp-card-t-background-dark: #076b82;
 }
+
+@layer utilities {
+  .range-thumb {
+    --track-height: 0.75rem;
+    --thumb-size: 1.25rem; /* Slightly larger size for a greater radius */
+    --thumb-margin: calc((var(--thumb-size) - var(--track-height)) / -2);
+  }
+
+  .range-thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: var(--thumb-size);
+    width: var(--thumb-size); /* Adjusted size */
+    border-radius: 50%; /* Fully rounded */
+    background: #076b82; /* Slightly darker color */
+    border: none; /* Remove border */
+    margin-top: var(--thumb-margin);
+    cursor: pointer;
+  }
+
+  .range-thumb::-webkit-slider-runnable-track {
+    height: var(--track-height);
+    background: linear-gradient(
+      to right,
+      #0a91b1 0%,
+      #0a91b1 var(--range-percent, 50%),
+      #94a3b8 var(--range-percent, 50%),
+      #94a3b8 100%
+    );
+    border-radius: 9999px;
+  }
+
+  .range-thumb::-moz-range-thumb {
+    height: var(--thumb-size);
+    width: var(--thumb-size); /* Adjusted size */
+    border-radius: 50%; /* Fully rounded */
+    background: #076b82; /* Slightly darker color */
+    border: none; /* Remove border */
+    cursor: pointer;
+  }
+
+  .range-thumb::-moz-range-track {
+    height: var(--track-height);
+    background: linear-gradient(
+      to right,
+      #0a91b1 0%,
+      #0a91b1 var(--range-percent, 50%),
+      white var(--range-percent, 50%),
+      white 100%
+    );
+    border-radius: 9999px;
+  }
+}

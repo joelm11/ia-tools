@@ -17,8 +17,12 @@ async function createAudioElement(file: File) {
     id: uuidv4(),
     audioFile: file,
     audioChFormat: audioChFormat,
-    gain: 50,
+    gain: 0.5,
   });
+  console.log(
+    "Audio element created",
+    $state.snapshot(audioElements[audioElements.length - 1])
+  );
 }
 
 function deleteAudioElement(idToDelete: string) {

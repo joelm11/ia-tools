@@ -11,6 +11,10 @@ function getMixPresentations(): MixPresentation[] {
 function createMixPresentation(mixPresentation: MixPresentation) {
   mixPresentation.id = uuidv4();
   mixPresentations.push(mixPresentation);
+  console.log(
+    "Mix presentation created",
+    $state.snapshot(mixPresentations[mixPresentations.length - 1])
+  );
 }
 
 function deleteMixPresentation(idToDelete: string) {
