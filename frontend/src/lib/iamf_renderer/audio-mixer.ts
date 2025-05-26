@@ -42,6 +42,11 @@ export class AudioMixer {
     this.masterGainController
       .getMasterGainNode()
       .connect(this.audioContext.destination);
+
+    // Listen for the mixFinished event
+    window.addEventListener("mixFinished", () => {
+      this.isPlaying = false; // Update isPlaying when the event is triggered
+    });
   }
 
   getLoudnessValues(): number[] {
@@ -195,7 +200,6 @@ export class AudioMixer {
     }
   }
 
-  // Optionally, expose the managers for testing/inspection
   getAudioElementManager(): AudioElementManager {
     return this.audioElementManager;
   }

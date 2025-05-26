@@ -26,11 +26,20 @@
     currentLoudnessValues = mixer.getLoudnessValues();
   }
 
-  onMount(() => {
+  onMount(async () => {
+    mixer = await AudioMixer.getInstance();
+    const handleMixFinished = () => {
+      isPlaying = false; // Reset play/pause button state
+    };
+    window.addEventListener("mixFinished", handleMixFinished); // Listen for custom event
     intervalId = window.setInterval(updateLoudness, 1000 / 60);
   });
 
   onDestroy(() => {
+    const handleMixFinished = () => {
+      isPlaying = false; // Reset play/pause button state
+    };
+    window.removeEventListener("mixFinished", handleMixFinished); // Cleanup listener
     window.clearInterval(intervalId);
   });
 
