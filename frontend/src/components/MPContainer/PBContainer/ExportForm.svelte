@@ -10,6 +10,8 @@
   let filename = $state("My_Awesome_Mix");
   let downloading = $state(true);
   let downloadURL = $state("");
+  let errorMessage = $state(""); // State to store error messages
+  let isProcessing = $state(false); // Separate state to track processing status
 
   // svelte-ignore non_reactive_update
   let modalElement: HTMLDivElement;
@@ -17,34 +19,52 @@
   async function handleExport(event: { preventDefault: () => void }) {
     event.preventDefault(); // Prevent default form submission
 
-    const jobId = await sendMixPresentations();
-    console.log("Job created with ID:", jobId);
+    isProcessing = true; // Show spinner
+    downloading = true;
+    errorMessage = ""; // Reset error message
 
-    let jobState: { state: JobState; result: any };
-    do {
-      const response = await fetch(
-        `http://localhost:3000/job-status/${jobId}`,
+    try {
+      const jobId = await sendMixPresentations();
+      console.log("Job created with ID:", jobId);
+
+      let jobState: { state: JobState; result: any };
+      do {
+        const response = await fetch(
+          `http://localhost:3000/job-status/${jobId}`,
+          {
+            method: "GET",
+          }
+        );
+        jobState = JSON.parse(await response.text());
+        if (jobState.state !== "completed") {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      } while (jobState.state !== "completed" && jobState.state !== "failed");
+
+      if (jobState.state === "failed") {
+        throw new Error("Job failed on the backend.");
+      }
+
+      // Download file
+      const dlResponse = await fetch(
+        `http://localhost:3000/job-download/${jobId}`,
         {
           method: "GET",
         }
       );
-      jobState = JSON.parse(await response.text());
-      if (jobState.state !== "completed") {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (dlResponse.ok) {
+        const blob = await dlResponse.blob();
+        downloadURL = window.URL.createObjectURL(blob);
+        downloading = false;
+      } else {
+        throw new Error("Failed to download the file.");
       }
-    } while (jobState.state !== "completed");
-
-    // Download file
-    const dlResponse = await fetch(
-      `http://localhost:3000/job-download/${jobId}`,
-      {
-        method: "GET",
-      }
-    );
-    if (dlResponse.ok) {
-      const blob = await dlResponse.blob();
-      downloadURL = window.URL.createObjectURL(blob);
+    } catch (error) {
       downloading = false;
+      errorMessage = (error as any).message || "An unexpected error occurred.";
+      console.error(error);
+    } finally {
+      isProcessing = false; // Hide spinner
     }
   }
 
@@ -139,6 +159,10 @@
           />
         </div>
 
+        {#if errorMessage}
+          <div class="text-red-500 text-sm mb-4">{errorMessage}</div>
+        {/if}
+
         <div
           class="flex justify-end space-x-3 border-t border-slate-600 pt-4 mt-4"
         >
@@ -149,7 +173,35 @@
           >
             Cancel
           </button>
-          {#if downloading}
+          {#if isProcessing}
+            <button
+              type="submit"
+              class="px-4 py-2 bg-cyan-600 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800 flex items-center justify-center"
+              disabled
+            >
+              <svg
+                class="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                ></path>
+              </svg>
+              Processing...
+            </button>
+          {:else if downloading}
             <button
               type="submit"
               class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800"
