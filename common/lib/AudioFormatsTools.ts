@@ -99,11 +99,24 @@ export function getSpeakerLabels(chFormat: AudioChFormat) {
     case AudioChFormat.K5P1P4:
       return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf", "Ltb", "Rtb"];
     case AudioChFormat.K7P1:
-      return ["L", "R", "C", "LFE", "Ls", "Rs"];
+      return ["L", "R", "C", "LFE", "Lss", "Rss", "Lrs", "Rrs"];
     case AudioChFormat.K7P1P2:
-      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf"];
+      return ["L", "R", "C", "LFE", "Lss", "Rss", "Lrs", "Rrs", "Ltf", "Rtf"];
     case AudioChFormat.K7P1P4:
-      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf", "Ltb", "Rtb"];
+      return [
+        "L",
+        "R",
+        "C",
+        "LFE",
+        "Lss",
+        "Rss",
+        "Lrs",
+        "Rrs",
+        "Ltf",
+        "Rtf",
+        "Ltb",
+        "Rtb",
+      ];
     default:
       throw new Error(
         `getSpeakerLabels(): Unknown channel format: ${chFormat}`
