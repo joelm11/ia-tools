@@ -4,7 +4,10 @@
   import MixControls from "./MixControls.svelte";
   import WaveViz from "./WaveViz.svelte";
   import PBAEContainer from "./PBAEContainer.svelte";
-  import { getSpeakerLabels } from "src/@common/AudioFormatsTools";
+  import {
+    getChannelCountRaw,
+    getSpeakerLabels,
+  } from "src/@common/AudioFormatsTools";
   import type { MixPresentation } from "src/@types/MixPresentation";
 
   let {
@@ -23,7 +26,13 @@
 
   async function updateLoudness() {
     mixer = await AudioMixer.getInstance();
-    currentLoudnessValues = mixer.getLoudnessValues();
+    if (mixer.getActiveMixPresentation() === mixPresentation.id) {
+      currentLoudnessValues = mixer.getLoudnessValues();
+    } else {
+      currentLoudnessValues = Array(
+        getChannelCountRaw(mixPresentation.playbackFormat)
+      ).fill(0);
+    }
   }
 
   onMount(async () => {
