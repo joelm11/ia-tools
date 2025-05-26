@@ -26,7 +26,6 @@ export class IAMFWorker extends Worker<MixPresentationBase[]> {
         try {
           const iamfJobRes = await iamfWorkerJob(jobId, job.data, audioSS);
           console.log("Completed job:", job.id);
-          console.log(iamfJobRes.iamfUrl);
           return iamfJobRes.iamfUrl;
         } catch (err) {
           console.log("Failed IAMF job:", job.id, "with", err);
