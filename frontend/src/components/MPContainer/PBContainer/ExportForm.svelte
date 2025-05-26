@@ -51,7 +51,7 @@
   function downloadFile() {
     const a = document.createElement("a");
     a.href = downloadURL;
-    a.download = "frontend.iamf";
+    a.download = `${filename}.iamf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

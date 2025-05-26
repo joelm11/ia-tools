@@ -252,7 +252,7 @@ function addMixPresentationData(
                 parameterRate: 48000,
                 paramDefinitionMode: true,
               },
-              defaultMixGain: 0, // TODO
+              defaultMixGain: decimalToIntGain(mixPresentation.mixGain), // TODO
             },
             // Let's see if we can get away without loudness information.
             // Otherwise, TODO.
@@ -292,12 +292,17 @@ function mixpresentationAudioElements(
             parameterRate: 48000,
             paramDefinitionMode: true,
           },
-          defaultMixGain: element.gain,
+          defaultMixGain: decimalToIntGain(element.gain),
         },
       })
     );
   }
   return mixpresentationAudioElements;
+}
+
+function decimalToIntGain(value: number): number {
+  // Multiply float dB gain by 256 and truncate as integer for proto formatting.
+  return Math.trunc(value * 256);
 }
 
 async function metadataToTextProto(
