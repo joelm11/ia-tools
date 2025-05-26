@@ -32,7 +32,7 @@
 
 <div
   id="audio-element-container"
-  class="col-span-1 h-full flex flex-col text-left gap-1 border border-ae-card-background bg-card-background rounded-2xl p-4"
+  class="col-span-1 h-full flex flex-col text-left gap-1 border border-ae-card-background bg-card-background rounded-2xl p-4 overflow-y-auto max-h-full"
 >
   <div class="text-card-p-text mb-1 text-2xl">Audio Elements</div>
   <div class="border-b border-ae-card-background mb-2"></div>

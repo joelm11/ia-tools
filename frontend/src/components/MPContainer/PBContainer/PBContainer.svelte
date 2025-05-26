@@ -20,7 +20,7 @@
 </script>
 
 <div
-  class="col-span-3 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4 border border-ae-card-background"
+  class="col-span-3 h-full flex flex-col text-left gap-1 bg-card-background rounded-2xl p-4 border border-ae-card-background overflow-y-auto max-h-full"
 >
   <div id="pb-container-header" class="flex justify-between">
     <div class="text-card-p-text mb-1 text-2xl w-32">Playback</div>
