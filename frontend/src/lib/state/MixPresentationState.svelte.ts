@@ -38,8 +38,9 @@ function removeAEFromMixPresentation(idToDelete: string) {
 // We serialize mix presentations and audio elements to their base formats and attach referenced files to the form data.
 async function sendMixPresentations() {
   const formData = new FormData();
-  // Construct a set of audio elements to avoid duplicates.
   const activeAudioElementSet = new Set<string>();
+  const serializablePresentations = [];
+
   for (const presentation of getMixPresentations()) {
     const { audioElements, ...rest } = presentation;
     const baseAudioElements = audioElements.map(
@@ -49,22 +50,26 @@ async function sendMixPresentations() {
       ...rest,
       audioElements: baseAudioElements,
     };
+    serializablePresentations.push(serializablePresentation);
+
     for (const element of audioElements) {
       activeAudioElementSet.add(element.id);
     }
-
-    formData.append(
-      "mixPresentations",
-      JSON.stringify(serializablePresentation)
-    );
   }
-  // Append active audio element files to the form data.
+
+  formData.append(
+    "mixPresentations",
+    JSON.stringify(serializablePresentations)
+  );
+  console.log(formData.get("mixPresentations"));
+
   const currentAudioElements = getAudioElements();
   currentAudioElements
     .filter((element) => activeAudioElementSet.has(element.id))
     .forEach((element) => {
       formData.append("audioFiles", element.audioFile);
     });
+
   let jobId = -1;
   try {
     const response = await fetch("http://localhost:3000/upload", {
