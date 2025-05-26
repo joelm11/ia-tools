@@ -82,3 +82,31 @@ export function getChannelCountRaw(chFormat: AudioChFormat): number {
       );
   }
 }
+
+export function getSpeakerLabels(chFormat: AudioChFormat) {
+  // Returns an array of speaker labels for a given format.
+  switch (chFormat) {
+    case AudioChFormat.MONO:
+      return ["L"];
+    case AudioChFormat.STEREO:
+      return ["L", "R"];
+    case AudioChFormat.K3P1P2:
+      return ["L", "R", "C", "LFE", "Ls", "Rs"];
+    case AudioChFormat.K5P1:
+      return ["L", "R", "C", "LFE", "Ls", "Rs"];
+    case AudioChFormat.K5P1P2:
+      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf"];
+    case AudioChFormat.K5P1P4:
+      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf", "Ltb", "Rtb"];
+    case AudioChFormat.K7P1:
+      return ["L", "R", "C", "LFE", "Ls", "Rs"];
+    case AudioChFormat.K7P1P2:
+      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf"];
+    case AudioChFormat.K7P1P4:
+      return ["L", "R", "C", "LFE", "Ls", "Rs", "Ltf", "Rtf", "Ltb", "Rtb"];
+    default:
+      throw new Error(
+        `getSpeakerLabels(): Unknown channel format: ${chFormat}`
+      );
+  }
+}

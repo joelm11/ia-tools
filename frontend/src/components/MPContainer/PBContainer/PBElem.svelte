@@ -4,6 +4,7 @@
   import MixControls from "./MixControls.svelte";
   import WaveViz from "./WaveViz.svelte";
   import PBAEContainer from "./PBAEContainer.svelte";
+  import { getSpeakerLabels } from "src/@common/AudioFormatsTools";
 
   let { mixPresentation, isActive, activeMix = $bindable() } = $props();
   let currentLoudnessValues = $state();
@@ -52,9 +53,16 @@
     class="col-span-1 rounded-md bg-ae-card-background border border-card-s-text px-1 h-36 flex flex-col"
     id="wave-vis-mix-controls"
   >
-    <WaveViz {currentLoudnessValues} />
-    <hr class="w-11/12 mx-auto border-t border-card-p-text/50 my-2" />
-    <MixControls {handlePlayPause} {setMasterGain} {isPlaying} {isActive} />
+    <div class="flex-[2]">
+      <WaveViz
+        {currentLoudnessValues}
+        speakerLabels={getSpeakerLabels(mixPresentation.playbackFormat)}
+      />
+    </div>
+    <hr class="w-11/12 mx-auto border-t border-card-p-text/50" />
+    <div class="flex-[1]">
+      <MixControls {handlePlayPause} {setMasterGain} {isPlaying} {isActive} />
+    </div>
   </div>
   <div class="col-span-1 flex-grow">
     <PBAEContainer {mixPresentation} {setAEGain} />
