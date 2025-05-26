@@ -8,7 +8,9 @@
   }
 </script>
 
-<div class="p-2 bg-ae-card-background rounded-md gap-2">
-  <span class="text-xs text-card-p-text truncate">{audioElement.name}</span>
+<div class="p-2 bg-ae-card-background rounded-md max-w-full">
+  <span class="text-s text-card-p-text overflow-ellipsis inline-block"
+    >{audioElement.name}</span
+  >
   <VolumeSlider {setGain} />
 </div>

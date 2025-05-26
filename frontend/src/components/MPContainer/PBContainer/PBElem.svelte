@@ -7,7 +7,7 @@
   import { getSpeakerLabels } from "src/@common/AudioFormatsTools";
 
   let { mixPresentation, isActive, activeMix = $bindable() } = $props();
-  let currentLoudnessValues = $state();
+  let currentLoudnessValues: number[] = $state([]);
   let isPlaying = $state(false);
   let mixer: AudioMixer;
   let intervalId: number;
