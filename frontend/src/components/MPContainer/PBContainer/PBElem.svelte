@@ -5,8 +5,17 @@
   import WaveViz from "./WaveViz.svelte";
   import PBAEContainer from "./PBAEContainer.svelte";
   import { getSpeakerLabels } from "src/@common/AudioFormatsTools";
+  import type { MixPresentation } from "src/@types/MixPresentation";
 
-  let { mixPresentation, isActive, activeMix = $bindable() } = $props();
+  let {
+    mixPresentation,
+    isActive,
+    activeMix = $bindable(),
+  }: {
+    mixPresentation: MixPresentation;
+    isActive: boolean;
+    activeMix: string;
+  } = $props();
   let currentLoudnessValues: number[] = $state([]);
   let isPlaying = $state(false);
   let mixer: AudioMixer;
@@ -42,7 +51,13 @@
 
   async function setAEGain(aeId: string, val: number) {
     mixer = await AudioMixer.getInstance();
-    mixer.getAudioElementManager().getInputGainController(aeId)?.setGain(val);
+    const audioElement = mixPresentation.audioElements.find(
+      (ae) => ae.id === aeId
+    );
+    if (audioElement) {
+      audioElement.gain = val;
+      mixer.setAEGain(val, aeId);
+    }
   }
 </script>
 

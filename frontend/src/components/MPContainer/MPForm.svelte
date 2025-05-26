@@ -26,7 +26,10 @@
   });
 
   function handleSubmit() {
-    const mixPresentationCopy = { ...mixPresentation };
+    const mixPresentationCopy = {
+      ...mixPresentation,
+      audioElements: mixPresentation.audioElements.map((el) => ({ ...el })),
+    };
     createMixPresentation(mixPresentationCopy);
     // Reset form.
     mixPresentation.name = "";

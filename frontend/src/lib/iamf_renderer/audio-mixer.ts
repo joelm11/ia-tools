@@ -102,6 +102,8 @@ export class AudioMixer {
       } else {
         this.registerElement(elem.id, mediaElem, elem.audioChFormat);
         this.connectInputToMaster(elem.id);
+        // Set gains for the element from the mix presentation.
+        this.setAEGain(elem.gain, elem.id);
       }
     }
 
@@ -177,6 +179,19 @@ export class AudioMixer {
   setMixGain(val: number, id: string) {
     if (this.activePresentation && this.activePresentation.id === id) {
       this.masterGainController.setMasterGain(val);
+    }
+  }
+
+  setAEGain(val: number, id: string) {
+    if (!this.activePresentation) {
+      return;
+    }
+    const inputGainController =
+      this.audioElementManager.getInputGainController(id);
+    if (inputGainController) {
+      inputGainController.setGain(val);
+    } else {
+      console.warn(`No InputGainController found for ID: ${id}`);
     }
   }
 
