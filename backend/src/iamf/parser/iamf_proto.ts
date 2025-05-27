@@ -274,11 +274,11 @@ function addMixPresentationData(
   }
 }
 
+let parameterId = 800; // Static variable for unique parameterIds
 function mixpresentationAudioElements(
   mixPresentation: MixPresentationMetadata
 ): SubMixAudioElement[] {
   const mixpresentationAudioElements: SubMixAudioElement[] = [];
-
   for (const element of mixPresentation.audioElements) {
     mixpresentationAudioElements.push(
       SubMixAudioElement.create({
@@ -290,7 +290,7 @@ function mixpresentationAudioElements(
         },
         elementMixGain: {
           paramDefinition: {
-            parameterId: 997,
+            parameterId: parameterId++,
             parameterRate: 48000,
             paramDefinitionMode: true,
           },
@@ -305,7 +305,9 @@ function mixpresentationAudioElements(
 function decimalToIntGain(value: number): number {
   // Multiply float dB gain by 256 and truncate as integer for proto formatting.
   const dBValue = 20 * Math.log10(value) * 256;
-  return Number.isNaN(dBValue) ? -96 : Math.trunc(dBValue);
+  return Number.isNaN(dBValue) || !Number.isFinite(dBValue)
+    ? -96
+    : Math.trunc(dBValue);
 }
 
 async function metadataToTextProto(

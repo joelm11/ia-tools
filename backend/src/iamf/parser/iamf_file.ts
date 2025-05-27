@@ -43,6 +43,7 @@ export async function buildIAMFFile(
         console.log(logData);
         reject(`IAMF Encoder completed with code ${code}`);
       } else {
+        console.log(logData);
         resolve({
           iamfUrl: path.join(iamfOutputDirURL, IAMF_FILENAME),
         });
