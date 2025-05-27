@@ -2,6 +2,7 @@
   import PbElem from "./PBElem.svelte";
   import type { MixPresentation } from "src/@types/MixPresentation";
   import ExportForm from "./ExportForm.svelte";
+  import WalkthroughModal from "./WalkthroughModal.svelte";
 
   const { mixPresentations } = $props<{
     mixPresentations: MixPresentation[];
@@ -21,7 +22,10 @@
 
   function startWalkthrough() {
     showWalkthrough = true;
-    // Logic to trigger the walkthrough can be added here
+  }
+
+  function closeWalkthrough() {
+    showWalkthrough = false;
   }
 </script>
 
@@ -63,4 +67,6 @@
     {/each}
   </div>
   <ExportForm show={showExportForm} closeModal={closeExportForm}></ExportForm>
+  <WalkthroughModal show={showWalkthrough} closeModal={closeWalkthrough}
+  ></WalkthroughModal>
 </div>
