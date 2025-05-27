@@ -125,7 +125,7 @@
     <div
       onclick={(e) => e.stopPropagation()}
       role="presentation"
-      class="bg-slate-800 w-full max-w-md rounded-lg shadow-xl border border-slate-600"
+      class="bg-slate-800 w-full max-w-lg rounded-lg shadow-xl border border-slate-600"
       aria-labelledby="modal-title"
     >
       <div

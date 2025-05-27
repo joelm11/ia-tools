@@ -34,6 +34,7 @@
 </script>
 
 {#if show}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div
     bind:this={modalElement}
     transition:fade={{ duration: 100 }}
@@ -47,7 +48,7 @@
     <div
       onclick={(e) => e.stopPropagation()}
       role="presentation"
-      class="bg-slate-800 w-full max-w-md rounded-lg shadow-xl border border-slate-600"
+      class="bg-slate-800 w-full max-w-lg rounded-lg shadow-xl border border-slate-600"
       aria-labelledby="walkthrough-modal-title"
     >
       <div
@@ -61,7 +62,7 @@
         </h2>
         <button
           onclick={closeModal}
-          class="text-slate-400 hover:text-slate-200 text-2xl leading-none focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-sm"
+          class="text-slate-400 hover:text-slate-500 active:text-slate-600 text-2xl leading-none focus:outline-none focus:ring-2 focus:ring-cyan-500 rounded-sm"
           aria-label="Close modal"
         >
           &times;
@@ -73,7 +74,7 @@
       <div class="flex justify-end border-t border-slate-600 p-4 sm:p-6">
         <button
           onclick={closeModal}
-          class="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-slate-200 font-medium rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800"
+          class="px-4 py-2 bg-slate-600 hover:bg-slate-700 active:bg-slate-800 text-slate-200 font-medium rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800"
         >
           Close
         </button>
