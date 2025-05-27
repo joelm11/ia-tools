@@ -145,10 +145,9 @@ function addDefaultMetadata(
   metadata.codecConfigMetadata.push(
     CodecConfigObuMetadata.create({
       codecConfigId: CODEC_CONFIG_ID,
-      // TODO Hardcoding these for now but these must become common between input files.
       codecConfig: {
         codecId: CodecId.CODEC_ID_LPCM,
-        numSamplesPerFrame: 512,
+        numSamplesPerFrame: 1024,
         decoderConfigLpcm: {
           sampleFormatFlags: LpcmFormatFlags.LPCM_LITTLE_ENDIAN,
           sampleSize: CODEC_BIT_DEPTH,
@@ -216,8 +215,8 @@ function addAudioElementData(
           channelAudioLayerConfigs: [
             {
               loudspeakerLayout: getIAMFLayout(element.audioChFormat),
-              outputGainIsPresentFlag: 0, // TODO(?)
-              reconGainIsPresentFlag: 0, // TODO(?)
+              outputGainIsPresentFlag: 0,
+              reconGainIsPresentFlag: 0,
               substreamCount: numSubstreams,
               coupledSubstreamCount: getCoupledChannelCount(
                 element.audioChFormat
@@ -252,7 +251,7 @@ function addMixPresentationData(
                 parameterRate: 48000,
                 paramDefinitionMode: true,
               },
-              defaultMixGain: -1541, // TODO
+              defaultMixGain: decimalToIntGain(mixPresentation.mixGain), // TODO
             },
             // Let's see if we can get away without loudness information.
             // Otherwise, TODO.
@@ -262,6 +261,9 @@ function addMixPresentationData(
                 loudnessLayout: {
                   layoutType: LayoutType.LAYOUT_TYPE_LOUDSPEAKERS_SS_CONVENTION,
                   ssLayout: { soundSystem: SoundSystem.SOUND_SYSTEM_A_0_2_0 }, // TODO
+                },
+                loudness: {
+                  infoTypeBitMasks: [],
                 },
               },
             ],
@@ -288,11 +290,11 @@ function mixpresentationAudioElements(
         },
         elementMixGain: {
           paramDefinition: {
-            parameterId: 999,
+            parameterId: 997,
             parameterRate: 48000,
             paramDefinitionMode: true,
           },
-          defaultMixGain: -1541,
+          defaultMixGain: decimalToIntGain(element.gain),
         },
       })
     );
@@ -302,8 +304,8 @@ function mixpresentationAudioElements(
 
 function decimalToIntGain(value: number): number {
   // Multiply float dB gain by 256 and truncate as integer for proto formatting.
-  // Assumes linear input value in range [0,1]
-  return Math.trunc(20 * Math.log10(value * 256));
+  const dBValue = 20 * Math.log10(value) * 256;
+  return Number.isNaN(dBValue) ? -96 : Math.trunc(dBValue);
 }
 
 async function metadataToTextProto(

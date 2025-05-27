@@ -32,7 +32,7 @@ export async function formatSourceAudio(
     for (let i = 0; i < sourceIds.length; ++i) {
       const buffer = wav.encode(paddedFiles[i].file.channelData, {
         sampleRate: desc.sampleRate,
-        float: true,
+        float: false,
         bitDepth: desc.bitDepth,
       });
       await sourceStore.replace(sourceIds[i], buffer);

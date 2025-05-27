@@ -35,6 +35,7 @@ async function copyDirectoryRecursive(
 describe("Test create IAMF files from given payloads", async () => {
   let tempAudioDirectory: string;
   let audioSourceStorage: StorageService;
+  let result: { iamfUrl: string };
 
   beforeAll(async () => {
     // Copy source audio files to a temporary directory as we modify source files
@@ -56,7 +57,12 @@ describe("Test create IAMF files from given payloads", async () => {
     );
   });
 
-  afterEach(async () => {});
+  afterEach(async () => {
+    // Remove the file at result.iamfUrl after each test
+    if (result && result.iamfUrl) {
+      await fs.rm(result.iamfUrl, { force: true });
+    }
+  });
 
   afterAll(async () => {
     await fs.rm(tempAudioDirectory, { recursive: true, force: true });
@@ -69,11 +75,7 @@ describe("Test create IAMF files from given payloads", async () => {
       "1ae1mp.json"
     );
     const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
-    const result = await iamfWorkerJob(
-      "1AE1MPTest",
-      [payload],
-      audioSourceStorage
-    );
+    result = await iamfWorkerJob("1AE1MPTest", [payload], audioSourceStorage);
 
     expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
   });
@@ -90,7 +92,7 @@ describe("Test create IAMF files from given payloads", async () => {
         /"audioElementFormat": ".*?"/,
         `"audioElementFormat": "${layout}"`
       );
-      const result = await iamfWorkerJob(
+      result = await iamfWorkerJob(
         "1AE1MPFormats",
         [JSON.parse(payload)],
         audioSourceStorage
@@ -109,35 +111,33 @@ describe("Test create IAMF files from given payloads", async () => {
     const payload: MixPresentationBase[] = JSON.parse(
       fsSync.readFileSync(payloadPath, "utf-8")
     );
-    // console.log("Payload", payload);
     const result = await iamfWorkerJob("1AE2MP", payload, audioSourceStorage);
 
     expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
   });
 
-  // it("2AE2MP", async () => {
-  //   const payloadPath = path.join(
-  //     process.cwd(),
-  //     "src/iamf/test/resources",
-  //     "2ae2mp.json"
-  //   );
-  //   const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
-  //   const job = { id: "2AE2MP", data: [payload] };
-  //   const result = await iamfWorkerJob(job, audioSourceStorage);
+  it("2AE2MP", async () => {
+    const payloadPath = path.join(
+      process.cwd(),
+      "src/iamf/test/resources",
+      "2ae2mp.json"
+    );
+    const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
+    console.log("Payload:", payload);
+    result = await iamfWorkerJob("2AE2MP", payload, audioSourceStorage);
 
-  //   expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
-  // });
+    expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
+  });
 
-  // it("4AE1MP", async () => {
-  //   const payloadPath = path.join(
-  //     process.cwd(),
-  //     "src/iamf/test/resources",
-  //     "4ae1mp.json"
-  //   );
-  //   const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
-  //   const job = { id: "4AE1MP", data: [payload] };
-  //   const result = await iamfWorkerJob(job, audioSourceStorage);
+  it("4AE1MP", async () => {
+    const payloadPath = path.join(
+      process.cwd(),
+      "src/iamf/test/resources",
+      "4ae1mp.json"
+    );
+    const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
+    result = await iamfWorkerJob("4AE1MP", [payload], audioSourceStorage);
 
-  //   expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
-  // });
+    expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
+  });
 });
