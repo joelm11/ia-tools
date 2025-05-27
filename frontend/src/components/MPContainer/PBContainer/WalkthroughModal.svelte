@@ -71,7 +71,16 @@
       <div class="p-4 sm:p-6 text-slate-200">
         <WalkthroughContent></WalkthroughContent>
       </div>
-      <div class="flex justify-end border-t border-slate-600 p-4 sm:p-6">
+      <div class="flex justify-around border-t border-slate-600 p-4 sm:p-6">
+        <div class="mt-6 text-xs text-gray-500">
+          <p>This product is not endorsed by the AOM, Google, nor Samsung.</p>
+          <a
+            href="mailto:developer@example.com"
+            class="flex items-center mt-2 text-blue-500 hover:underline"
+          >
+            Contact Developer
+          </a>
+        </div>
         <button
           onclick={closeModal}
           class="px-4 py-2 bg-slate-600 hover:bg-slate-700 active:bg-slate-800 text-slate-200 font-medium rounded-md shadow transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800"
