@@ -19,7 +19,7 @@
     isActive: boolean;
     activeMix: string;
   } = $props();
-  let currentLoudnessValues: number[] = $state([]);
+  let currentLoudnessValues: number[] = $state([-60, -60]);
   let isPlaying = $state(false);
   let mixer: AudioMixer;
   let intervalId: number;
@@ -31,7 +31,7 @@
     } else {
       currentLoudnessValues = Array(
         getChannelCountRaw(mixPresentation.playbackFormat)
-      ).fill(0);
+      ).fill(-60);
     }
   }
 

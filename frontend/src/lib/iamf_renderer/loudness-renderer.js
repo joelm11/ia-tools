@@ -9,7 +9,7 @@ class LoudnessProcessor extends AudioWorkletProcessor {
     const input = inputs[0];
     const output = outputs[0];
     const numChannels = input.length;
-    const loudnessValues = [];
+    const loudnessValues = Array(numChannels).fill(-60);
 
     // Iterate through each input channel
     for (let channel = 0; channel < numChannels; ++channel) {
@@ -17,7 +17,7 @@ class LoudnessProcessor extends AudioWorkletProcessor {
       const outputChannel = output[channel];
       let sum = 0;
 
-      // Calculate RMS loudness for the current channel
+      // Calculate dB loudness for the current channel
       for (let i = 0; i < inputChannel.length; ++i) {
         const sample = inputChannel[i];
         sum += sample * sample;
@@ -25,7 +25,8 @@ class LoudnessProcessor extends AudioWorkletProcessor {
       }
 
       const rms = Math.sqrt(sum / inputChannel.length);
-      loudnessValues.push(rms);
+      const dB = 20 * Math.log10(rms || 1e-12); // Avoid log of zero
+      loudnessValues[channel] = dB;
     }
 
     // Send the loudness values to the host node

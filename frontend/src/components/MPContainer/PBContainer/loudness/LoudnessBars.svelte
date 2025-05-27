@@ -1,8 +1,8 @@
 <script lang="ts">
   export let currentLoudnessValues: number[];
   export let speakerLabels: string[];
-  export let maxLoudness: number = 1.0;
-  export let minLoudness: number = 0.0;
+  export let maxLoudness: number = 3.0;
+  export let minLoudness: number = -60.0;
   export let barColorClass: string = "bg-lime-500";
   export let barWidthClass: string = "w-4";
   export let barSpacingClass: string = "mr-3";
