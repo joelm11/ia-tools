@@ -85,22 +85,20 @@ describe("formatSourceAudio", () => {
   });
 
   it("should pad audio", async () => {
-    const filename = "padding_test.wav";
     const sampleRate = 44100;
     const bitDepth = 16;
-    const initialDuration = 1;
 
     const fileId = await createDummyWaveFile(
-      filename,
+      "padding_test.wav",
       sampleRate,
       bitDepth.toString(),
-      initialDuration
+      1
     );
     const fileId2 = await createDummyWaveFile(
-      filename,
+      "padding_test2.wav",
       sampleRate,
       bitDepth.toString(),
-      initialDuration + 5
+      5
     );
     const desc: FormatAudioParams = {
       bitDepth: bitDepth,
@@ -112,17 +110,13 @@ describe("formatSourceAudio", () => {
     const buffer = await fs.readFile(url!);
     const wf = new WaveFile(buffer);
     const samples = wf.getSamples();
-    const numSamples = Array.isArray(samples[0])
-      ? samples[0].length
-      : samples.length;
+    const numSamples = (samples[0] as any).length;
 
     const url2 = (await storage.exists(fileId2)).url;
     const buffer2 = await fs.readFile(url2!);
     const wf2 = new WaveFile(buffer2);
     const samples2 = wf2.getSamples();
-    const numSamples2 = Array.isArray(samples2[0])
-      ? samples2[0].length
-      : samples2.length;
+    const numSamples2 = (samples2[0] as any).length;
     expect(numSamples).toEqual(numSamples2);
   });
 });
