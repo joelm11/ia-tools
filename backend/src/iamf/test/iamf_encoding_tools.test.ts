@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import { StorageService } from "src/storage/storage_fs";
 import { formatSourceAudio } from "../parser/iamf_encoding_tools";
 import { WaveFile } from "wavefile";
+import path from "path";
 
 describe("formatSourceAudio", () => {
   let storage: StorageService;
@@ -141,4 +142,31 @@ describe("formatSourceAudio", () => {
     expect((decodedWav.fmt as any).sampleRate).toEqual(48000);
     expect(decodedWav.getSamples()[0].length).toEqual(chLength);
   });
+
+  it("7.1 input file", async () => {
+    const fileId = "7dot1.wav";
+    const sourceFilePath = path.join(
+      process.cwd(),
+      "src/iamf/test/resources/audio_sources/Nums_7dot1_24_48000.wav"
+    );
+    const buffer = await fs.readFile(sourceFilePath);
+    let wav = new WaveFile(buffer);
+    wav.toSampleRate(96000);
+    const newBuffer = wav.toBuffer();
+
+    let ret = await storage.create(newBuffer, fileId);
+    expect(ret.success).toBe(true);
+
+    await formatSourceAudio([fileId], storage, {
+      bitDepth: 24,
+      sampleRate: 96000,
+    });
+
+    let existsPostMod = await storage.exists(fileId);
+    let wavFile = await fs.readFile(existsPostMod.url!);
+    let decodedWav = new WaveFile(wavFile);
+
+    expect((decodedWav.fmt as any).sampleRate).toEqual(96000);
+    expect((decodedWav.fmt as any).numChannels).toEqual(8);
+  }, 0);
 });
