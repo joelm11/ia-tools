@@ -1,6 +1,7 @@
 import { AudioChFormat } from "src/@types/AudioFormats";
 import { ChannelLabel } from "./protoc/audio_frame";
 import { LoudspeakerLayout } from "./protoc/audio_element";
+import { SoundSystem } from "./protoc/mix_presentation";
 
 export function getChannelLabels(chFormat: AudioChFormat) {
   switch (chFormat) {
@@ -143,5 +144,32 @@ export function getIAMFLayout(chFormat: AudioChFormat): any {
       return LoudspeakerLayout.LOUDSPEAKER_LAYOUT_7_1_4_CH;
     default:
       throw new Error(`getIAMFLayout(): Unknown channel format: ${chFormat}`);
+  }
+}
+
+export function getIAMFSoundSystem(chFormat: AudioChFormat) {
+  switch (chFormat) {
+    case AudioChFormat.MONO:
+      return SoundSystem.SOUND_SYSTEM_A_0_2_0;
+    case AudioChFormat.STEREO:
+      return SoundSystem.SOUND_SYSTEM_A_0_2_0;
+    case AudioChFormat.K3P1P2:
+      return SoundSystem.SOUND_SYSTEM_C_2_5_0;
+    case AudioChFormat.K5P1:
+      return SoundSystem.SOUND_SYSTEM_B_0_5_0;
+    case AudioChFormat.K5P1P2:
+      return SoundSystem.SOUND_SYSTEM_C_2_5_0;
+    case AudioChFormat.K5P1P4:
+      return SoundSystem.SOUND_SYSTEM_D_4_5_0;
+    case AudioChFormat.K7P1:
+      return SoundSystem.SOUND_SYSTEM_I_0_7_0;
+    case AudioChFormat.K7P1P2:
+      return SoundSystem.SOUND_SYSTEM_J_4_7_0;
+    case AudioChFormat.K7P1P4:
+      return SoundSystem.SOUND_SYSTEM_J_4_7_0;
+    default:
+      throw new Error(
+        `getIAMFSoundSystem(): Unknown channel format: ${chFormat}`
+      );
   }
 }

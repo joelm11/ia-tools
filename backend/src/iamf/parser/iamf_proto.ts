@@ -29,6 +29,7 @@ import {
   getCoupledChannelCount,
   getChannelLabels,
   getIAMFLayout,
+  getIAMFSoundSystem,
 } from "./iamf_format_tools";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -239,7 +240,7 @@ function addMixPresentationData(
       MixPresentationObuMetadata.create({
         mixPresentationId: uuidToNumber(mixPresentation.id),
         countLabel: 1,
-        annotationsLanguage: ["en-us"], // TODO (?)
+        annotationsLanguage: ["en-us"], // TODO (?) - This is important for selectability.
         localizedPresentationAnnotations: [mixPresentation.name],
         subMixes: [
           {
@@ -253,14 +254,28 @@ function addMixPresentationData(
               },
               defaultMixGain: decimalToIntGain(mixPresentation.mixGain), // TODO
             },
-            // Let's see if we can get away without loudness information.
-            // Otherwise, TODO.
-            // Looks like I can just hardcode stereo loudness stuff for now(?)
+            // Looks like I can just hardcode stereo loudness stuff for now
+            // We can get away without loudness info for now, but we have to specify the mix presentation's playback layout.
             layouts: [
               {
                 loudnessLayout: {
                   layoutType: LayoutType.LAYOUT_TYPE_LOUDSPEAKERS_SS_CONVENTION,
-                  ssLayout: { soundSystem: SoundSystem.SOUND_SYSTEM_A_0_2_0 }, // TODO
+                  ssLayout: {
+                    soundSystem: getIAMFSoundSystem(
+                      mixPresentation.playbackFormat
+                    ),
+                  },
+                },
+                loudness: {
+                  infoTypeBitMasks: [],
+                },
+              },
+              {
+                loudnessLayout: {
+                  layoutType: LayoutType.LAYOUT_TYPE_LOUDSPEAKERS_SS_CONVENTION,
+                  ssLayout: {
+                    soundSystem: SoundSystem.SOUND_SYSTEM_A_0_2_0,
+                  },
                 },
                 loudness: {
                   infoTypeBitMasks: [],

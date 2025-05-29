@@ -2,7 +2,7 @@
   "name": "My Mix Presentation",
   "description": "",
   "id": "68a73826-cd5c-48e5-bb32-d64bb1b0cea1",
-  "playbackFormat": "none",
+  "playbackFormat": "7.1.2",
   "audioElements": [
     {
       "name": "BassNote.wav",

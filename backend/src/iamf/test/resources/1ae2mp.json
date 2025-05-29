@@ -3,7 +3,7 @@
     "name": "My Mix Presentation",
     "description": "",
     "id": "7132c66d-2a78-47f7-99fa-08bbcb2249bb",
-    "playbackFormat": "none",
+    "playbackFormat": "Stereo",
     "audioElements": [
       {
         "name": "BassNote.wav",
@@ -17,7 +17,7 @@
     "name": "Foo Bar",
     "description": "",
     "id": "e3a4304c-6687-4acb-98b9-8699c39e6032",
-    "playbackFormat": "none",
+    "playbackFormat": "3.1.2",
     "audioElements": [
       {
         "name": "dialog_clip_stereo.wav",

@@ -139,4 +139,27 @@ describe("Test create IAMF files from given payloads", async () => {
 
     expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
   });
+
+  it("1AE1MP: All playback layouts", async () => {
+    for (const layout of Object.values(AudioChFormat)) {
+      if (layout === AudioChFormat.NONE) continue;
+      const payloadPath = path.join(
+        process.cwd(),
+        "src/iamf/test/resources",
+        "1ae1mp.json"
+      );
+      let payload = fsSync.readFileSync(payloadPath, "utf-8");
+      payload = payload.replace(
+        /"playbackFormat": ".*?"/,
+        `"playbackFormat": "${layout}"`
+      );
+      result = await iamfWorkerJob(
+        "1AE1MPFormats",
+        [JSON.parse(payload)],
+        audioSourceStorage
+      );
+
+      expect(fsSync.existsSync(result.iamfUrl)).toBe(true);
+    }
+  });
 });

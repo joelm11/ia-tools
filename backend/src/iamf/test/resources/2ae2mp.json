@@ -3,7 +3,7 @@
     "name": "asdf",
     "description": "",
     "id": "b6554aab-649d-44c3-a611-3114877d2a31",
-    "playbackFormat": "none",
+    "playbackFormat": "Stereo",
     "audioElements": [
       {
         "name": "BassNote.wav",
@@ -17,7 +17,7 @@
     "name": "My Mix Presentation",
     "description": "",
     "id": "da6b734a-f4fa-46f7-b65b-33bc933b889d",
-    "playbackFormat": "none",
+    "playbackFormat": "Stereo",
     "audioElements": [
       {
         "name": "shots.wav",
