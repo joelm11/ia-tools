@@ -60,58 +60,71 @@ describe("formatSourceAudio", () => {
     expect((wf.fmt as any).sampleRate).toBe(targetSampleRate);
   });
 
-  //   it("should convert bit depth", async () => {
-  //     const filename = "bit_depth_test.wav";
-  //     const sampleRate = 44100;
-  //     const initialBitDepth = 16;
-  //     const targetBitDepth = 24;
-  //     const duration = 1;
+  it("should convert bit depth", async () => {
+    const filename = "bit_depth_test.wav";
+    const sampleRate = 44100;
+    const initialBitDepth = 16;
+    const targetBitDepth = 24;
+    const duration = 1;
 
-  //     const fileId = await createDummyWaveFile(
-  //       filename,
-  //       sampleRate,
-  //       initialBitDepth.toString(),
-  //       duration
-  //     );
-  //     const desc: FormatAudioParams = {
-  //       bitDepth: targetBitDepth,
-  //       sampleRate: sampleRate,
-  //     };
-  //     await formatAudio([fileId], storage, desc);
+    const fileId = await createDummyWaveFile(
+      filename,
+      sampleRate,
+      initialBitDepth.toString(),
+      duration
+    );
+    const desc: FormatAudioParams = {
+      bitDepth: targetBitDepth,
+      sampleRate: sampleRate,
+    };
+    await formatAudio([fileId], storage, desc);
 
-  //     const { url } = await storage.exists(fileId);
-  //     const buffer = await fs.readFile(url!);
-  //     const wf = new WaveFile(buffer);
-  //     expect((wf.fmt as any).bitsPerSample).toBe(targetBitDepth);
-  //   });
+    const { url } = await storage.exists(fileId);
+    const buffer = await fs.readFile(url!);
+    const wf = new WaveFile(buffer);
+    expect((wf.fmt as any).bitsPerSample).toBe(targetBitDepth);
+  });
 
-  //   it("should pad audio", async () => {
-  //     const filename = "padding_test.wav";
-  //     const sampleRate = 44100;
-  //     const bitDepth = 16;
-  //     const initialDuration = 1;
-  //     const targetDuration = 2;
+  it("should pad audio", async () => {
+    const filename = "padding_test.wav";
+    const sampleRate = 44100;
+    const bitDepth = 16;
+    const initialDuration = 1;
+    const targetDuration = 2;
 
-  //     const fileId = await createDummyWaveFile(
-  //       filename,
-  //       sampleRate,
-  //       bitDepth.toString(),
-  //       initialDuration
-  //     );
-  //     const desc: FormatAudioParams = {
-  //       bitDepth: bitDepth,
-  //       sampleRate: sampleRate,
-  //     };
-  //     await formatAudio([fileId], storage, desc);
+    const fileId = await createDummyWaveFile(
+      filename,
+      sampleRate,
+      bitDepth.toString(),
+      initialDuration
+    );
+    const fileId2 = await createDummyWaveFile(
+      filename,
+      sampleRate,
+      bitDepth.toString(),
+      initialDuration + 5
+    );
+    const desc: FormatAudioParams = {
+      bitDepth: bitDepth,
+      sampleRate: sampleRate,
+    };
+    await formatAudio([fileId, fileId2], storage, desc);
 
-  //     const { url } = await storage.exists(fileId);
-  //     const buffer = await fs.readFile(url!);
-  //     const wf = new WaveFile(buffer);
-  //     const samples = wf.getSamples();
-  //     const numSamples = Array.isArray(samples[0])
-  //       ? samples[0].length
-  //       : samples.length;
-  //     const actualDuration = numSamples / sampleRate;
-  //     expect(actualDuration).toBeCloseTo(targetDuration, 1); // Allow a small tolerance
-  //   });
+    const { url } = await storage.exists(fileId);
+    const buffer = await fs.readFile(url!);
+    const wf = new WaveFile(buffer);
+    const samples = wf.getSamples();
+    const numSamples = Array.isArray(samples[0])
+      ? samples[0].length
+      : samples.length;
+
+    const url2 = (await storage.exists(fileId2)).url;
+    const buffer2 = await fs.readFile(url2!);
+    const wf2 = new WaveFile(buffer2);
+    const samples2 = wf2.getSamples();
+    const numSamples2 = Array.isArray(samples2[0])
+      ? samples2[0].length
+      : samples2.length;
+    expect(numSamples).toEqual(numSamples2);
+  });
 });

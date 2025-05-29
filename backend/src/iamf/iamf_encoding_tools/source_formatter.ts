@@ -2,6 +2,8 @@ import { StorageService } from "src/storage/storage_fs";
 import fs from "fs/promises";
 import { WaveFile } from "wavefile";
 import { spawn } from "child_process";
+import path from "path";
+import os from "os";
 
 const FORMAT_EXE = `${process.cwd()}/src/iamf/iamf_encoding_tools/ffmpeg/ffmpeg_custom_backend_build/bin/ffmpeg`;
 
@@ -26,7 +28,7 @@ export async function formatAudio(
       if (!success || !url) {
         throw `formatAudio: Input file '${sourceId}' not found.`;
       }
-      formatInput(url, desc, maxDuration);
+      await formatInput(sourceId, url, desc, maxDuration, sourceStore);
     })
   );
 }
@@ -78,13 +80,15 @@ function getMaxDuration(fileParams: ParsedAudioParams[]): number {
 
 // Format and replace input files according to desired input desc
 async function formatInput(
+  fileId: string,
   inputUrl: string,
   desc: FormatAudioParams,
-  duration: number
+  duration: number,
+  storageService: StorageService
 ) {
-  const args = [buildFormatArgs(inputUrl, desc, duration)];
-
-  console.log(args); // debug
+  const tmpDir = os.tmpdir();
+  const tmpFile = path.join(tmpDir, `tmp_audio_${Date.now()}.wav`);
+  const args = buildFormatArgs(inputUrl, desc, duration, tmpFile);
 
   return new Promise((resolve, reject) => {
     const formatProcess = spawn(FORMAT_EXE, args);
@@ -98,8 +102,20 @@ async function formatInput(
     });
 
     formatProcess.on("close", async (code) => {
-      console.log(logData); // Debug
-      resolve({});
+      if (code === 0) {
+        try {
+          const buffer = await fs.readFile(tmpFile);
+          await storageService.replace(fileId, buffer);
+          await fs.unlink(tmpFile);
+          resolve({});
+        } catch (err: any) {
+          console.error("Error replacing file:", err);
+          reject(err);
+        }
+      } else {
+        console.log(logData);
+        reject(new Error(`FFmpeg process failed with code ${code}`));
+      }
     });
 
     formatProcess.on("error", async (err) => {
@@ -112,8 +128,9 @@ async function formatInput(
 function buildFormatArgs(
   inputFilePath: string,
   desc: FormatAudioParams,
-  duration: number
-) {
+  duration: number,
+  outputFilePath: string
+): string[] {
   const { bitDepth, sampleRate } = desc;
 
   // Determine output format based on bit depth
@@ -132,10 +149,18 @@ function buildFormatArgs(
       throw new Error("Unsupported bit depth. Please use 16, 24, or 32.");
   }
 
-  const input = `-i "${inputFilePath}"`;
-  const dur = `-t ${duration}`;
-  const sr = `-ar ${sampleRate}`;
-  const codec = `-c:a ${audioCodec}`;
-  const output = `-y "${inputFilePath}"`;
-  return `${input} ${dur} ${sr} ${codec} ${output}`;
+  const args: string[] = [
+    "-i",
+    inputFilePath,
+    "-t",
+    duration.toString(),
+    "-ar",
+    sampleRate.toString(),
+    "-c:a",
+    audioCodec,
+    "-y",
+    outputFilePath,
+  ];
+
+  return args;
 }
