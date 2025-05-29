@@ -1,3 +1,6 @@
 [submodule "backend/src/iamf/iamf-tools"]
 	path = backend/src/iamf/iamf-tools
 	url = https://github.com/AOMediaCodec/iamf-tools.git
+[submodule "backend/src/iamf/iamf_encoding_tools/ffmpeg"]
+	path = backend/src/iamf/iamf_encoding_tools/ffmpeg
+	url = https://github.com/FFmpeg/FFmpeg.git
