@@ -123,7 +123,6 @@ describe("Test create IAMF files from given payloads", async () => {
       "2ae2mp.json"
     );
     const payload = JSON.parse(fsSync.readFileSync(payloadPath, "utf-8"));
-    console.log("Payload:", payload);
     result = await iamfWorkerJob("2AE2MP", payload, audioSourceStorage);
 
     expect(fsSync.existsSync(result.iamfUrl)).toBe(true);

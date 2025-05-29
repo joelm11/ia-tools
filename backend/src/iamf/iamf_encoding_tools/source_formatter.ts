@@ -54,10 +54,10 @@ async function parseInput(
   const wf = new WaveFile(buffer);
 
   const formatData = wf.fmt as any;
-  const samples = wf.getSamples();
-  const numSamples = Array.isArray(samples[0])
-    ? samples[0].length
-    : samples.length;
+  const samples = wf.getSamples(false, Uint8Array);
+  //   console.log(samples);
+  const numSamples = (samples[0] as any).length;
+  //   console.log(numSamples);
 
   parsedParams = {
     fileId: sourceId,
@@ -87,7 +87,10 @@ async function formatInput(
   storageService: StorageService
 ) {
   const tmpDir = os.tmpdir();
-  const tmpFile = path.join(tmpDir, `tmp_audio_${Date.now()}.wav`);
+  const tmpFile = path.join(
+    tmpDir,
+    `tmp_audio_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.wav`
+  );
   const args = buildFormatArgs(inputUrl, desc, duration, tmpFile);
 
   return new Promise((resolve, reject) => {
@@ -106,7 +109,7 @@ async function formatInput(
         try {
           const buffer = await fs.readFile(tmpFile);
           await storageService.replace(fileId, buffer);
-          await fs.unlink(tmpFile);
+          await fs.rm(tmpFile, { force: true });
           resolve({});
         } catch (err: any) {
           console.error("Error replacing file:", err);
@@ -143,7 +146,7 @@ function buildFormatArgs(
       audioCodec = "pcm_s24le";
       break;
     case 32:
-      audioCodec = "pcm_f32le";
+      audioCodec = "pcm_s32le";
       break;
     default:
       throw new Error("Unsupported bit depth. Please use 16, 24, or 32.");

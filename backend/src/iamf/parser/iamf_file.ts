@@ -51,7 +51,7 @@ export async function buildIAMFFile(
 
     iamfProcess.on("error", async (err) => {
       try {
-        // await iamfJobStorage.create(Buffer.from(logData), logFileID);
+        await iamfJobStorage.create(Buffer.from(logData), logFileID);
         console.error(`Process error. Log file: ${logFileID}`);
       } catch (storageErr) {
         console.error(`Failed to store log file: ${storageErr}`);

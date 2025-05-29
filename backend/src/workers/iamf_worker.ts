@@ -9,6 +9,7 @@ import { buildIAMFFile, IAMFFileResult } from "../iamf/parser/iamf_file";
 import type { MixPresentationBase } from "src/@types/MixPresentation";
 import { StorageService } from "src/storage/storage_fs";
 import { formatSourceAudio } from "src/iamf/parser/iamf_encoding_tools";
+import { formatAudio } from "src/iamf/iamf_encoding_tools/source_formatter";
 
 /**
  * @brief IAMF Job Executor. Given parsed and validated payload, attempts to encode an IAMF file.
@@ -61,7 +62,7 @@ export async function iamfWorkerJob(
     }
   }
   const sourceIds = [...sourceSet.keys()];
-  await formatSourceAudio(sourceIds, audioSS, {
+  await formatAudio(sourceIds, audioSS, {
     sampleRate: CODEC_SR,
     bitDepth: CODEC_BIT_DEPTH,
   });

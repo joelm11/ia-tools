@@ -3,7 +3,6 @@ import fs from "fs/promises";
 import { StorageService } from "src/storage/storage_fs";
 import { formatAudio, FormatAudioParams } from "../source_formatter";
 import { WaveFile } from "wavefile";
-import path from "path";
 
 describe("formatSourceAudio", () => {
   let storage: StorageService;
@@ -27,7 +26,7 @@ describe("formatSourceAudio", () => {
     const numSamples = sampleRate * duration;
     const samples = new Array(numSamples).fill(0.5);
     const wf = new WaveFile();
-    wf.fromScratch(1, sampleRate, bitDepth, samples);
+    wf.fromScratch(5, sampleRate, bitDepth, samples);
 
     const buffer = wf.toBuffer();
     const fileId = filename; // Use filename as fileId for now
@@ -90,7 +89,6 @@ describe("formatSourceAudio", () => {
     const sampleRate = 44100;
     const bitDepth = 16;
     const initialDuration = 1;
-    const targetDuration = 2;
 
     const fileId = await createDummyWaveFile(
       filename,
