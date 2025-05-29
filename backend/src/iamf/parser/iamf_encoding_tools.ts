@@ -2,6 +2,7 @@ import { StorageService } from "src/storage/storage_fs";
 import * as wav from "node-wav";
 import { resample } from "wave-resampler";
 import fs from "fs/promises";
+import { WaveFile } from "wavefile";
 
 interface WavFileDescriptor {
   sampleRate: number;
@@ -10,7 +11,7 @@ interface WavFileDescriptor {
 }
 
 type ParsedFile = {
-  file: { channelData: Float32Array[]; sampleRate: number };
+  file: { channelData: Float64Array[] };
   desc: WavFileDescriptor;
 };
 
@@ -30,11 +31,14 @@ export async function formatSourceAudio(
     const paddedFiles = await padSources(resampledFiles);
 
     for (let i = 0; i < sourceIds.length; ++i) {
-      const buffer = wav.encode(paddedFiles[i].file.channelData, {
-        sampleRate: desc.sampleRate,
-        float: false,
-        bitDepth: desc.bitDepth,
-      });
+      const wav = new WaveFile();
+      wav.fromScratch(
+        paddedFiles[i].desc.numChannels,
+        desc.sampleRate,
+        `${desc.bitDepth}`,
+        paddedFiles[i].file.channelData
+      );
+      const buffer = wav.toBuffer();
       await sourceStore.replace(sourceIds[i], buffer);
     }
   } catch (error) {
@@ -53,14 +57,21 @@ async function processInputs(
       throw `processInputs: Input file '${id}' not found.`;
     }
     const buffer = await fs.readFile(url);
-    const { sampleRate, channelData } = wav.decode(buffer);
+    const wf = new WaveFile(buffer);
+    wf.toBitDepth("32");
+
+    const formatData = wf.fmt as any;
+    const numChannels = formatData.numChannels;
+    const sampleRate = formatData.sampleRate;
+    const numSamples = wf.getSamples()[0].length;
+    const channelData: Array<Float64Array> = wf.getSamples(false);
 
     inputs.push({
-      file: { channelData: Array.from(channelData), sampleRate },
+      file: { channelData: channelData },
       desc: {
-        numSamples: channelData[0].length,
+        numSamples: numSamples,
         sampleRate: sampleRate,
-        numChannels: channelData.length,
+        numChannels: numChannels,
       },
     });
   }
@@ -82,7 +93,7 @@ async function resampleSources(
           method: "sinc",
         }
       );
-      channelData[ch] = new Float32Array(newSampleCh);
+      channelData[ch] = new Float64Array(newSampleCh);
     }
     file.desc.numSamples = channelData[0].length;
   }
