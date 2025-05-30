@@ -231,6 +231,7 @@ function addAudioElementData(
   }
 }
 
+let mpOmgPId = 998;
 function addMixPresentationData(
   mixPresentations: MixPresentationMetadata[],
   metadata: UserMetadata
@@ -248,7 +249,7 @@ function addMixPresentationData(
             // TODO?
             outputMixGain: {
               paramDefinition: {
-                parameterId: 998,
+                parameterId: mpOmgPId--,
                 parameterRate: 48000,
                 paramDefinitionMode: true,
               },
